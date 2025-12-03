@@ -1,0 +1,150 @@
+package com.example.studentselectionsystem.service.impl;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.example.studentselectionsystem.entity.Role;
+import com.example.studentselectionsystem.entity.User;
+import com.example.studentselectionsystem.repository.RoleRepository;
+import com.example.studentselectionsystem.repository.UserRepository;
+import com.example.studentselectionsystem.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 用户服务实现类
+ */
+@Service
+@Transactional
+public class UserServiceImpl implements UserService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    public User createUser(User user) {
+        // 设置创建时间
+        user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
+        // 设置默认状态为1（正常）
+        if (user.getStatus() == null) {
+            user.setStatus(1);
+        }
+        userRepository.insert(user);
+        return user;
+    }
+
+    @Override
+    public User updateUser(Integer id, User user) {
+        Optional<User> optionalUser = Optional.ofNullable(userRepository.selectById(id));
+        if (optionalUser.isPresent()) {
+            User existingUser = optionalUser.get();
+            // 更新用户信息
+            existingUser.setUsername(user.getUsername());
+            existingUser.setName(user.getName());
+            existingUser.setEmail(user.getEmail());
+            existingUser.setPhone(user.getPhone());
+            existingUser.setStatus(user.getStatus());
+            existingUser.setUpdateTime(new Date());
+            // 如果更新了密码，则重新加密
+            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
+            userRepository.updateById(existingUser);
+            return existingUser;
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteUser(Integer id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<User> findUserById(Integer id) {
+        return Optional.ofNullable(userRepository.selectById(id));
+    }
+
+    @Override
+    public Optional<User> findUserByUsername(String username) {
+        logger.info("正在查询用户名: {}", username);
+        Optional<User> userOptional = userRepository.selectByUsername(username);
+        if (userOptional.isPresent()) {
+            logger.info("查询结果: 用户存在，ID={}, 用户名={}, 密码={}", 
+                    userOptional.get().getId(), 
+                    userOptional.get().getUsername(), 
+                    userOptional.get().getPassword());
+        } else {
+            logger.info("查询结果: 用户 '{}' 不存在", username);
+        }
+        return userOptional;
+    }
+
+    @Override
+    public Optional<User> findUserByEmail(String email) {
+        return userRepository.selectByEmail(email);
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+        return userRepository.selectList(null);
+    }
+
+    @Override
+    public IPage<User> findUsersByPage(IPage<User> page) {
+        return userRepository.selectPage(page, null);
+    }
+
+    @Override
+    public IPage<User> findUsersByPage(Integer current, Integer size) {
+        // 创建MyBatis Plus分页对象
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<User> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, size);
+        return userRepository.selectPage(page, null);
+    }
+
+    @Override
+    public User assignRolesToUser(Integer userId, List<Integer> roleIds) {
+        Optional<User> optionalUser = Optional.ofNullable(userRepository.selectById(userId));
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            // 获取角色列表
+            List<Role> roles = roleRepository.selectBatchIds(roleIds);
+            user.setRoles(roles);
+            userRepository.updateById(user);
+            return user;
+        }
+        return null;
+    }
+
+    @Override
+    public Optional<User> findUserByIdWithRoles(Integer id) {
+        return userRepository.selectByIdWithRoles(id);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+}

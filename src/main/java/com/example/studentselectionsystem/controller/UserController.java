@@ -1,0 +1,146 @@
+package com.example.studentselectionsystem.controller;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.studentselectionsystem.entity.User;
+import com.example.studentselectionsystem.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * 用户控制器
+ */
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    /**
+     * 创建用户
+     */
+    @PostMapping
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        User createdUser = userService.createUser(user);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    }
+
+    /**
+     * 更新用户信息
+     */
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User user) {
+        User updatedUser = userService.updateUser(id, user);
+        if (updatedUser != null) {
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * 删除用户
+     */
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+        userService.deleteUser(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * 根据ID查找用户
+     */
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('admin') or hasRole('teacher') or (authentication.principal.username == @userService.findUserById(#id).get().getUsername())")
+    public ResponseEntity<User> findUserById(@PathVariable Integer id) {
+        Optional<User> optionalUser = userService.findUserById(id);
+        return optionalUser.map(user -> new ResponseEntity<>(user, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    /**
+     * 根据ID查找用户及其角色信息
+     */
+    @GetMapping("/{id}/with-roles")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<User> findUserByIdWithRoles(@PathVariable Integer id) {
+        Optional<User> optionalUser = userService.findUserByIdWithRoles(id);
+        return optionalUser.map(user -> new ResponseEntity<>(user, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    /**
+     * 根据用户名查找用户
+     */
+    @GetMapping("/username/{username}")
+    @PreAuthorize("hasRole('admin') or hasRole('teacher') or authentication.principal.username == #username")
+    public ResponseEntity<User> findUserByUsername(@PathVariable String username) {
+        Optional<User> optionalUser = userService.findUserByUsername(username);
+        return optionalUser.map(user -> new ResponseEntity<>(user, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    /**
+     * 获取所有用户
+     */
+    @GetMapping
+    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    public ResponseEntity<List<User>> findAllUsers() {
+        List<User> users = userService.findAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    /**
+     * 分页获取用户
+     */
+    @GetMapping("/page")
+    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    public ResponseEntity<IPage<User>> findUsersByPage(@RequestParam(defaultValue = "1") Integer current,
+                                                      @RequestParam(defaultValue = "10") Integer size) {
+        IPage<User> users = userService.findUsersByPage(current, size);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    /**
+     * 为用户分配角色
+     */
+    @PostMapping("/{id}/roles")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<User> assignRolesToUser(@PathVariable Integer id, @RequestBody List<Integer> roleIds) {
+        User updatedUser = userService.assignRolesToUser(id, roleIds);
+        if (updatedUser != null) {
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * 检查用户名是否已存在
+     */
+    @GetMapping("/check-username/{username}")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Boolean> checkUsernameExists(@PathVariable String username) {
+        boolean exists = userService.existsByUsername(username);
+        return new ResponseEntity<>(exists, HttpStatus.OK);
+    }
+
+    /**
+     * 检查邮箱是否已存在
+     */
+    @GetMapping("/check-email/{email}")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Boolean> checkEmailExists(@PathVariable String email) {
+        boolean exists = userService.existsByEmail(email);
+        return new ResponseEntity<>(exists, HttpStatus.OK);
+    }
+
+}

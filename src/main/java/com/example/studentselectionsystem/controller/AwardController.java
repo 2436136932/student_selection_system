@@ -1,0 +1,126 @@
+package com.example.studentselectionsystem.controller;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.example.studentselectionsystem.model.Award;
+import com.example.studentselectionsystem.service.AwardService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * 评奖评优Controller
+ */
+@RestController
+@RequestMapping("/api/awards")
+public class AwardController {
+    
+    @Autowired
+    private AwardService awardService;
+
+    /**
+     * 新增奖项
+     * @param award 奖项信息
+     * @return 响应结果
+     */
+    @PostMapping
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<String> addAward(@RequestBody Award award) {
+        boolean success = awardService.addAward(award);
+        if (success) {
+            return ResponseEntity.ok("新增奖项成功");
+        } else {
+            return ResponseEntity.badRequest().body("新增奖项失败，奖项ID已存在");
+        }
+    }
+
+    /**
+     * 更新奖项信息
+     * @param awardId 奖项ID
+     * @param award 奖项信息
+     * @return 响应结果
+     */
+    @PutMapping("/{awardId}")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<String> updateAward(@PathVariable String awardId, @RequestBody Award award) {
+        // 确保路径参数和请求体中的ID一致
+        award.setAwardId(awardId);
+        boolean success = awardService.updateAward(award);
+        if (success) {
+            return ResponseEntity.ok("更新奖项成功");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * 删除奖项
+     * @param awardId 奖项ID
+     * @return 响应结果
+     */
+    @DeleteMapping("/{awardId}")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<String> deleteAward(@PathVariable String awardId) {
+        boolean success = awardService.deleteAward(awardId);
+        if (success) {
+            return ResponseEntity.ok("删除奖项成功");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * 根据奖项ID查询奖项
+     * @param awardId 奖项ID
+     * @return 奖项信息
+     */
+    @GetMapping("/{awardId}")
+    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    public ResponseEntity<Award> getAwardById(@PathVariable String awardId) {
+        Optional<Award> award = awardService.getAwardById(awardId);
+        return award.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    /**
+     * 根据学生学号查询所有奖项
+     * @param studentId 学生学号
+     * @return 奖项列表
+     */
+    @GetMapping("/student/{studentId}")
+    @PreAuthorize("hasRole('admin') or hasRole('teacher') or authentication.principal.username == #studentId")
+    public ResponseEntity<List<Award>> getAwardsByStudentId(@PathVariable String studentId) {
+        List<Award> awards = awardService.getAwardsByStudentId(studentId);
+        return ResponseEntity.ok(awards);
+    }
+
+    /**
+     * 查询所有奖项
+     * @return 奖项列表
+     */
+    @GetMapping
+    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    public ResponseEntity<IPage<Award>> getAwardsByPage(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String studentId,
+            @RequestParam(required = false) String awardName,
+            @RequestParam(required = false) String year) {
+        
+        IPage<Award> awards = awardService.getAwardsByPage(page, size, studentId, awardName, year);
+        return ResponseEntity.ok(awards);
+    }
+
+    /**
+     * 获取学生获奖次数
+     * @param studentId 学生学号
+     * @return 获奖次数
+     */
+    @GetMapping("/count/{studentId}")
+    @PreAuthorize("hasRole('admin') or hasRole('teacher') or authentication.principal.username == #studentId")
+    public ResponseEntity<Integer> getAwardCountByStudentId(@PathVariable String studentId) {
+        int count = awardService.getAwardCountByStudentId(studentId);
+        return ResponseEntity.ok(count);
+    }
+}
