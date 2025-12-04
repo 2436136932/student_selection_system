@@ -5,7 +5,7 @@
         <div class="card-header">
           <span>学生管理</span>
           <el-button v-if="hasRole('admin')" type="primary" @click="dialogVisible = true">
-            <el-icon-plus></el-icon-plus> 新增学生
+            <el-icon><Plus /></el-icon> 新增学生
           </el-button>
         </div>
       </template>
@@ -107,7 +107,8 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
 import axios from 'axios'
 
 // 获取用户信息
