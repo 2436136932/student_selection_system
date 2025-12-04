@@ -11,6 +11,7 @@ com\example\studentselectionsystem\config\SecurityConfig.class
 com\example\studentselectionsystem\service\impl\CourseServiceImpl.class
 com\example\studentselectionsystem\entity\SelectionResult.class
 com\example\studentselectionsystem\mapper\SelectionProcessMapper.class
+com\example\studentselectionsystem\controller\TestController.class
 com\example\studentselectionsystem\mapper\UserMapper.class
 com\example\studentselectionsystem\service\impl\ScoreServiceImpl.class
 com\example\studentselectionsystem\entity\StudentAwardApplication.class
@@ -20,7 +21,6 @@ com\example\studentselectionsystem\repository\RoleRepository.class
 com\example\studentselectionsystem\test\PasswordTest.class
 com\example\studentselectionsystem\controller\CourseController.class
 com\example\studentselectionsystem\dao\AwardDAO.class
-com\example\studentselectionsystem\config\CorsConfig.class
 com\example\studentselectionsystem\entity\User.class
 com\example\studentselectionsystem\controller\AuthController$LoginRequest.class
 com\example\studentselectionsystem\entity\Standard.class
@@ -39,6 +39,7 @@ com\example\studentselectionsystem\mapper\AwardMapper.class
 com\example\studentselectionsystem\mapper\ObjectionMapper.class
 com\example\studentselectionsystem\mapper\ResearchAchievementMapper.class
 com\example\studentselectionsystem\service\impl\RoleServiceImpl.class
+com\example\studentselectionsystem\util\JwtUtil.class
 com\example\studentselectionsystem\entity\Major.class
 com\example\studentselectionsystem\mapper\SelectionCriteriaMapper.class
 com\example\studentselectionsystem\service\MajorService.class
@@ -55,6 +56,7 @@ com\example\studentselectionsystem\controller\AwardController.class
 com\example\studentselectionsystem\entity\Competition.class
 com\example\studentselectionsystem\controller\MajorController.class
 com\example\studentselectionsystem\controller\AuthController.class
+com\example\studentselectionsystem\config\JwtAuthenticationFilter.class
 com\example\studentselectionsystem\entity\SelectionProcess.class
 com\example\studentselectionsystem\repository\ScoreRepository.class
 com\example\studentselectionsystem\mapper\StudentMapper.class
@@ -72,8 +74,10 @@ com\example\studentselectionsystem\controller\ScoreController.class
 com\example\studentselectionsystem\service\impl\PermissionServiceImpl.class
 com\example\studentselectionsystem\service\ScoreService.class
 com\example\studentselectionsystem\controller\AuthController$RegisterRequest.class
+com\example\studentselectionsystem\config\GlobalExceptionHandler.class
 com\example\studentselectionsystem\entity\Course.class
 com\example\studentselectionsystem\mapper\ScoreMapper.class
+com\example\studentselectionsystem\config\CustomUserDetailsService.class
 com\example\studentselectionsystem\controller\PermissionController.class
 com\example\studentselectionsystem\controller\StudentFilterController.class
 com\example\studentselectionsystem\mapper\CompetitionMapper.class

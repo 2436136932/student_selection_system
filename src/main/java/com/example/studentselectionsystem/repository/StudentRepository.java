@@ -21,7 +21,7 @@ public interface StudentRepository extends BaseMapper<Student> {
      * @param studentNumber 学号
      * @return 学生信息
      */
-    @Select("SELECT * FROM student WHERE student_number = #{studentNumber}")
+    @Select("SELECT * FROM students WHERE student_number = #{studentNumber}")
     Optional<Student> selectByStudentId(@Param("studentNumber") String studentNumber);
 
     /**
@@ -29,7 +29,7 @@ public interface StudentRepository extends BaseMapper<Student> {
      * @param name 姓名
      * @return 学生列表
      */
-    @Select("SELECT * FROM student WHERE name = #{name}")
+    @Select("SELECT * FROM students WHERE name = #{name}")
     List<Student> selectByName(@Param("name") String name);
 
     /**
@@ -37,7 +37,7 @@ public interface StudentRepository extends BaseMapper<Student> {
      * @param name 姓名
      * @return 学生列表
      */
-    @Select("SELECT * FROM student WHERE name LIKE CONCAT('%', #{name}, '%')")
+    @Select("SELECT * FROM students WHERE name LIKE CONCAT('%', #{name}, '%')")
     List<Student> selectByNameContaining(@Param("name") String name);
 
     /**
@@ -45,23 +45,23 @@ public interface StudentRepository extends BaseMapper<Student> {
      * @param major 专业
      * @return 学生列表
      */
-    @Select("SELECT * FROM student WHERE major_id = #{major.id}")
+    @Select("SELECT * FROM students WHERE major = #{major.name}")
     List<Student> selectByMajor(@Param("major") Major major);
 
     /**
-     * 根据专业ID查找学生
-     * @param majorId 专业ID
+     * 根据专业名称查找学生
+     * @param majorName 专业名称
      * @return 学生列表
      */
-    @Select("SELECT * FROM student WHERE major_id = #{majorId}")
-    List<Student> selectByMajorId(@Param("majorId") Integer majorId);
+    @Select("SELECT * FROM students WHERE major = #{majorName}")
+    List<Student> selectByMajorName(@Param("majorName") String majorName);
 
     /**
      * 根据性别查找学生
      * @param gender 性别
      * @return 学生列表
      */
-    @Select("SELECT * FROM student WHERE gender = #{gender}")
+    @Select("SELECT * FROM students WHERE gender = #{gender}")
     List<Student> selectByGender(@Param("gender") String gender);
 
     /**
@@ -69,7 +69,7 @@ public interface StudentRepository extends BaseMapper<Student> {
      * @param studentNumber 学号
      * @return 是否存在
      */
-    @Select("SELECT COUNT(*) > 0 FROM student WHERE student_number = #{studentNumber}")
+    @Select("SELECT COUNT(*) > 0 FROM students WHERE student_number = #{studentNumber}")
     boolean existsByStudentId(@Param("studentNumber") String studentNumber);
 
     /**
@@ -77,14 +77,14 @@ public interface StudentRepository extends BaseMapper<Student> {
      * @param id 学生ID
      * @return 学生信息
      */
-    @Select("SELECT s.*, m.* FROM student s LEFT JOIN major m ON s.major_id = m.id WHERE s.id = #{id}")
+    @Select("SELECT * FROM students WHERE id = #{id}")
     Optional<Student> selectByIdWithMajor(@Param("id") Long id);
 
     /**
      * 获取所有学生及其专业信息
      * @return 学生列表
      */
-    @Select("SELECT s.*, m.* FROM student s LEFT JOIN major m ON s.major_id = m.id")
+    @Select("SELECT * FROM students")
     List<Student> selectAllWithMajor();
 
 }

@@ -70,4 +70,69 @@ public class SelectionCriteria implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
+    // Getter methods
+    public Long getId() {
+        return id;
+    }
+
+    public Integer getAwardId() {
+        return awardId;
+    }
+
+    public Award getAward() {
+        return award;
+    }
+
+    public String getCriterionName() {
+        return criterionName;
+    }
+
+    public String getCriterionType() {
+        return criterionType;
+    }
+
+    public BigDecimal getWeight() {
+        return weight;
+    }
+
+    public BigDecimal getThreshold() {
+        return threshold;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    // Setter methods
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setAwardId(Integer awardId) {
+        this.awardId = awardId;
+    }
+
+    public void setAward(Award award) {
+        this.award = award;
+    }
+
+    public void setCriterionName(String criterionName) {
+        this.criterionName = criterionName;
+    }
+
+    public void setCriterionType(String criterionType) {
+        this.criterionType = criterionType;
+    }
+
+    public void setWeight(BigDecimal weight) {
+        this.weight = weight;
+    }
+
+    public void setThreshold(BigDecimal threshold) {
+        this.threshold = threshold;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 }

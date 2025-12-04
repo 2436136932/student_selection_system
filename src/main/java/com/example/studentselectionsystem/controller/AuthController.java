@@ -2,13 +2,19 @@ package com.example.studentselectionsystem.controller;
 
 import com.example.studentselectionsystem.entity.User;
 import com.example.studentselectionsystem.service.UserService;
+import com.example.studentselectionsystem.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -29,6 +35,12 @@ public class AuthController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     /**
      * 用户登录
@@ -53,6 +65,8 @@ public class AuthController {
             System.out.println("找到用户: " + user.getUsername() + "，ID: " + user.getId());
             System.out.println("数据库中存储的加密密码: " + user.getPassword());
             System.out.println("登录请求中的原始密码: " + loginRequest.getPassword());
+            System.out.println("用户状态: " + user.getStatus());
+            System.out.println("用户角色: " + user.getRole());
             
             // 尝试手动验证密码
             System.out.println("使用PasswordEncoder: " + passwordEncoder.getClass().getName() + " 进行密码验证");
@@ -65,6 +79,14 @@ public class AuthController {
             boolean testMatch = passwordEncoder.matches(loginRequest.getPassword(), encodedPassword);
             System.out.println("测试加密后的密码匹配结果: " + testMatch);
             
+            // 验证用户状态
+            if (user.getStatus() != 1) {
+                System.out.println("用户状态不正常，当前状态: " + user.getStatus());
+                response.put("success", false);
+                response.put("message", "用户账号已被禁用");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+            
             if (passwordMatches) {
                 // 构建简化的用户信息
                 Map<String, Object> userInfo = new HashMap<>();
@@ -75,14 +97,25 @@ public class AuthController {
                 userInfo.put("phone", user.getPhone());
                 userInfo.put("role", user.getRole()); // 返回用户的实际角色信息
                 
+                // 生成JWT令牌，使用与CustomUserDetailsService相同的角色处理方式
+                UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
+                        .username(user.getUsername())
+                        .password(user.getPassword())
+                        .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().toUpperCase())))
+                        .build();
+                String token = jwtUtil.generateToken(userDetails);
+                
                 // 登录成功
+                System.out.println("用户 " + user.getUsername() + " 登录成功");
                 logger.info("用户 {} 登录成功", user.getUsername());
                 response.put("success", true);
                 response.put("message", "登录成功");
                 response.put("user", userInfo);
+                response.put("token", token);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 // 密码错误
+                System.out.println("用户 " + user.getUsername() + " 登录失败，密码错误");
                 logger.warn("用户 {} 登录失败，密码错误", user.getUsername());
                 response.put("success", false);
                 response.put("message", "密码错误");
@@ -90,6 +123,7 @@ public class AuthController {
             }
         } else {
             // 用户不存在
+            System.out.println("登录失败，用户 " + loginRequest.getUsername() + " 不存在");
             logger.warn("登录失败，用户 {} 不存在", loginRequest.getUsername());
             response.put("success", false);
             response.put("message", "用户不存在");

@@ -27,7 +27,7 @@ public class StudentAwardApplicationController {
      * 创建学生奖项申请
      */
     @PostMapping
-    @PreAuthorize("hasRole('student')")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<StudentAwardApplication> createApplication(@RequestBody StudentAwardApplication application) {
         StudentAwardApplication createdApplication = studentAwardApplicationService.createApplication(application);
         return new ResponseEntity<>(createdApplication, HttpStatus.CREATED);
@@ -37,7 +37,7 @@ public class StudentAwardApplicationController {
      * 更新申请状态
      */
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<StudentAwardApplication> updateApplicationStatus(@PathVariable Integer id, @RequestParam Integer status) {
         StudentAwardApplication updatedApplication = studentAwardApplicationService.updateApplicationStatus(id, status);
         if (updatedApplication != null) {
@@ -50,7 +50,7 @@ public class StudentAwardApplicationController {
      * 删除申请
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or hasRole('student')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STUDENT')")
     public ResponseEntity<Void> deleteApplication(@PathVariable Integer id) {
         studentAwardApplicationService.deleteApplication(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -60,7 +60,7 @@ public class StudentAwardApplicationController {
      * 根据ID查找申请
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher') or hasRole('student')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     public ResponseEntity<StudentAwardApplication> findApplicationById(@PathVariable Integer id) {
         Optional<StudentAwardApplication> optionalApplication = studentAwardApplicationService.findApplicationById(id);
         return optionalApplication.map(application -> new ResponseEntity<>(application, HttpStatus.OK))
@@ -71,7 +71,7 @@ public class StudentAwardApplicationController {
      * 根据学生ID查找申请
      */
     @GetMapping("/student/{studentId}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher') or hasRole('student')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     public ResponseEntity<List<StudentAwardApplication>> findApplicationsByStudentId(@PathVariable Long studentId) {
         List<StudentAwardApplication> applications = studentAwardApplicationService.findApplicationsByStudentId(studentId);
         return new ResponseEntity<>(applications, HttpStatus.OK);
@@ -81,7 +81,7 @@ public class StudentAwardApplicationController {
      * 根据奖项ID查找申请
      */
     @GetMapping("/award/{awardId}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<List<StudentAwardApplication>> findApplicationsByAwardId(@PathVariable Integer awardId) {
         List<StudentAwardApplication> applications = studentAwardApplicationService.findApplicationsByAwardId(awardId);
         return new ResponseEntity<>(applications, HttpStatus.OK);
@@ -91,7 +91,7 @@ public class StudentAwardApplicationController {
      * 分页查找所有申请
      */
     @GetMapping("/page")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<IPage<StudentAwardApplication>> findAllApplications(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size) {
@@ -104,11 +104,31 @@ public class StudentAwardApplicationController {
      * 检查学生是否已申请该奖项
      */
     @GetMapping("/check-exists")
-    @PreAuthorize("hasRole('student')")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<Boolean> checkStudentApplicationExists(
             @RequestParam Long studentId,
             @RequestParam Integer awardId) {
         boolean exists = studentAwardApplicationService.checkStudentApplicationExists(studentId, awardId);
         return new ResponseEntity<>(exists, HttpStatus.OK);
+    }
+
+    /**
+     * 获取申请总数
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> getApplicationCount(
+            @RequestParam(required = false) String status) {
+        try {
+            long count;
+            if ("approved".equals(status)) {
+                count = studentAwardApplicationService.countApprovedApplications();
+            } else {
+                count = studentAwardApplicationService.countApplications();
+            }
+            return new ResponseEntity<>(count, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace(); // 输出详细错误信息到控制台
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

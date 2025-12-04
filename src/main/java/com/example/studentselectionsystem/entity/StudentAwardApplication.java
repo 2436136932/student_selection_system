@@ -15,7 +15,7 @@ import java.util.Date;
  * 学生奖项申请表实体类
  */
 @Data
-@TableName("student_award_applications")
+@TableName("student_award_application")
 public class StudentAwardApplication implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -24,6 +24,7 @@ public class StudentAwardApplication implements Serializable {
      * 申请ID
      */
     @TableId(type = IdType.AUTO)
+    @TableField("application_id")
     private Integer id;
 
     /**
@@ -66,15 +67,88 @@ public class StudentAwardApplication implements Serializable {
     /**
      * 创建时间
      */
-    @TableField(value = "create_time", updateStrategy = FieldStrategy.NEVER)
+    @TableField(value = "created_at", updateStrategy = FieldStrategy.NEVER)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * 更新时间
      */
-    @TableField("update_time")
+    @TableField("updated_at")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
+    // Getter methods
+    public Integer getId() {
+        return id;
+    }
+
+    public Long getStudentId() {
+        return studentId;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public Integer getAwardId() {
+        return awardId;
+    }
+
+    public Award getAward() {
+        return award;
+    }
+
+    public Date getApplicationTime() {
+        return applicationTime;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    // Setter methods
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setStudentId(Long studentId) {
+        this.studentId = studentId;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    public void setAwardId(Integer awardId) {
+        this.awardId = awardId;
+    }
+
+    public void setAward(Award award) {
+        this.award = award;
+    }
+
+    public void setApplicationTime(Date applicationTime) {
+        this.applicationTime = applicationTime;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
 }

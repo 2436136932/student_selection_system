@@ -27,8 +27,8 @@ public class StandardController {
      * @param standard 评奖标准信息
      * @return 创建的评奖标准
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @PostMapping
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
     public ResponseEntity<Standard> createStandard(@RequestBody Standard standard) {
         try {
             Standard createdStandard = standardService.createStandard(standard);
@@ -44,8 +44,8 @@ public class StandardController {
      * @param standard 标准信息
      * @return 更新后的标准
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
     public ResponseEntity<Standard> updateStandard(@PathVariable("id") Integer id, @RequestBody Standard standard) {
         try {
             Standard updatedStandard = standardService.updateStandard(id, standard);
@@ -63,8 +63,8 @@ public class StandardController {
      * 删除评奖标准
      * @param id 标准ID
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
     public ResponseEntity<HttpStatus> deleteStandard(@PathVariable("id") Integer id) {
         try {
             standardService.deleteStandard(id);
@@ -79,8 +79,8 @@ public class StandardController {
      * @param id 标准ID
      * @return 标准信息
      */
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('admin', 'teacher', 'student')")
     public ResponseEntity<Standard> findStandardById(@PathVariable("id") Integer id) {
         Optional<Standard> standard = standardService.findStandardById(id);
         if (standard.isPresent()) {
@@ -95,8 +95,8 @@ public class StandardController {
      * @param name 标准名称
      * @return 标准信息
      */
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
     @GetMapping("/name/{name}")
-    @PreAuthorize("hasAnyRole('admin', 'teacher', 'student')")
     public ResponseEntity<Standard> findStandardByName(@PathVariable("name") String name) {
         Optional<Standard> standard = standardService.findStandardByName(name);
         if (standard.isPresent()) {

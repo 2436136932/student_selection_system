@@ -28,7 +28,7 @@ public class CourseController {
      * @return 创建的课程
      */
     @PostMapping
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<Course> createCourse(@RequestBody Course course) {
         try {
             Course createdCourse = courseService.createCourse(course);
@@ -45,7 +45,7 @@ public class CourseController {
      * @return 更新后的课程
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<Course> updateCourse(@PathVariable("id") Integer id, @RequestBody Course course) {
         try {
             Course updatedCourse = courseService.updateCourse(id, course);
@@ -64,7 +64,7 @@ public class CourseController {
      * @param id 课程ID
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<HttpStatus> deleteCourse(@PathVariable("id") Integer id) {
         try {
             courseService.deleteCourse(id);
@@ -80,7 +80,7 @@ public class CourseController {
      * @return 课程信息
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('admin', 'teacher', 'student')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
     public ResponseEntity<Course> findCourseById(@PathVariable("id") Integer id) {
         Optional<Course> course = courseService.findCourseById(id);
         if (course.isPresent()) {
@@ -96,7 +96,7 @@ public class CourseController {
      * @return 课程信息
      */
     @GetMapping("/name/{name}")
-    @PreAuthorize("hasAnyRole('admin', 'teacher', 'student')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
     public ResponseEntity<Course> findCourseByName(@PathVariable("name") String name) {
         Optional<Course> course = courseService.findCourseByName(name);
         if (course.isPresent()) {

@@ -27,7 +27,7 @@ public class UserController {
      * 创建用户
      */
     @PostMapping
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User createdUser = userService.createUser(user);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
@@ -37,7 +37,7 @@ public class UserController {
      * 更新用户信息
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User user) {
         User updatedUser = userService.updateUser(id, user);
         if (updatedUser != null) {
@@ -50,7 +50,7 @@ public class UserController {
      * 删除用户
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -60,7 +60,7 @@ public class UserController {
      * 根据ID查找用户
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher') or (authentication.principal.username == @userService.findUserById(#id).get().getUsername())")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or (authentication.principal.username == @userService.findUserById(#id).get().getUsername())")
     public ResponseEntity<User> findUserById(@PathVariable Integer id) {
         Optional<User> optionalUser = userService.findUserById(id);
         return optionalUser.map(user -> new ResponseEntity<>(user, HttpStatus.OK))
@@ -71,7 +71,7 @@ public class UserController {
      * 根据ID查找用户及其角色信息
      */
     @GetMapping("/{id}/with-roles")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> findUserByIdWithRoles(@PathVariable Integer id) {
         Optional<User> optionalUser = userService.findUserByIdWithRoles(id);
         return optionalUser.map(user -> new ResponseEntity<>(user, HttpStatus.OK))
@@ -82,7 +82,7 @@ public class UserController {
      * 根据用户名查找用户
      */
     @GetMapping("/username/{username}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher') or authentication.principal.username == #username")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or authentication.principal.username == #username")
     public ResponseEntity<User> findUserByUsername(@PathVariable String username) {
         Optional<User> optionalUser = userService.findUserByUsername(username);
         return optionalUser.map(user -> new ResponseEntity<>(user, HttpStatus.OK))
@@ -93,7 +93,7 @@ public class UserController {
      * 获取所有用户
      */
     @GetMapping
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<List<User>> findAllUsers() {
         List<User> users = userService.findAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
@@ -103,7 +103,7 @@ public class UserController {
      * 分页获取用户
      */
     @GetMapping("/page")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<IPage<User>> findUsersByPage(@RequestParam(defaultValue = "1") Integer current,
                                                       @RequestParam(defaultValue = "10") Integer size) {
         IPage<User> users = userService.findUsersByPage(current, size);
@@ -114,7 +114,7 @@ public class UserController {
      * 为用户分配角色
      */
     @PostMapping("/{id}/roles")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> assignRolesToUser(@PathVariable Integer id, @RequestBody List<Integer> roleIds) {
         User updatedUser = userService.assignRolesToUser(id, roleIds);
         if (updatedUser != null) {

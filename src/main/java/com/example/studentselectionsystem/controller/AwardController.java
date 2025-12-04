@@ -26,7 +26,7 @@ public class AwardController {
      * @return 响应结果
      */
     @PostMapping
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> addAward(@RequestBody Award award) {
         boolean success = awardService.addAward(award);
         if (success) {
@@ -43,7 +43,7 @@ public class AwardController {
      * @return 响应结果
      */
     @PutMapping("/{awardId}")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updateAward(@PathVariable String awardId, @RequestBody Award award) {
         // 确保路径参数和请求体中的ID一致
         award.setAwardId(awardId);
@@ -61,7 +61,7 @@ public class AwardController {
      * @return 响应结果
      */
     @DeleteMapping("/{awardId}")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteAward(@PathVariable String awardId) {
         boolean success = awardService.deleteAward(awardId);
         if (success) {
@@ -77,7 +77,7 @@ public class AwardController {
      * @return 奖项信息
      */
     @GetMapping("/{awardId}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<Award> getAwardById(@PathVariable String awardId) {
         Optional<Award> award = awardService.getAwardById(awardId);
         return award.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
@@ -89,7 +89,7 @@ public class AwardController {
      * @return 奖项列表
      */
     @GetMapping("/student/{studentId}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher') or authentication.principal.username == #studentId")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or authentication.principal.username == #studentId")
     public ResponseEntity<List<Award>> getAwardsByStudentId(@PathVariable String studentId) {
         List<Award> awards = awardService.getAwardsByStudentId(studentId);
         return ResponseEntity.ok(awards);
@@ -100,7 +100,7 @@ public class AwardController {
      * @return 奖项列表
      */
     @GetMapping
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<IPage<Award>> getAwardsByPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -118,9 +118,19 @@ public class AwardController {
      * @return 获奖次数
      */
     @GetMapping("/count/{studentId}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher') or authentication.principal.username == #studentId")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or authentication.principal.username == #studentId")
     public ResponseEntity<Integer> getAwardCountByStudentId(@PathVariable String studentId) {
         int count = awardService.getAwardCountByStudentId(studentId);
         return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getAwardCount() {
+        try {
+            long count = awardService.countAwards();
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

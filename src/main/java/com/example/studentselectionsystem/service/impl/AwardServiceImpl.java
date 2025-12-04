@@ -67,4 +67,10 @@ public class AwardServiceImpl implements AwardService {
     public int getAwardCountByStudentId(String studentId) {
         return awardDAO.getAwardsByStudentId(studentId).size();
     }
+
+    @Override
+    public long countAwards() {
+        // 使用已有的getTotalAwards方法，传入null参数获取所有奖项的总数
+        return awardDAO.getTotalAwards(null, null, null);
+    }
 }

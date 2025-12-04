@@ -96,4 +96,18 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
                         .eq(StudentAwardApplication::getAwardId, awardId)
         );
     }
+
+    @Override
+    public long countApplications() {
+        return studentAwardApplicationMapper.selectCount(null);
+    }
+
+    @Override
+    public long countApprovedApplications() {
+        // 假设状态1表示已批准
+        return studentAwardApplicationMapper.selectCount(
+                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
+                        .eq(StudentAwardApplication::getStatus, 1)
+        );
+    }
 }

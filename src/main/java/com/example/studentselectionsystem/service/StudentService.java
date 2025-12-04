@@ -74,11 +74,11 @@ public interface StudentService {
     List<Student> findStudentsByNameContaining(String name);
 
     /**
-     * 根据专业ID查找学生
-     * @param majorId 专业ID
+     * 根据专业名称查找学生
+     * @param majorName 专业名称
      * @return 学生列表
      */
-    List<Student> findStudentsByMajorId(Integer majorId);
+    List<Student> findStudentsByMajorName(String majorName);
 
     /**
      * 根据性别查找学生
@@ -129,6 +129,17 @@ public interface StudentService {
     com.baomidou.mybatisplus.core.metadata.IPage<Student> findStudentsByPage(Integer current, Integer size);
 
     /**
+     * 分页和搜索获取学生
+     * @param page 页码（从1开始）
+     * @param size 每页大小
+     * @param studentNumber 学号
+     * @param name 姓名
+     * @param className 班级
+     * @return 学生分页列表
+     */
+    com.baomidou.mybatisplus.core.metadata.IPage<Student> findStudentsByPageWithSearch(Integer page, Integer size, String studentNumber, String name, String className);
+
+    /**
      * 线性搜索：根据平均成绩筛选符合奖学金条件的学生
      * @param minAverageScore 最低平均成绩
      * @return 符合条件的学生列表
@@ -152,5 +163,11 @@ public interface StudentService {
      * @return 符合条件的学生列表
      */
     List<Student> filterStudentsByComprehensiveCriteria(Double minAverageScore, Integer minAwardCount, Integer majorId, Integer year);
+
+    /**
+     * 获取学生总数
+     * @return 学生总数
+     */
+    long countStudents();
 
 }

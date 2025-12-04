@@ -3,6 +3,18 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
+import axios from 'axios'
+
+// 添加axios拦截器，自动为每个请求添加Authorization头
+axios.interceptors.request.use(config => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+}, error => {
+  return Promise.reject(error)
+})
 
 const app = createApp(App)
 

@@ -76,4 +76,16 @@ public interface StudentAwardApplicationService {
      * @return 是否已申请
      */
     boolean checkStudentApplicationExists(Long studentId, Integer awardId);
+
+    /**
+     * 获取所有申请总数
+     * @return 申请总数
+     */
+    long countApplications();
+
+    /**
+     * 获取已批准的申请总数
+     * @return 已批准申请总数
+     */
+    long countApprovedApplications();
 }

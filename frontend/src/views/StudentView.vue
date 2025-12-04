@@ -12,7 +12,7 @@
       <div class="card-body">
         <el-form :model="searchForm" :inline="true" class="search-form">
           <el-form-item label="学号">
-            <el-input v-model="searchForm.studentId" placeholder="请输入学号"></el-input>
+            <el-input v-model="searchForm.studentNumber" placeholder="请输入学号"></el-input>
           </el-form-item>
           <el-form-item label="姓名">
             <el-input v-model="searchForm.name" placeholder="请输入姓名"></el-input>
@@ -27,14 +27,14 @@
         </el-form>
 
         <el-table :data="students" style="width: 100%" stripe>
-          <el-table-column prop="studentId" label="学号" width="120"></el-table-column>
+          <el-table-column prop="studentNumber" label="学号" width="120"></el-table-column>
           <el-table-column prop="name" label="姓名" width="120"></el-table-column>
           <el-table-column prop="gender" label="性别" width="80"></el-table-column>
-          <el-table-column prop="age" label="年龄" width="80"></el-table-column>
+          <el-table-column prop="birthDate" label="出生日期" width="150"></el-table-column>
           <el-table-column prop="className" label="班级" width="150"></el-table-column>
           <el-table-column prop="major" label="专业" width="150"></el-table-column>
-          <el-table-column prop="gpa" label="GPA" width="80"></el-table-column>
-          <el-table-column prop="totalCredits" label="总学分" width="100"></el-table-column>
+          <el-table-column prop="admissionYear" label="入学年份" width="120"></el-table-column>
+          <el-table-column prop="status" label="状态" width="100"></el-table-column>
           <el-table-column label="操作" width="150" fixed="right" v-if="hasRole('admin')">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
@@ -65,7 +65,7 @@
     >
       <el-form :model="form" label-width="100px">
         <el-form-item label="学号">
-          <el-input v-model="form.studentId" placeholder="请输入学号"></el-input>
+          <el-input v-model="form.studentNumber" placeholder="请输入学号"></el-input>
         </el-form-item>
         <el-form-item label="姓名">
           <el-input v-model="form.name" placeholder="请输入姓名"></el-input>
@@ -76,8 +76,8 @@
             <el-option label="女" value="女"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="年龄">
-          <el-input-number v-model="form.age" :min="16" :max="30" placeholder="请输入年龄"></el-input-number>
+        <el-form-item label="出生日期">
+          <el-date-picker v-model="form.birthDate" type="date" placeholder="请选择出生日期" style="width: 100%"></el-date-picker>
         </el-form-item>
         <el-form-item label="班级">
           <el-input v-model="form.className" placeholder="请输入班级"></el-input>
@@ -85,11 +85,14 @@
         <el-form-item label="专业">
           <el-input v-model="form.major" placeholder="请输入专业"></el-input>
         </el-form-item>
-        <el-form-item label="GPA">
-          <el-input-number v-model="form.gpa" :min="0" :max="4" :step="0.01" placeholder="请输入GPA"></el-input-number>
+        <el-form-item label="入学年份">
+          <el-input-number v-model="form.admissionYear" :min="2000" :max="2025" placeholder="请输入入学年份"></el-input-number>
         </el-form-item>
-        <el-form-item label="总学分">
-          <el-input-number v-model="form.totalCredits" :min="0" :max="200" placeholder="请输入总学分"></el-input-number>
+        <el-form-item label="状态">
+          <el-select v-model="form.status" placeholder="请选择状态">
+            <el-option label="在读" value="1"></el-option>
+            <el-option label="毕业" value="0"></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -138,20 +141,20 @@ const pageSize = ref(10)
 const dialogVisible = ref(false)
 
 const searchForm = reactive({
-  studentId: '',
+  studentNumber: '',
   name: '',
   className: ''
 })
 
 const form = reactive({
-  studentId: '',
+  studentNumber: '',
   name: '',
   gender: '',
-  age: null,
+  birthDate: null,
   className: '',
   major: '',
-  gpa: null,
-  totalCredits: null
+  admissionYear: null,
+  status: 1
 })
 
 // 获取学生列表
@@ -160,13 +163,13 @@ const getStudents = () => {
     params: {
       page: currentPage.value,
       size: pageSize.value,
-      studentId: searchForm.studentId,
+      studentNumber: searchForm.studentNumber,
       name: searchForm.name,
       className: searchForm.className
     }
   }).then(response => {
-    students.value = response.data.content
-    total.value = response.data.totalElements
+    students.value = response.data.records
+    total.value = response.data.total
   }).catch(error => {
     ElMessage.error('获取学生列表失败')
     console.error('Error fetching students:', error)
@@ -181,7 +184,7 @@ const handleSearch = () => {
 
 // 重置表单
 const resetForm = () => {
-  searchForm.studentId = ''
+  searchForm.studentNumber = ''
   searchForm.name = ''
   searchForm.className = ''
   currentPage.value = 1
@@ -201,9 +204,9 @@ const handleCurrentChange = (current) => {
 
 // 新增/编辑学生
 const handleSubmit = () => {
-  if (form.studentId) {
+  if (form.id) {
     // 编辑学生
-    axios.put(`/api/students/${form.studentId}`, form)
+    axios.put(`/api/students/${form.id}`, form)
       .then(response => {
         ElMessage.success('编辑学生成功')
         dialogVisible.value = false
@@ -215,16 +218,27 @@ const handleSubmit = () => {
       })
   } else {
     // 新增学生
-    axios.post('/api/students', form)
-      .then(response => {
-        ElMessage.success('新增学生成功')
-        dialogVisible.value = false
-        getStudents()
-      })
-      .catch(error => {
-        ElMessage.error('新增学生失败')
-        console.error('Error creating student:', error)
-      })
+        console.log('提交的表单数据:', form)
+        axios.post('/api/students', form)
+          .then(response => {
+            console.log('新增学生响应:', response)
+            ElMessage.success('新增学生成功')
+            dialogVisible.value = false
+            getStudents()
+          })
+          .catch(error => {
+            ElMessage.error('新增学生失败')
+            console.error('Error creating student:', error)
+            if (error.response) {
+              console.error('错误响应数据:', error.response.data)
+              console.error('错误响应状态:', error.response.status)
+              console.error('错误响应头:', error.response.headers)
+            } else if (error.request) {
+              console.error('请求发送失败:', error.request)
+            } else {
+              console.error('请求配置错误:', error.message)
+            }
+          })
   }
 }
 
@@ -241,7 +255,7 @@ const handleDelete = (row) => {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
-    axios.delete(`/api/students/${row.studentId}`)
+    axios.delete(`/api/students/${row.id}`)
       .then(response => {
         ElMessage.success('删除学生成功')
         getStudents()

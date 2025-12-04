@@ -26,7 +26,7 @@ public class SelectionCriteriaController {
      * 创建评选标准
      */
     @PostMapping
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<SelectionCriteria> createSelectionCriteria(@RequestBody SelectionCriteria selectionCriteria) {
         SelectionCriteria createdCriteria = selectionCriteriaService.createSelectionCriteria(selectionCriteria);
         return new ResponseEntity<>(createdCriteria, HttpStatus.CREATED);
@@ -36,7 +36,7 @@ public class SelectionCriteriaController {
      * 更新评选标准
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<SelectionCriteria> updateSelectionCriteria(@PathVariable Integer id, @RequestBody SelectionCriteria selectionCriteria) {
         SelectionCriteria updatedCriteria = selectionCriteriaService.updateSelectionCriteria(id, selectionCriteria);
         if (updatedCriteria != null) {
@@ -49,7 +49,7 @@ public class SelectionCriteriaController {
      * 删除评选标准
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<Void> deleteSelectionCriteria(@PathVariable Integer id) {
         selectionCriteriaService.deleteSelectionCriteria(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -59,7 +59,7 @@ public class SelectionCriteriaController {
      * 根据ID查找评选标准
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher') or hasRole('student')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     public ResponseEntity<SelectionCriteria> findSelectionCriteriaById(@PathVariable Integer id) {
         Optional<SelectionCriteria> optionalCriteria = selectionCriteriaService.findSelectionCriteriaById(id);
         return optionalCriteria.map(criteria -> new ResponseEntity<>(criteria, HttpStatus.OK))
@@ -70,7 +70,7 @@ public class SelectionCriteriaController {
      * 根据奖项ID查找评选标准
      */
     @GetMapping("/award/{awardId}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher') or hasRole('student')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     public ResponseEntity<List<SelectionCriteria>> findSelectionCriteriaByAwardId(@PathVariable Integer awardId) {
         List<SelectionCriteria> criteria = selectionCriteriaService.findSelectionCriteriaByAwardId(awardId);
         return new ResponseEntity<>(criteria, HttpStatus.OK);
@@ -80,7 +80,7 @@ public class SelectionCriteriaController {
      * 获取所有评选标准
      */
     @GetMapping
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<List<SelectionCriteria>> findAllSelectionCriteria() {
         List<SelectionCriteria> criteria = selectionCriteriaService.findAllSelectionCriteria();
         return new ResponseEntity<>(criteria, HttpStatus.OK);
@@ -90,7 +90,7 @@ public class SelectionCriteriaController {
      * 分页获取评选标准
      */
     @GetMapping("/page")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<Page<SelectionCriteria>> findSelectionCriteriaByPage(
             @RequestParam(defaultValue = "1") Integer current,
             @RequestParam(defaultValue = "10") Integer size) {
@@ -103,7 +103,7 @@ public class SelectionCriteriaController {
      * 计算奖项的总权重
      */
     @GetMapping("/calculate-total-weight/{awardId}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<Double> calculateTotalWeightByAwardId(@PathVariable Integer awardId) {
         Double totalWeight = selectionCriteriaService.calculateTotalWeightByAwardId(awardId);
         return new ResponseEntity<>(totalWeight, HttpStatus.OK);

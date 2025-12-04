@@ -40,6 +40,10 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student createStudent(Student student) {
+        // 检查学号是否已存在
+        if (existsByStudentId(student.getStudentNumber())) {
+            throw new RuntimeException("学号已存在");
+        }
         // 设置创建时间和更新时间
         student.setCreatedAt(new Date());
         student.setUpdatedAt(new Date());
@@ -70,10 +74,11 @@ public class StudentServiceImpl implements StudentService {
             existingStudent.setName(student.getName());
             existingStudent.setGender(student.getGender());
             existingStudent.setBirthDate(student.getBirthDate());
-            existingStudent.setUpdatedAt(new Date());
-
-            // 更新专业信息
             existingStudent.setMajor(student.getMajor());
+            existingStudent.setClassName(student.getClassName());
+            existingStudent.setAdmissionYear(student.getAdmissionYear());
+            existingStudent.setStatus(student.getStatus());
+            existingStudent.setUpdatedAt(new Date());
 
             studentRepository.updateById(existingStudent);
             return existingStudent;
@@ -112,8 +117,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<Student> findStudentsByMajorId(Integer majorId) {
-        return studentRepository.selectByMajorId(majorId);
+    public List<Student> findStudentsByMajorName(String majorName) {
+        return studentRepository.selectByMajorName(majorName);
     }
 
     @Override
@@ -136,6 +141,29 @@ public class StudentServiceImpl implements StudentService {
         // 创建MyBatis Plus分页对象
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Student> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, size);
         return studentRepository.selectPage(page, null);
+    }
+
+    @Override
+    public com.baomidou.mybatisplus.core.metadata.IPage<Student> findStudentsByPageWithSearch(Integer page, Integer size, String studentNumber, String name, String className) {
+        // 创建MyBatis Plus分页对象
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Student> pageObj = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(page, size);
+        
+        // 使用QueryWrapper构建查询条件
+        com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<Student> queryWrapper = new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
+        
+        // 添加查询条件
+        if (studentNumber != null && !studentNumber.isEmpty()) {
+            queryWrapper.eq("student_number", studentNumber);
+        }
+        if (name != null && !name.isEmpty()) {
+            queryWrapper.like("name", name);
+        }
+        if (className != null && !className.isEmpty()) {
+            queryWrapper.like("class_name", className);
+        }
+        
+        // 执行查询
+        return studentRepository.selectPage(pageObj, queryWrapper);
     }
 
     @Override
@@ -261,6 +289,11 @@ public class StudentServiceImpl implements StudentService {
         }
 
         return eligibleStudents;
+    }
+
+    @Override
+    public long countStudents() {
+        return studentRepository.selectCount(null);
     }
 
 }

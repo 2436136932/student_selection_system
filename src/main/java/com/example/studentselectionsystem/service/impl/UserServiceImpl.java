@@ -86,10 +86,13 @@ public class UserServiceImpl implements UserService {
         logger.info("正在查询用户名: {}", username);
         Optional<User> userOptional = userRepository.selectByUsername(username);
         if (userOptional.isPresent()) {
-            logger.info("查询结果: 用户存在，ID={}, 用户名={}, 密码={}", 
-                    userOptional.get().getId(), 
-                    userOptional.get().getUsername(), 
-                    userOptional.get().getPassword());
+            User user = userOptional.get();
+            logger.info("查询结果: 用户存在，ID={}, 用户名={}, 密码={}, 角色={}, 状态={}", 
+                    user.getId(), 
+                    user.getUsername(), 
+                    user.getPassword(),
+                    user.getRole(),
+                    user.getStatus());
         } else {
             logger.info("查询结果: 用户 '{}' 不存在", username);
         }

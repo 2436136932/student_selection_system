@@ -279,13 +279,15 @@ const handleLogin = () => {
             return // 角色不匹配，禁止登录
           }
           ElMessage.success('登录成功')
-          // 存储用户信息到本地存储
+          // 存储用户信息和token到本地存储
           localStorage.setItem('userInfo', JSON.stringify({
             username: response.data.user.username,
             role: response.data.user.role,
             name: response.data.user.name || response.data.user.username,
             id: response.data.user.id
           }))
+          // 存储token
+          localStorage.setItem('token', response.data.token)
           // 跳转到系统主页
           router.push('/home')
         } else {

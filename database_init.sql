@@ -145,13 +145,12 @@ CREATE TABLE IF NOT EXISTS selection_criteria (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评选标准表';
 
 -- 创建学生奖项申请表
-CREATE TABLE IF NOT EXISTS student_award_application (
-    application_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID',
+CREATE TABLE IF NOT EXISTS student_award_applications (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID',
     student_id BIGINT NOT NULL COMMENT '学生ID',
     award_id BIGINT NOT NULL COMMENT '奖项ID',
     application_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '申请时间',
     status TINYINT NOT NULL DEFAULT 0 COMMENT '状态：0-待审核, 1-通过, 2-未通过',
-    application_material TEXT COMMENT '申请材料',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
@@ -181,7 +180,7 @@ CREATE TABLE IF NOT EXISTS selection_result (
     review_date DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '评审时间',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    FOREIGN KEY (application_id) REFERENCES student_award_application(application_id) ON DELETE CASCADE
+    FOREIGN KEY (application_id) REFERENCES student_award_applications(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评选结果表';
 
 -- 插入初始数据

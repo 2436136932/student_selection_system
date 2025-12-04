@@ -27,8 +27,8 @@ public class ScoreController {
      * @param score 成绩信息
      * @return 创建的成绩
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @PostMapping
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
     public ResponseEntity<Score> createScore(@RequestBody Score score) {
         try {
             Score createdScore = scoreService.createScore(score);
@@ -44,8 +44,8 @@ public class ScoreController {
      * @param score 成绩信息
      * @return 更新后的成绩
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
     public ResponseEntity<Score> updateScore(@PathVariable("id") Integer id, @RequestBody Score score) {
         try {
             Score updatedScore = scoreService.updateScore(id, score);
@@ -63,8 +63,8 @@ public class ScoreController {
      * 删除成绩
      * @param id 成绩ID
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
     public ResponseEntity<HttpStatus> deleteScore(@PathVariable("id") Integer id) {
         try {
             scoreService.deleteScore(id);
@@ -79,8 +79,8 @@ public class ScoreController {
      * @param id 成绩ID
      * @return 成绩信息
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher')")
     public ResponseEntity<Score> findScoreById(@PathVariable("id") Integer id) {
         Optional<Score> score = scoreService.findScoreById(id);
         if (score.isPresent()) {
@@ -95,8 +95,8 @@ public class ScoreController {
      * @param studentId 学生ID
      * @return 成绩列表
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or authentication.principal.username == #studentId")
     @GetMapping("/student/{studentId}")
-    @PreAuthorize("hasRole('admin') or hasRole('teacher') or authentication.principal.username == #studentId")
     public ResponseEntity<List<Score>> findScoresByStudentId(@PathVariable("studentId") Long studentId) {
         try {
             List<Score> scores = scoreService.findScoresByStudentId(studentId);
