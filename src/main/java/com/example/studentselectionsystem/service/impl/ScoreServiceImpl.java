@@ -1,14 +1,23 @@
 package com.example.studentselectionsystem.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.studentselectionsystem.entity.Score;
+import com.example.studentselectionsystem.entity.Student;
+import com.example.studentselectionsystem.entity.Course;
 import com.example.studentselectionsystem.repository.ScoreRepository;
+import com.example.studentselectionsystem.repository.StudentRepository;
+import com.example.studentselectionsystem.repository.CourseRepository;
 import com.example.studentselectionsystem.service.ScoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -19,6 +28,96 @@ public class ScoreServiceImpl implements ScoreService {
 
     @Autowired
     private ScoreRepository scoreRepository;
+    
+    @Autowired
+    private StudentRepository studentRepository;
+    
+    @Autowired
+    private CourseRepository courseRepository;
+    
+    /**
+     * 辅助方法：填充Score对象的学期、课程名称和学生姓名信息
+     * @param score 需要填充信息的Score对象
+     */
+    private void populateScoreSemester(Score score) {
+        if (score != null) {
+            // 确保等级已经计算
+            if (score.getTotalScore() != null && score.getGrade() == null) {
+                score.setGrade(calculateGrade(score.getTotalScore()));
+            }
+            
+            // 填充课程信息
+            if (score.getCourseId() != null) {
+                Course course = courseRepository.selectById(score.getCourseId());
+                if (course != null) {
+                    score.setSemester(course.getSemester());
+                    score.setCourseName(course.getName()); // 从课程表中获取课程名称
+                    score.setCourseCode(course.getCode()); // 从课程表中获取课程代码
+                }
+            }
+            
+            // 填充学生信息
+            if (score.getStudentId() != null) {
+                Student student = studentRepository.selectById(score.getStudentId());
+                if (student != null) {
+                    score.setStudentName(student.getName());
+                    score.setStudentNumber(student.getStudentNumber());
+                }
+            }
+            
+            // 如果有学号但没有学生姓名，则根据学号查询
+            if ((score.getStudentName() == null || score.getStudentName().isEmpty()) && 
+                score.getStudentNumber() != null && !score.getStudentNumber().isEmpty()) {
+                Optional<Student> studentOptional = studentRepository.selectByStudentId(score.getStudentNumber());
+                if (studentOptional.isPresent()) {
+                    Student student = studentOptional.get();
+                    score.setStudentName(student.getName());
+                    score.setStudentId(student.getId());
+                }
+            }
+        }
+    }
+    
+    /**
+     * 辅助方法：填充Score列表的学期信息
+     * @param scores 需要填充学期信息的Score列表
+     */
+    private void populateScoreSemesters(List<Score> scores) {
+        if (scores != null) {
+            for (Score score : scores) {
+                populateScoreSemester(score);
+            }
+        }
+    }
+    
+    /**
+     * 辅助方法：根据总分计算等级
+     * 等级划分规则：
+     * - 90分及以上：A
+     * - 80-89分：B
+     * - 70-79分：C
+     * - 60-69分：D
+     * - 低于60分：F
+     * @param totalScore 总分
+     * @return 等级（A/B/C/D/F）
+     */
+    private String calculateGrade(BigDecimal totalScore) {
+        if (totalScore == null) {
+            return null;
+        }
+        int score = totalScore.intValue();
+        if (score >= 90) {
+            return "A";
+        } else if (score >= 80 && score <= 89) {
+            return "B";
+        } else if (score >= 70 && score <= 79) {
+            return "C";
+        } else if (score >= 60 && score <= 69) {
+            return "D";
+        } else {
+            return "F";
+        }
+    }
 
     /**
      * 创建成绩记录
@@ -27,6 +126,8 @@ public class ScoreServiceImpl implements ScoreService {
      */
     @Override
     public Score createScore(Score score) {
+        // 根据总分自动计算等级
+        score.setGrade(calculateGrade(score.getTotalScore()));
         scoreRepository.insert(score);
         return score;
     }
@@ -38,13 +139,16 @@ public class ScoreServiceImpl implements ScoreService {
      * @return 更新后的成绩
      */
     @Override
-    public Score updateScore(Integer id, Score score) {
+    public Score updateScore(Long id, Score score) {
         Score existingScore = scoreRepository.selectById(id);
         if (existingScore != null) {
             existingScore.setStudentId(score.getStudentId());
             existingScore.setCourseId(score.getCourseId());
-            existingScore.setScore(score.getScore());
-            existingScore.setSemester(score.getSemester());
+            existingScore.setUsualScore(score.getUsualScore());
+            existingScore.setExamScore(score.getExamScore());
+            existingScore.setTotalScore(score.getTotalScore());
+            // 根据总分自动计算等级
+            existingScore.setGrade(calculateGrade(score.getTotalScore()));
             scoreRepository.updateById(existingScore);
             return existingScore;
         }
@@ -56,7 +160,7 @@ public class ScoreServiceImpl implements ScoreService {
      * @param id 成绩ID
      */
     @Override
-    public void deleteScore(Integer id) {
+    public void deleteScore(Long id) {
         scoreRepository.deleteById(id);
     }
 
@@ -66,8 +170,12 @@ public class ScoreServiceImpl implements ScoreService {
      * @return 成绩信息
      */
     @Override
-    public Optional<Score> findScoreById(Integer id) {
-        return Optional.ofNullable(scoreRepository.selectById(id));
+    public Optional<Score> findScoreById(Long id) {
+        Score score = scoreRepository.selectById(id);
+        if (score != null) {
+            populateScoreSemester(score);
+        }
+        return Optional.ofNullable(score);
     }
 
     /**
@@ -77,7 +185,9 @@ public class ScoreServiceImpl implements ScoreService {
      */
     @Override
     public List<Score> findScoresByStudentId(Long studentId) {
-        return scoreRepository.selectByStudentId(studentId);
+        List<Score> scores = scoreRepository.selectByStudentId(studentId);
+        populateScoreSemesters(scores);
+        return scores;
     }
 
     /**
@@ -86,8 +196,10 @@ public class ScoreServiceImpl implements ScoreService {
      * @return 成绩列表
      */
     @Override
-    public List<Score> findScoresByCourseId(Integer courseId) {
-        return scoreRepository.selectByCourseId(courseId);
+    public List<Score> findScoresByCourseId(Long courseId) {
+        List<Score> scores = scoreRepository.selectByCourseId(courseId);
+        populateScoreSemesters(scores);
+        return scores;
     }
 
     /**
@@ -97,8 +209,10 @@ public class ScoreServiceImpl implements ScoreService {
      * @return 成绩信息
      */
     @Override
-    public Optional<Score> findScoreByStudentIdAndCourseId(Long studentId, Integer courseId) {
-        return scoreRepository.selectByStudentIdAndCourseId(studentId, courseId);
+    public Optional<Score> findScoreByStudentIdAndCourseId(Long studentId, Long courseId) {
+        Optional<Score> scoreOptional = scoreRepository.selectByStudentIdAndCourseId(studentId, courseId);
+        scoreOptional.ifPresent(this::populateScoreSemester);
+        return scoreOptional;
     }
 
     /**
@@ -109,7 +223,9 @@ public class ScoreServiceImpl implements ScoreService {
      */
     @Override
     public List<Score> findScoresByStudentIdAndSemester(Long studentId, String semester) {
-        return scoreRepository.selectByStudentIdAndSemester(studentId, semester);
+        List<Score> scores = scoreRepository.selectByStudentIdAndSemester(studentId, semester);
+        populateScoreSemesters(scores);
+        return scores;
     }
 
     /**
@@ -119,8 +235,10 @@ public class ScoreServiceImpl implements ScoreService {
      * @return 成绩列表
      */
     @Override
-    public List<Score> findScoresByCourseIdAndSemester(Integer courseId, String semester) {
-        return scoreRepository.selectByCourseIdAndSemester(courseId, semester);
+    public List<Score> findScoresByCourseIdAndSemester(Long courseId, String semester) {
+        List<Score> scores = scoreRepository.selectByCourseIdAndSemester(courseId, semester);
+        populateScoreSemesters(scores);
+        return scores;
     }
 
     /**
@@ -130,7 +248,9 @@ public class ScoreServiceImpl implements ScoreService {
      */
     @Override
     public List<Score> findScoresBySemester(String semester) {
-        return scoreRepository.selectBySemester(semester);
+        List<Score> scores = scoreRepository.selectBySemester(semester);
+        populateScoreSemesters(scores);
+        return scores;
     }
 
     /**
@@ -139,7 +259,9 @@ public class ScoreServiceImpl implements ScoreService {
      */
     @Override
     public List<Score> findAllScores() {
-        return scoreRepository.selectList(null);
+        List<Score> scores = scoreRepository.selectList(null);
+        populateScoreSemesters(scores);
+        return scores;
     }
 
     /**
@@ -149,14 +271,62 @@ public class ScoreServiceImpl implements ScoreService {
      */
     @Override
     public IPage<Score> findScoresByPage(IPage<Score> page) {
-        return scoreRepository.selectPage(page, null);
+        IPage<Score> scorePage = scoreRepository.selectPage(page, null);
+        populateScoreSemesters(scorePage.getRecords());
+        return scorePage;
     }
 
     @Override
     public IPage<Score> findScoresByPage(Integer current, Integer size) {
         // 创建MyBatis Plus分页对象
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Score> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, size);
-        return scoreRepository.selectPage(page, null);
+        IPage<Score> scorePage = scoreRepository.selectPage(page, null);
+        populateScoreSemesters(scorePage.getRecords());
+        return scorePage;
+    }
+
+    @Override
+    public IPage<Score> findScoresByPage(Integer current, Integer size, String studentNumber, String courseCode, String semester) {
+        // 创建MyBatis Plus分页对象
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Score> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, size);
+        
+        // 构建查询条件
+        QueryWrapper<Score> queryWrapper = new QueryWrapper<>();
+        
+        // 处理学生学号查询
+        if (studentNumber != null && !studentNumber.isEmpty()) {
+            // 先根据学号查询学生ID
+            QueryWrapper<Student> studentWrapper = new QueryWrapper<>();
+            studentWrapper.eq("student_number", studentNumber);
+            Student student = studentRepository.selectOne(studentWrapper);
+            if (student != null) {
+                queryWrapper.eq("student_id", student.getId());
+            }
+        }
+        
+        // 处理课程代码查询
+        if (courseCode != null && !courseCode.isEmpty()) {
+            // 先根据课程代码查询课程ID
+            QueryWrapper<Course> courseWrapper = new QueryWrapper<>();
+            courseWrapper.eq("course_code", courseCode);
+            Course course = courseRepository.selectOne(courseWrapper);
+            if (course != null) {
+                queryWrapper.eq("course_id", course.getId());
+            }
+        }
+        
+        // 处理学期查询
+        if (semester != null && !semester.isEmpty()) {
+            queryWrapper.like("semester", semester);
+        }
+        
+        // 查询成绩数据
+        IPage<Score> scorePage = scoreRepository.selectPage(page, queryWrapper);
+        
+        // 填充学生信息和课程信息
+        populateScoreSemesters(scorePage.getRecords());
+        
+        return scorePage;
     }
 
     /**
@@ -207,8 +377,32 @@ public class ScoreServiceImpl implements ScoreService {
      * @return 平均成绩
      */
     @Override
-    public Double getAverageScoreByCourseId(Integer courseId) {
-        return scoreRepository.getAverageScoreByCourseId(courseId);
+    public Double getAverageScoreByCourseId(Long courseId) {
+        QueryWrapper<Score> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("course_id", courseId);
+        List<Score> scores = scoreRepository.selectList(queryWrapper);
+        if (scores.isEmpty()) {
+            return 0.0;
+        }
+        
+        BigDecimal sum = BigDecimal.ZERO;
+        int validCount = 0;
+        
+        for (Score score : scores) {
+            BigDecimal totalScore = score.getTotalScore();
+            if (totalScore != null) {
+                sum = sum.add(totalScore);
+                validCount++;
+            }
+        }
+        
+        if (validCount == 0) {
+            return 0.0;
+        }
+        
+        // 保留两位小数，四舍五入
+        BigDecimal average = sum.divide(BigDecimal.valueOf(validCount), 2, RoundingMode.HALF_UP);
+        return average.doubleValue();
     }
 
     /**
@@ -218,8 +412,33 @@ public class ScoreServiceImpl implements ScoreService {
      * @return 平均成绩
      */
     @Override
-    public Double getAverageScoreByCourseIdAndSemester(Integer courseId, String semester) {
-        return scoreRepository.getAverageScoreByCourseIdAndSemester(courseId, semester);
+    public Double getAverageScoreByCourseIdAndSemester(Long courseId, String semester) {
+        QueryWrapper<Score> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("course_id", courseId)
+                .eq("semester", semester);
+        List<Score> scores = scoreRepository.selectList(queryWrapper);
+        if (scores.isEmpty()) {
+            return 0.0;
+        }
+        
+        BigDecimal sum = BigDecimal.ZERO;
+        int validCount = 0;
+        
+        for (Score score : scores) {
+            BigDecimal totalScore = score.getTotalScore();
+            if (totalScore != null) {
+                sum = sum.add(totalScore);
+                validCount++;
+            }
+        }
+        
+        if (validCount == 0) {
+            return 0.0;
+        }
+        
+        // 保留两位小数，四舍五入
+        BigDecimal average = sum.divide(BigDecimal.valueOf(validCount), 2, RoundingMode.HALF_UP);
+        return average.doubleValue();
     }
 
     /**
@@ -233,7 +452,7 @@ public class ScoreServiceImpl implements ScoreService {
         int n = sortedScores.size();
         for (int i = 0; i < n - 1; i++) {
             for (int j = 0; j < n - i - 1; j++) {
-                if (sortedScores.get(j).getScore().compareTo(sortedScores.get(j + 1).getScore()) < 0) {
+                if (sortedScores.get(j).getTotalScore().compareTo(sortedScores.get(j + 1).getTotalScore()) < 0) {
                     // 交换元素
                     Score temp = sortedScores.get(j);
                     sortedScores.set(j, sortedScores.get(j + 1));
@@ -255,7 +474,7 @@ public class ScoreServiceImpl implements ScoreService {
         int n = sortedScores.size();
         for (int i = 0; i < n - 1; i++) {
             for (int j = 0; j < n - i - 1; j++) {
-                if (sortedScores.get(j).getScore().compareTo(sortedScores.get(j + 1).getScore()) > 0) {
+                if (sortedScores.get(j).getTotalScore().compareTo(sortedScores.get(j + 1).getTotalScore()) > 0) {
                     // 交换元素
                     Score temp = sortedScores.get(j);
                     sortedScores.set(j, sortedScores.get(j + 1));
@@ -264,5 +483,124 @@ public class ScoreServiceImpl implements ScoreService {
             }
         }
         return sortedScores;
+    }
+    
+    @Override
+    public Map<String, Object> getScoreStatistics(String studentNumber, String courseCode, String semester) {
+        Map<String, Object> statistics = new HashMap<>();
+        
+        // 构建查询条件
+        QueryWrapper<Score> queryWrapper = new QueryWrapper<>();
+        
+        // 处理学生学号查询
+        if (studentNumber != null && !studentNumber.isEmpty()) {
+            // 先根据学号查询学生ID
+            QueryWrapper<Student> studentWrapper = new QueryWrapper<>();
+            studentWrapper.eq("student_number", studentNumber);
+            Student student = studentRepository.selectOne(studentWrapper);
+            if (student != null) {
+                queryWrapper.eq("student_id", student.getId());
+            }
+        }
+        
+        // 处理课程代码查询
+        if (courseCode != null && !courseCode.isEmpty()) {
+            // 先根据课程代码查询课程ID
+            QueryWrapper<Course> courseWrapper = new QueryWrapper<>();
+            courseWrapper.eq("course_code", courseCode);
+            Course course = courseRepository.selectOne(courseWrapper);
+            if (course != null) {
+                queryWrapper.eq("course_id", course.getId());
+            }
+        }
+        
+        // 处理学期查询
+        if (semester != null && !semester.isEmpty()) {
+            queryWrapper.like("semester", semester);
+        }
+        
+        // 查询成绩数据
+        List<Score> scores = scoreRepository.selectList(queryWrapper);
+        populateScoreSemesters(scores);
+        
+        // 计算统计数据
+        int totalCount = scores.size();
+        int validCount = 0;
+        BigDecimal sum = BigDecimal.ZERO;
+        BigDecimal maxScore = BigDecimal.ZERO;
+        BigDecimal minScore = BigDecimal.valueOf(100);
+        
+        // 各等级人数
+        int aCount = 0;
+        int bCount = 0;
+        int cCount = 0;
+        int dCount = 0;
+        int fCount = 0;
+        
+        for (Score score : scores) {
+            BigDecimal totalScore = score.getTotalScore();
+            if (totalScore != null) {
+                validCount++;
+                sum = sum.add(totalScore);
+                
+                // 更新最高分
+                if (totalScore.compareTo(maxScore) > 0) {
+                    maxScore = totalScore;
+                }
+                
+                // 更新最低分
+                if (totalScore.compareTo(minScore) < 0) {
+                    minScore = totalScore;
+                }
+                
+                // 统计各等级人数
+                String grade = score.getGrade();
+                if (grade == null) {
+                    grade = calculateGrade(totalScore);
+                }
+                
+                switch (grade) {
+                    case "A":
+                        aCount++;
+                        break;
+                    case "B":
+                        bCount++;
+                        break;
+                    case "C":
+                        cCount++;
+                        break;
+                    case "D":
+                        dCount++;
+                        break;
+                    case "F":
+                        fCount++;
+                        break;
+                }
+            }
+        }
+        
+        // 计算平均分
+        BigDecimal averageScore = BigDecimal.ZERO;
+        if (validCount > 0) {
+            averageScore = sum.divide(BigDecimal.valueOf(validCount), 2, RoundingMode.HALF_UP);
+        }
+        
+        // 填充统计数据
+        statistics.put("totalCount", totalCount);
+        statistics.put("validCount", validCount);
+        statistics.put("averageScore", averageScore.doubleValue());
+        statistics.put("maxScore", maxScore.doubleValue());
+        statistics.put("minScore", minScore.doubleValue());
+        
+        // 各等级人数
+        Map<String, Integer> gradeCount = new HashMap<>();
+        gradeCount.put("A", aCount);
+        gradeCount.put("B", bCount);
+        gradeCount.put("C", cCount);
+        gradeCount.put("D", dCount);
+        gradeCount.put("F", fCount);
+        statistics.put("gradeCount", gradeCount);
+        
+        return statistics;
     }
 }

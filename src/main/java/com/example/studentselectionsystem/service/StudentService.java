@@ -160,9 +160,10 @@ public interface StudentService {
      * @param minAwardCount 最低获奖次数（可选）
      * @param majorId 专业ID（可选）
      * @param year 年级（可选）
+     * @param awardLevel 奖项级别（可选）
      * @return 符合条件的学生列表
      */
-    List<Student> filterStudentsByComprehensiveCriteria(Double minAverageScore, Integer minAwardCount, Integer majorId, Integer year);
+    List<Student> filterStudentsByComprehensiveCriteria(Double minAverageScore, Integer minAwardCount, Integer majorId, Integer year, String awardLevel);
 
     /**
      * 获取学生总数

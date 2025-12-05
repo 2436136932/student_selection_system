@@ -75,6 +75,17 @@ public interface StandardService {
     IPage<Standard> findStandardsByPage(Integer current, Integer size);
 
     /**
+     * 分页获取标准，支持搜索
+     * @param current 页码（从1开始）
+     * @param size 每页大小
+     * @param code 标准代码（可选）
+     * @param name 标准名称（可选）
+     * @param teacher 负责人（可选）
+     * @return 标准分页列表
+     */
+    IPage<Standard> findStandardsByPage(Integer current, Integer size, String code, String name, String teacher);
+
+    /**
      * 判断标准名称是否存在
      * @param name 标准名称
      * @return 是否存在

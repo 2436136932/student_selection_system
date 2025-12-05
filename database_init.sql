@@ -207,6 +207,23 @@ INSERT INTO awards (award_name, award_level, award_type, description, requiremen
 ('校级一等奖学金', 'school', 'academic', '校级最高级别奖学金', '专业成绩排名前5%'),
 ('院级优秀学生干部', 'department', 'leadership', '院级优秀学生干部', '在学生工作中表现突出');
 
+-- 插入示例学生
+INSERT INTO students (student_number, name, gender, birth_date, major, class_name, admission_year, phone, email, status) VALUES
+('S001', '赵同学', '男', '2002-01-01', '计算机科学与技术', '计科2001', 2020, '13800138001', 'zhaostudent@example.com', 1),
+('S002', '钱同学', '女', '2002-02-02', '数学与应用数学', '数学2001', 2020, '13800138002', 'qianstudent@example.com', 1),
+('S003', '孙同学', '男', '2002-03-03', '物理学', '物理2001', 2020, '13800138003', 'sunstudent@example.com', 1);
+
+-- 插入学生用户账号（密码为: 123456）
+INSERT INTO users (username, password, role, real_name, email, phone, status) VALUES
+('student1', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '赵同学', 'zhaostudent@example.com', '13800138001', 1),
+('student2', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '钱同学', 'qianstudent@example.com', '13800138002', 1),
+('student3', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '孙同学', 'sunstudent@example.com', '13800138003', 1);
+
+-- 更新学生表中的user_id
+UPDATE students SET user_id = (SELECT id FROM users WHERE username = 'student1') WHERE student_number = 'S001';
+UPDATE students SET user_id = (SELECT id FROM users WHERE username = 'student2') WHERE student_number = 'S002';
+UPDATE students SET user_id = (SELECT id FROM users WHERE username = 'student3') WHERE student_number = 'S003';
+
 -- 创建索引
 CREATE INDEX idx_students_major ON students(major);
 CREATE INDEX idx_students_class_name ON students(class_name);
@@ -219,6 +236,25 @@ CREATE INDEX idx_scores_total_score ON scores(total_score);
 CREATE INDEX idx_student_awards_student_id ON student_awards(student_id);
 CREATE INDEX idx_student_awards_award_id ON student_awards(award_id);
 CREATE INDEX idx_student_awards_award_year ON student_awards(award_year);
+
+-- 创建standards表用于存储评奖标准信息
+CREATE TABLE IF NOT EXISTS standards (
+    id INT PRIMARY KEY AUTO_INCREMENT COMMENT '标准ID',
+    code VARCHAR(50) NOT NULL UNIQUE COMMENT '标准代码',
+    name VARCHAR(100) NOT NULL COMMENT '标准名称',
+    teacher VARCHAR(50) NOT NULL COMMENT '负责人',
+    weight DECIMAL(3,1) NOT NULL COMMENT '权重',
+    capacity INT NOT NULL COMMENT '达标值',
+    enrolled INT DEFAULT 0 COMMENT '符合人数',
+    semester VARCHAR(20) NOT NULL COMMENT '适用学期',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) COMMENT '评奖标准表';
+
+-- 添加standards表索引
+CREATE INDEX idx_standards_semester ON standards(semester);
+CREATE INDEX idx_standards_code ON standards(code);
+CREATE INDEX idx_standards_name ON standards(name);
 
 --密码本
 --账号testuser2 密码testpassword2

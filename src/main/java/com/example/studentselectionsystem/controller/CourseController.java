@@ -46,7 +46,7 @@ public class CourseController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    public ResponseEntity<Course> updateCourse(@PathVariable("id") Integer id, @RequestBody Course course) {
+    public ResponseEntity<Course> updateCourse(@PathVariable("id") Long id, @RequestBody Course course) {
         try {
             Course updatedCourse = courseService.updateCourse(id, course);
             if (updatedCourse != null) {
@@ -65,7 +65,7 @@ public class CourseController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    public ResponseEntity<HttpStatus> deleteCourse(@PathVariable("id") Integer id) {
+    public ResponseEntity<HttpStatus> deleteCourse(@PathVariable("id") Long id) {
         try {
             courseService.deleteCourse(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -81,7 +81,7 @@ public class CourseController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
-    public ResponseEntity<Course> findCourseById(@PathVariable("id") Integer id) {
+    public ResponseEntity<Course> findCourseById(@PathVariable("id") Long id) {
         Optional<Course> course = courseService.findCourseById(id);
         if (course.isPresent()) {
             return new ResponseEntity<>(course.get(), HttpStatus.OK);

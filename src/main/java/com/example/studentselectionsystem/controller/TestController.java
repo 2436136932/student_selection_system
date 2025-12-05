@@ -34,4 +34,14 @@ public class TestController {
         System.out.println("TestController - echo() 方法被调用，收到消息: " + message);
         return response;
     }
+
+    @GetMapping("/protected")
+    public Map<String, Object> protectedTest() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Protected resource accessed successfully!");
+        response.put("timestamp", System.currentTimeMillis());
+        System.out.println("TestController - protectedTest() 方法被调用");
+        return response;
+    }
 }

@@ -18,7 +18,7 @@ com\example\studentselectionsystem\entity\StudentAwardApplication.class
 com\example\studentselectionsystem\service\StudentService.class
 com\example\studentselectionsystem\entity\StudentCompetition.class
 com\example\studentselectionsystem\repository\RoleRepository.class
-com\example\studentselectionsystem\test\PasswordTest.class
+com\example\studentselectionsystem\controller\AwardTypeController$1.class
 com\example\studentselectionsystem\controller\CourseController.class
 com\example\studentselectionsystem\dao\AwardDAO.class
 com\example\studentselectionsystem\entity\User.class
@@ -34,6 +34,7 @@ com\example\studentselectionsystem\controller\StandardController.class
 com\example\studentselectionsystem\entity\Objection.class
 com\example\studentselectionsystem\service\impl\StudentAwardApplicationServiceImpl.class
 com\example\studentselectionsystem\repository\UserRepository.class
+com\example\studentselectionsystem\service\impl\AwardTypeServiceImpl.class
 com\example\studentselectionsystem\service\impl\StandardServiceImpl.class
 com\example\studentselectionsystem\mapper\AwardMapper.class
 com\example\studentselectionsystem\mapper\ObjectionMapper.class
@@ -48,8 +49,12 @@ com\example\studentselectionsystem\repository\MajorRepository.class
 com\example\studentselectionsystem\controller\UserController.class
 com\example\studentselectionsystem\repository\PermissionRepository.class
 com\example\studentselectionsystem\service\impl\StudentServiceImpl.class
+com\example\studentselectionsystem\repository\StandardRepository.class
 com\example\studentselectionsystem\service\StudentAwardApplicationService.class
 com\example\studentselectionsystem\service\AwardService.class
+com\example\studentselectionsystem\util\DatabaseChecker.class
+com\example\studentselectionsystem\controller\AwardTypeController.class
+com\example\studentselectionsystem\service\AwardTypeService.class
 com\example\studentselectionsystem\service\UserService.class
 com\example\studentselectionsystem\StudentAwardSelectionSystemApplication.class
 com\example\studentselectionsystem\controller\AwardController.class

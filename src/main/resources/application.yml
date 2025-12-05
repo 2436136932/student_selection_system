@@ -11,6 +11,12 @@ spring:
     username: root
     password: 123456
   
+  # SQL初始化配置
+  sql:
+    init:
+      schema-locations: classpath:database_init.sql
+      mode: never
+  
   # JPA Configuration (Removed - using MyBatis Plus instead)
   # jpa:
   #   hibernate:
@@ -75,6 +81,7 @@ logging:
     com.example.studentselectionsystem: debug
     org.springframework.web: debug
     org.apache.catalina: debug
+    org.springframework.security: debug
   file:
     name: logs/student-selection-system.log
     max-size: 10MB

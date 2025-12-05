@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -24,18 +25,24 @@ public class Course implements Serializable {
      * 课程ID
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 课程名称
      */
-    @TableField("name")
+    @TableField("course_name")
     private String name;
+
+    /**
+     * 课程代码
+     */
+    @TableField("course_code")
+    private String code;
 
     /**
      * 学分
      */
-    @TableField("credit")
+    @TableField("credits")
     private BigDecimal credit;
 
     /**
@@ -45,9 +52,9 @@ public class Course implements Serializable {
     private String semester;
 
     /**
-     * 创建时间
+     * 创建时间（不映射到数据库）
      */
-    @TableField(value = "create_time", updateStrategy = com.baomidou.mybatisplus.annotation.FieldStrategy.NEVER)
+    @TableField(exist = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
@@ -55,14 +62,15 @@ public class Course implements Serializable {
      * 课程成绩关联（不映射到数据库）
      */
     @TableField(exist = false)
+    @JsonIgnore
     private List<Score> scores;
 
     // Getter and Setter methods
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -72,6 +80,14 @@ public class Course implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public BigDecimal getCredit() {

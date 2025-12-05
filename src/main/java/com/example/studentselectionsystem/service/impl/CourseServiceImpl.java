@@ -37,7 +37,7 @@ public class CourseServiceImpl implements CourseService {
      * @return 更新后的课程
      */
     @Override
-    public Course updateCourse(Integer id, Course course) {
+    public Course updateCourse(Long id, Course course) {
         Optional<Course> existingCourse = Optional.ofNullable(courseRepository.selectById(id));
         if (existingCourse.isPresent()) {
             Course updatedCourse = existingCourse.get();
@@ -55,7 +55,7 @@ public class CourseServiceImpl implements CourseService {
      * @param id 课程ID
      */
     @Override
-    public void deleteCourse(Integer id) {
+    public void deleteCourse(Long id) {
         courseRepository.deleteById(id);
     }
 
@@ -65,7 +65,7 @@ public class CourseServiceImpl implements CourseService {
      * @return 课程信息
      */
     @Override
-    public Optional<Course> findCourseById(Integer id) {
+    public Optional<Course> findCourseById(Long id) {
         return Optional.ofNullable(courseRepository.selectById(id));
     }
 

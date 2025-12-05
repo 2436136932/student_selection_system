@@ -27,7 +27,7 @@ public interface ScoreRepository extends BaseMapper<Score> {
      * @param courseId 课程ID
      * @return 成绩列表
      */
-    List<Score> selectByCourseId(@Param("courseId") Integer courseId);
+    List<Score> selectByCourseId(@Param("courseId") Long courseId);
 
     /**
      * 根据学生ID和课程ID查找成绩
@@ -35,7 +35,7 @@ public interface ScoreRepository extends BaseMapper<Score> {
      * @param courseId 课程ID
      * @return 成绩信息
      */
-    Optional<Score> selectByStudentIdAndCourseId(@Param("studentId") Long studentId, @Param("courseId") Integer courseId);
+    Optional<Score> selectByStudentIdAndCourseId(@Param("studentId") Long studentId, @Param("courseId") Long courseId);
 
     /**
      * 根据学生ID和学期查找成绩
@@ -51,7 +51,7 @@ public interface ScoreRepository extends BaseMapper<Score> {
      * @param semester 学期
      * @return 成绩列表
      */
-    List<Score> selectByCourseIdAndSemester(@Param("courseId") Integer courseId, @Param("semester") String semester);
+    List<Score> selectByCourseIdAndSemester(@Param("courseId") Long courseId, @Param("semester") String semester);
 
     /**
      * 根据学期查找成绩
@@ -65,7 +65,7 @@ public interface ScoreRepository extends BaseMapper<Score> {
      * @param studentId 学生ID
      * @return 总分
      */
-    @Select("SELECT SUM(score) FROM score WHERE student_id = #{studentId}")
+    @Select("SELECT SUM(total_score) FROM scores WHERE student_id = #{studentId}")
     Double getTotalScoreByStudentId(@Param("studentId") Long studentId);
 
     /**
@@ -73,7 +73,7 @@ public interface ScoreRepository extends BaseMapper<Score> {
      * @param studentId 学生ID
      * @return 平均分
      */
-    @Select("SELECT AVG(score) FROM score WHERE student_id = #{studentId}")
+    @Select("SELECT AVG(total_score) FROM scores WHERE student_id = #{studentId}")
     Double getAverageScoreByStudentId(@Param("studentId") Long studentId);
 
     /**
@@ -82,7 +82,7 @@ public interface ScoreRepository extends BaseMapper<Score> {
      * @param semester 学期
      * @return 总分
      */
-    @Select("SELECT SUM(score) FROM score WHERE student_id = #{studentId} AND semester = #{semester}")
+    @Select("SELECT SUM(total_score) FROM scores WHERE student_id = #{studentId} AND semester = #{semester}")
     Double getTotalScoreByStudentIdAndSemester(@Param("studentId") Long studentId, @Param("semester") String semester);
 
     /**
@@ -91,7 +91,7 @@ public interface ScoreRepository extends BaseMapper<Score> {
      * @param semester 学期
      * @return 平均分
      */
-    @Select("SELECT AVG(score) FROM score WHERE student_id = #{studentId} AND semester = #{semester}")
+    @Select("SELECT AVG(total_score) FROM scores WHERE student_id = #{studentId} AND semester = #{semester}")
     Double getAverageScoreByStudentIdAndSemester(@Param("studentId") Long studentId, @Param("semester") String semester);
 
     /**
@@ -99,8 +99,8 @@ public interface ScoreRepository extends BaseMapper<Score> {
      * @param courseId 课程ID
      * @return 平均成绩
      */
-    @Select("SELECT AVG(score) FROM score WHERE course_id = #{courseId}")
-    Double getAverageScoreByCourseId(@Param("courseId") Integer courseId);
+    @Select("SELECT AVG(total_score) FROM scores WHERE course_id = #{courseId}")
+    Double getAverageScoreByCourseId(@Param("courseId") Long courseId);
 
     /**
      * 获取课程的平均成绩（按学期）
@@ -108,7 +108,7 @@ public interface ScoreRepository extends BaseMapper<Score> {
      * @param semester 学期
      * @return 平均成绩
      */
-    @Select("SELECT AVG(score) FROM score WHERE course_id = #{courseId} AND semester = #{semester}")
-    Double getAverageScoreByCourseIdAndSemester(@Param("courseId") Integer courseId, @Param("semester") String semester);
+    @Select("SELECT AVG(total_score) FROM scores WHERE course_id = #{courseId} AND semester = #{semester}")
+    Double getAverageScoreByCourseIdAndSemester(@Param("courseId") Long courseId, @Param("semester") String semester);
 
 }

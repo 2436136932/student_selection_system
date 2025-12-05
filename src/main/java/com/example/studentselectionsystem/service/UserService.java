@@ -97,6 +97,13 @@ public interface UserService {
     boolean existsByUsername(String username);
 
     /**
+     * 根据真实姓名查找用户
+     * @param realName 真实姓名
+     * @return 用户信息
+     */
+    Optional<User> findUserByRealName(String realName);
+    
+    /**
      * 检查邮箱是否已存在
      * @param email 邮箱
      * @return 是否存在

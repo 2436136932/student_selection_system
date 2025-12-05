@@ -98,6 +98,24 @@ public class UserServiceImpl implements UserService {
         }
         return userOptional;
     }
+    
+    @Override
+    public Optional<User> findUserByRealName(String realName) {
+        logger.info("正在查询真实姓名: {}", realName);
+        Optional<User> userOptional = userRepository.selectByRealName(realName);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            logger.info("查询结果: 用户存在，ID={}, 用户名={}, 真实姓名={}, 邮箱={}, 电话={}", 
+                    user.getId(), 
+                    user.getUsername(), 
+                    user.getName(),
+                    user.getEmail(),
+                    user.getPhone());
+        } else {
+            logger.info("查询结果: 真实姓名为 '{}' 的用户不存在", realName);
+        }
+        return userOptional;
+    }
 
     @Override
     public Optional<User> findUserByEmail(String email) {

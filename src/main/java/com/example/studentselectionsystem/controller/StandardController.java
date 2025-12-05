@@ -139,17 +139,23 @@ public class StandardController {
     }
 
     /**
-     * 分页获取评奖标准
+     * 分页获取评奖标准，支持搜索
      * @param current 页码（从1开始）
      * @param size 每页大小
+     * @param code 标准代码（可选）
+     * @param name 标准名称（可选）
+     * @param teacher 负责人（可选）
      * @return 标准分页列表
      */
     @GetMapping("/page")
     public ResponseEntity<IPage<Standard>> findStandardsByPage(
             @RequestParam(defaultValue = "1") int current,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String teacher) {
         try {
-            IPage<Standard> standards = standardService.findStandardsByPage(current, size);
+            IPage<Standard> standards = standardService.findStandardsByPage(current, size, code, name, teacher);
             return new ResponseEntity<>(standards, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -53,5 +53,13 @@ public interface UserRepository extends BaseMapper<User> {
      */
     @Select("SELECT u.*, r.* FROM users u LEFT JOIN user_role ur ON u.id = ur.user_id LEFT JOIN role r ON ur.role_id = r.id WHERE u.id = #{id}")
     Optional<User> selectByIdWithRoles(@Param("id") Integer id);
+    
+    /**
+     * 根据真实姓名查找用户
+     * @param realName 真实姓名
+     * @return 用户信息
+     */
+    @Select("SELECT * FROM users WHERE real_name = #{realName}")
+    Optional<User> selectByRealName(@Param("realName") String realName);
 
 }

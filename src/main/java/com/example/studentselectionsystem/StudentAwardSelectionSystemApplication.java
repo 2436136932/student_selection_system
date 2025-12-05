@@ -20,16 +20,7 @@ public class StudentAwardSelectionSystemApplication {
         SpringApplication.run(StudentAwardSelectionSystemApplication.class, args);
     }
 
-    /**
-     * MyBatis Plus插件配置
-     */
-    @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor() {
-        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        // 添加分页插件
-        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
-        return interceptor;
-    }
+
 
 
 

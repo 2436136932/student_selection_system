@@ -3,6 +3,7 @@ package com.example.studentselectionsystem.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.studentselectionsystem.model.Award;
 import com.example.studentselectionsystem.service.AwardService;
+import com.example.studentselectionsystem.service.AwardTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,9 @@ public class AwardController {
     
     @Autowired
     private AwardService awardService;
+    
+    @Autowired
+    private AwardTypeService awardTypeService;
 
     /**
      * 新增奖项
@@ -127,6 +131,7 @@ public class AwardController {
     @GetMapping("/count")
     public ResponseEntity<Long> getAwardCount() {
         try {
+            // 使用AwardService获取奖项总数
             long count = awardService.countAwards();
             return ResponseEntity.ok(count);
         } catch (Exception e) {

@@ -129,7 +129,7 @@ const activeIndex = computed(() => route.path)
 const menuItems = [
   { index: '/home', icon: House, text: '首页', roles: ['admin', 'teacher', 'student'] },
   { index: '/students', icon: User, text: '学生管理', roles: ['admin'] },
-  { index: '/courses', icon: Document, text: '课程管理', roles: ['admin', 'teacher', 'student'] },
+  { index: '/standards', icon: Document, text: '评奖标准管理', roles: ['admin', 'teacher', 'student'] },
   { index: '/scores', icon: DataLine, text: '成绩管理', roles: ['admin', 'teacher', 'student'] },
   { index: '/awards', icon: Medal, text: '评奖评优', roles: ['admin', 'teacher', 'student'] },
   { index: '/student-award-applications', icon: Document, text: '奖项申请', roles: ['admin', 'teacher', 'student'] },
@@ -140,7 +140,7 @@ const menuItems = [
 const menuMap = {
   '/home': '首页',
   '/students': '学生管理',
-  '/courses': '课程管理',
+  '/standards': '评奖标准管理',
   '/scores': '成绩管理',
   '/awards': '评奖评优',
   '/student-award-applications': '奖项申请',

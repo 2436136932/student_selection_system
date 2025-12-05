@@ -19,7 +19,7 @@ public interface CourseRepository extends BaseMapper<Course> {
      * @param name 课程名称
      * @return 课程信息
      */
-    @Select("SELECT * FROM course WHERE name = #{name}")
+    @Select("SELECT * FROM courses WHERE name = #{name}")
     Optional<Course> selectByName(@Param("name") String name);
 
     /**
@@ -27,7 +27,7 @@ public interface CourseRepository extends BaseMapper<Course> {
      * @param code 课程代码
      * @return 课程信息
      */
-    @Select("SELECT * FROM course WHERE code = #{code}")
+    @Select("SELECT * FROM courses WHERE course_code = #{code}")
     Optional<Course> selectByCode(@Param("code") String code);
 
     /**
@@ -35,7 +35,7 @@ public interface CourseRepository extends BaseMapper<Course> {
      * @param name 课程名称
      * @return 是否存在
      */
-    @Select("SELECT COUNT(*) > 0 FROM course WHERE name = #{name}")
+    @Select("SELECT COUNT(*) > 0 FROM courses WHERE name = #{name}")
     boolean existsByName(@Param("name") String name);
 
     /**
@@ -43,7 +43,7 @@ public interface CourseRepository extends BaseMapper<Course> {
      * @param code 课程代码
      * @return 是否存在
      */
-    @Select("SELECT COUNT(*) > 0 FROM course WHERE code = #{code}")
+    @Select("SELECT COUNT(*) > 0 FROM courses WHERE course_code = #{code}")
     boolean existsByCode(@Param("code") String code);
 
 }

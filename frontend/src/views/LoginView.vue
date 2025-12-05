@@ -78,9 +78,9 @@
             </el-form-item>
             
             <el-form-item>
-              <el-button type="primary" @click="handleLogin" :loading="loginLoading" size="large" block>
-                登录
-              </el-button>
+              <button @click="handleLogin" :disabled="loginLoading" class="custom-login-btn">
+                {{ loginLoading ? '登录中...' : '登录' }}
+              </button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
@@ -146,9 +146,9 @@
             </el-form-item>
             
             <el-form-item>
-              <el-button type="success" @click="handleRegister" :loading="registerLoading" size="large" block>
-                注册
-              </el-button>
+              <button @click="handleRegister" :disabled="registerLoading" class="custom-register-btn">
+                {{ registerLoading ? '注册中...' : '注册' }}
+              </button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
@@ -157,7 +157,7 @@
     
     <div class="login-footer">
       <div class="footer-content">
-        <p class="copyright">© 2024 学生评奖评优系统 - 版权所有</p>
+        <p class="copyright">© 2026 学生评奖评优系统 - 版权所有：俞伟杰</p>
         <div class="footer-links">
           <a href="#" class="footer-link">隐私政策</a>
           <span class="footer-divider">|</span>
@@ -351,7 +351,9 @@ const handleRegister = () => {
 .login-container {
   width: 100%;
   height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #a8d8ea 100%);
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease infinite;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -420,13 +422,26 @@ const handleRegister = () => {
   }
 }
 
+/* 渐变背景动画 */
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .login-box {
   background: white;
   border-radius: 24px;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-  padding: 50px 40px;
+  padding: 60px 50px;
   width: 100%;
-  max-width: 550px;
+  max-width: 650px;
   animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   position: relative;
   z-index: 1;
@@ -465,8 +480,8 @@ const handleRegister = () => {
 
 .login-header h1 {
   color: var(--primary-color);
-  font-size: 32px;
-  margin-bottom: 10px;
+  font-size: 36px;
+  margin-bottom: 12px;
   font-weight: 700;
   letter-spacing: -0.5px;
   font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -557,12 +572,12 @@ const handleRegister = () => {
 }
 
 .login-form .el-form-item {
-  margin-bottom: 30px;
+  margin-bottom: 35px;
 }
 
 .login-form .el-input__wrapper {
-  border-radius: 12px;
-  height: 52px;
+  border-radius: 14px;
+  height: 56px;
   background-color: var(--light-color);
   border: 2px solid transparent;
   transition: all 0.3s ease;
@@ -581,7 +596,7 @@ const handleRegister = () => {
 }
 
 .login-form .el-input__inner {
-  font-size: 15px;
+  font-size: 16px;
   color: var(--dark-color);
 }
 
@@ -595,21 +610,91 @@ const handleRegister = () => {
   font-size: 16px;
   font-weight: 600;
   background: linear-gradient(135deg, var(--secondary-color) 0%, #2980b9 100%);
-  border: none;
+  border: none !important;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  color: white !important;
+  z-index: 10;
+  display: block !important;
+  opacity: 1 !important;
 }
 
 .login-form .el-button:hover {
   background: linear-gradient(135deg, #2980b9 0%, var(--secondary-color) 100%);
   box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
   transform: translateY(-2px);
+  color: white !important;
+  border: none !important;
 }
 
 .login-form .el-button:active {
   transform: translateY(0);
+  color: white !important;
+  border: none !important;
+}
+
+/* 确保成功类型按钮也有清晰的文字颜色 */
+.login-form .el-button--success {
+  background: linear-gradient(135deg, var(--success-color) 0%, #219653 100%) !important;
+  color: white !important;
+}
+
+.login-form .el-button--success:hover {
+  background: linear-gradient(135deg, #219653 0%, var(--success-color) 100%) !important;
+  color: white !important;
+}
+
+/* 自定义登录按钮样式 */
+.custom-login-btn {
+  background-color: #3498db !important;
+  color: white !important;
+  height: 56px !important;
+  border-radius: 14px !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3) !important;
+  z-index: 9999 !important;
+  display: block !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  margin-top: 20px !important;
+  line-height: 56px !important;
+  text-align: center !important;
+}
+
+/* 自定义注册按钮样式 */
+.custom-register-btn {
+  background-color: #3498db !important;
+  color: white !important;
+  height: 56px !important;
+  border-radius: 14px !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3) !important;
+  z-index: 9999 !important;
+  display: block !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  margin-top: 20px !important;
+  line-height: 56px !important;
+  text-align: center !important;
+}
+
+/* 确保所有按钮都能正确显示 */
+.el-form-item {
+  position: relative;
+  overflow: visible !important;
+}
+
+.el-button {
+  position: relative !important;
+  z-index: 1000 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
 .login-footer {
@@ -658,12 +743,23 @@ const handleRegister = () => {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .login-box {
-    padding: 40px 30px;
+    padding: 50px 40px;
+    max-width: 550px;
     margin: 20px;
   }
   
   .login-header h1 {
-    font-size: 28px;
+    font-size: 32px;
+  }
+  
+  .login-form .el-input__wrapper {
+    height: 52px;
+  }
+  
+  .custom-login-btn,
+  .custom-register-btn {
+    height: 52px;
+    line-height: 52px;
   }
   
   .bg-circle {

@@ -88,6 +88,14 @@ public class UserController {
         return optionalUser.map(user -> new ResponseEntity<>(user, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    
+    @GetMapping("/realname/{realName}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+    public ResponseEntity<User> findUserByRealName(@PathVariable String realName) {
+        Optional<User> optionalUser = userService.findUserByRealName(realName);
+        return optionalUser.map(user -> new ResponseEntity<>(user, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 
     /**
      * 获取所有用户

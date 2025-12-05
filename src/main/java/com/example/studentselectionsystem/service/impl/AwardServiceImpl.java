@@ -3,6 +3,7 @@ package com.example.studentselectionsystem.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.studentselectionsystem.dao.AwardDAO;
+import com.example.studentselectionsystem.mapper.AwardMapper;
 import com.example.studentselectionsystem.model.Award;
 import com.example.studentselectionsystem.service.AwardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ public class AwardServiceImpl implements AwardService {
     
     @Autowired
     private AwardDAO awardDAO;
+    
+    @Autowired
+    private AwardMapper awardMapper;
 
     @Override
     public boolean addAward(Award award) {
@@ -70,7 +74,14 @@ public class AwardServiceImpl implements AwardService {
 
     @Override
     public long countAwards() {
-        // 使用已有的getTotalAwards方法，传入null参数获取所有奖项的总数
-        return awardDAO.getTotalAwards(null, null, null);
+        try {
+            // 使用MyBatis Plus的selectCount方法直接查询数据库中的奖项总数
+            return awardMapper.selectCount(null);
+        } catch (Exception e) {
+            // 添加错误日志
+            System.err.println("Error in countAwards: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 }

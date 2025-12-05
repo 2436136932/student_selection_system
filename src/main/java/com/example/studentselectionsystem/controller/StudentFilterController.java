@@ -52,6 +52,7 @@ public class StudentFilterController {
      * @param minAwardCount 最低获奖次数（可选）
      * @param majorId 专业ID（可选）
      * @param year 年级（可选）
+     * @param awardLevel 奖项级别（可选）
      * @return 符合条件的学生列表
      */
     @GetMapping("/comprehensive")
@@ -59,10 +60,11 @@ public class StudentFilterController {
             @RequestParam(required = false) Double minAverageScore,
             @RequestParam(required = false) Integer minAwardCount,
             @RequestParam(required = false) Integer majorId,
-            @RequestParam(required = false) Integer year) {
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) String awardLevel) {
         
         List<Student> eligibleStudents = studentService.filterStudentsByComprehensiveCriteria(
-                minAverageScore, minAwardCount, majorId, year);
+                minAverageScore, minAwardCount, majorId, year, awardLevel);
         return ResponseEntity.ok(eligibleStudents);
     }
 }

@@ -1,11 +1,10 @@
 package com.example.studentselectionsystem.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.example.studentselectionsystem.entity.Course;
 import com.example.studentselectionsystem.entity.Standard;
-import com.example.studentselectionsystem.repository.CourseRepository;
+import com.example.studentselectionsystem.repository.StandardRepository;
 import com.example.studentselectionsystem.service.StandardService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 public class StandardServiceImpl implements StandardService {
 
     @Autowired
-    private CourseRepository courseRepository;
+    private StandardRepository standardRepository;
 
     /**
      * 创建评奖标准
@@ -29,16 +28,7 @@ public class StandardServiceImpl implements StandardService {
      */
     @Override
     public Standard createStandard(Standard standard) {
-        // 转换为Course实体进行保存
-        Course course = new Course();
-        BeanUtils.copyProperties(standard, course, "weight");
-        course.setCredit(standard.getWeight()); // 权重映射到学分字段
-        
-        courseRepository.insert(course);
-        
-        // 转换回Standard实体返回
-        BeanUtils.copyProperties(course, standard, "credit");
-        standard.setWeight(course.getCredit());
+        standardRepository.insert(standard);
         return standard;
     }
 
@@ -50,18 +40,11 @@ public class StandardServiceImpl implements StandardService {
      */
     @Override
     public Standard updateStandard(Integer id, Standard standard) {
-        Optional<Course> existingCourse = Optional.ofNullable(courseRepository.selectById(id));
-        if (existingCourse.isPresent()) {
-            Course updatedCourse = existingCourse.get();
-            updatedCourse.setName(standard.getName());
-            updatedCourse.setCredit(standard.getWeight()); // 权重映射到学分字段
-            updatedCourse.setSemester(standard.getSemester());
-            courseRepository.updateById(updatedCourse);
-            
-            // 转换回Standard实体返回
-            BeanUtils.copyProperties(updatedCourse, standard, "credit");
-            standard.setWeight(updatedCourse.getCredit());
-            return standard;
+        Optional<Standard> existingStandard = Optional.ofNullable(standardRepository.selectById(id));
+        if (existingStandard.isPresent()) {
+            standard.setId(id); // 确保ID正确
+            standardRepository.updateById(standard);
+            return standardRepository.selectById(id);
         }
         return null;
     }
@@ -72,7 +55,7 @@ public class StandardServiceImpl implements StandardService {
      */
     @Override
     public void deleteStandard(Integer id) {
-        courseRepository.deleteById(id);
+        standardRepository.deleteById(id);
     }
 
     /**
@@ -82,8 +65,7 @@ public class StandardServiceImpl implements StandardService {
      */
     @Override
     public Optional<Standard> findStandardById(Integer id) {
-        Optional<Course> course = Optional.ofNullable(courseRepository.selectById(id));
-        return course.map(this::convertToStandard);
+        return Optional.ofNullable(standardRepository.selectById(id));
     }
 
     /**
@@ -93,8 +75,7 @@ public class StandardServiceImpl implements StandardService {
      */
     @Override
     public Optional<Standard> findStandardByName(String name) {
-        Optional<Course> course = courseRepository.selectByName(name);
-        return course.map(this::convertToStandard);
+        return standardRepository.selectByName(name);
     }
 
     /**
@@ -104,8 +85,7 @@ public class StandardServiceImpl implements StandardService {
      */
     @Override
     public Optional<Standard> findStandardByCode(String code) {
-        Optional<Course> course = courseRepository.selectByCode(code);
-        return course.map(this::convertToStandard);
+        return standardRepository.selectByCode(code);
     }
 
     /**
@@ -114,10 +94,7 @@ public class StandardServiceImpl implements StandardService {
      */
     @Override
     public List<Standard> findAllStandards() {
-        List<Course> courses = courseRepository.selectList(null);
-        return courses.stream()
-                .map(this::convertToStandard)
-                .collect(Collectors.toList());
+        return standardRepository.selectList(null);
     }
 
     /**
@@ -127,19 +104,7 @@ public class StandardServiceImpl implements StandardService {
      */
     @Override
     public IPage<Standard> findStandardsByPage(IPage<Standard> page) {
-        // 创建Course的分页对象
-        IPage<Course> coursePage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(page.getCurrent(), page.getSize());
-        coursePage = courseRepository.selectPage(coursePage, null);
-        
-        // 转换为Standard的分页对象
-        IPage<Standard> standardPage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(page.getCurrent(), page.getSize());
-        standardPage.setTotal(coursePage.getTotal());
-        standardPage.setPages(coursePage.getPages());
-        standardPage.setRecords(coursePage.getRecords().stream()
-                .map(this::convertToStandard)
-                .collect(Collectors.toList()));
-        
-        return standardPage;
+        return standardRepository.selectPage(page, null);
     }
 
     /**
@@ -150,19 +115,9 @@ public class StandardServiceImpl implements StandardService {
      */
     @Override
     public IPage<Standard> findStandardsByPage(Integer current, Integer size) {
-        // 创建Course的分页对象
-        IPage<Course> coursePage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, size);
-        coursePage = courseRepository.selectPage(coursePage, null);
-        
-        // 转换为Standard的分页对象
+        // 创建Standard的分页对象
         IPage<Standard> standardPage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, size);
-        standardPage.setTotal(coursePage.getTotal());
-        standardPage.setPages(coursePage.getPages());
-        standardPage.setRecords(coursePage.getRecords().stream()
-                .map(this::convertToStandard)
-                .collect(Collectors.toList()));
-        
-        return standardPage;
+        return standardRepository.selectPage(standardPage, null);
     }
 
     /**
@@ -172,7 +127,7 @@ public class StandardServiceImpl implements StandardService {
      */
     @Override
     public boolean existsByName(String name) {
-        return courseRepository.existsByName(name);
+        return standardRepository.existsByName(name);
     }
 
     /**
@@ -182,18 +137,38 @@ public class StandardServiceImpl implements StandardService {
      */
     @Override
     public boolean existsByCode(String code) {
-        return courseRepository.existsByCode(code);
+        return standardRepository.existsByCode(code);
     }
-    
+
     /**
-     * 将Course实体转换为Standard实体
-     * @param course Course实体
-     * @return Standard实体
+     * 分页获取标准，支持搜索
+     * @param current 页码（从1开始）
+     * @param size 每页大小
+     * @param code 标准代码（可选）
+     * @param name 标准名称（可选）
+     * @param teacher 负责人（可选）
+     * @return 标准分页列表
      */
-    private Standard convertToStandard(Course course) {
-        Standard standard = new Standard();
-        BeanUtils.copyProperties(course, standard, "credit");
-        standard.setWeight(course.getCredit()); // 学分字段映射到权重
-        return standard;
+    @Override
+    public IPage<Standard> findStandardsByPage(Integer current, Integer size, String code, String name, String teacher) {
+        // 创建Standard的分页对象
+        IPage<Standard> standardPage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, size);
+        
+        // 构建查询条件
+        QueryWrapper<Standard> queryWrapper = new QueryWrapper<>();
+        
+        // 添加搜索条件
+        if (code != null && !code.isEmpty()) {
+            queryWrapper.like("code", code);
+        }
+        if (name != null && !name.isEmpty()) {
+            queryWrapper.like("name", name);
+        }
+        if (teacher != null && !teacher.isEmpty()) {
+            queryWrapper.like("teacher", teacher);
+        }
+        
+        // 执行分页查询
+        return standardRepository.selectPage(standardPage, queryWrapper);
     }
 }

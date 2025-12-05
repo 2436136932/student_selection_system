@@ -78,6 +78,9 @@ public class StudentServiceImpl implements StudentService {
             existingStudent.setClassName(student.getClassName());
             existingStudent.setAdmissionYear(student.getAdmissionYear());
             existingStudent.setStatus(student.getStatus());
+            existingStudent.setPhone(student.getPhone());
+            existingStudent.setEmail(student.getEmail());
+            existingStudent.setUserId(student.getUserId());
             existingStudent.setUpdatedAt(new Date());
 
             studentRepository.updateById(existingStudent);
@@ -232,7 +235,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<Student> filterStudentsByComprehensiveCriteria(Double minAverageScore, Integer minAwardCount, Integer majorId, Integer year) {
+    public List<Student> filterStudentsByComprehensiveCriteria(Double minAverageScore, Integer minAwardCount, Integer majorId, Integer year, String awardLevel) {
         // 获取所有学生
         List<Student> allStudents = studentRepository.selectList(null);
         List<Student> eligibleStudents = new ArrayList<>();
@@ -251,7 +254,19 @@ public class StudentServiceImpl implements StudentService {
 
             // 检查获奖次数条件
             if (meetsCriteria && minAwardCount != null) {
-                int awardCount = awardService.getAwardCountByStudentId(student.getStudentNumber());
+                int awardCount = 0;
+                if (awardLevel != null && !awardLevel.isEmpty()) {
+                    // 如果指定了奖项级别，计算该级别的奖项数量
+                    List<Award> awards = awardService.getAwardsByStudentId(student.getStudentNumber());
+                    for (Award award : awards) {
+                        if (award.getAwardLevel().equals(awardLevel)) {
+                            awardCount++;
+                        }
+                    }
+                } else {
+                    // 否则计算所有奖项数量
+                    awardCount = awardService.getAwardCountByStudentId(student.getStudentNumber());
+                }
                 if (awardCount < minAwardCount) {
                     meetsCriteria = false;
                 }

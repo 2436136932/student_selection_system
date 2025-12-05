@@ -2,7 +2,11 @@ package com.example.studentselectionsystem.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.studentselectionsystem.entity.Score;
+import com.example.studentselectionsystem.entity.Course;
+import com.example.studentselectionsystem.entity.Student;
 import com.example.studentselectionsystem.service.ScoreService;
+import com.example.studentselectionsystem.service.CourseService;
+import com.example.studentselectionsystem.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +25,12 @@ public class ScoreController {
 
     @Autowired
     private ScoreService scoreService;
+    
+    @Autowired
+    private CourseService courseService;
+    
+    @Autowired
+    private StudentService studentService;
 
     /**
      * 创建成绩记录
@@ -31,9 +41,53 @@ public class ScoreController {
     @PostMapping
     public ResponseEntity<Score> createScore(@RequestBody Score score) {
         try {
+            // 添加详细的日志记录
+            System.out.println("\n接收到成绩创建请求:");
+            System.out.println("学生ID: " + score.getStudentId());
+            System.out.println("学生学号: " + score.getStudentNumber());
+            System.out.println("课程代码: " + score.getCourseCode());
+            System.out.println("课程ID: " + score.getCourseId());
+            System.out.println("平时成绩: " + score.getUsualScore());
+            System.out.println("考试成绩: " + score.getExamScore());
+            System.out.println("总成绩: " + score.getTotalScore());
+            System.out.println("学期: " + score.getSemester());
+            
+            // 如果前端传递了studentNumber，转换为studentId
+            if (score.getStudentNumber() != null && !score.getStudentNumber().isEmpty()) {
+                String studentNumber = score.getStudentNumber();
+                System.out.println("正在根据学号查询学生: " + studentNumber);
+                Student student = studentService.findStudentByStudentId(studentNumber).orElseThrow(() -> new RuntimeException("Student not found"));
+                System.out.println("查询到的学生: ID=" + student.getId() + ", 姓名=" + student.getName());
+                score.setStudentId(student.getId());
+            } else if (score.getStudentId() != null) {
+                // 如果直接提供了studentId，验证学生是否存在
+                System.out.println("正在验证学生ID: " + score.getStudentId());
+                Student student = studentService.findStudentById(score.getStudentId()).orElseThrow(() -> new RuntimeException("Student not found"));
+                System.out.println("验证通过的学生: ID=" + student.getId() + ", 姓名=" + student.getName());
+            }
+            
+            // 如果前端传递了courseCode，转换为courseId
+            if (score.getCourseCode() != null && !score.getCourseCode().isEmpty()) {
+                String courseCode = score.getCourseCode();
+                System.out.println("正在根据课程代码查询课程: " + courseCode);
+                Course course = courseService.findCourseByCode(courseCode).orElseThrow(() -> new RuntimeException("Course not found"));
+                System.out.println("查询到的课程: ID=" + course.getId() + ", 名称=" + course.getName());
+                score.setCourseId(course.getId());
+            } else if (score.getCourseId() != null) {
+                // 如果直接提供了courseId，验证课程是否存在
+                System.out.println("正在验证课程ID: " + score.getCourseId());
+                Course course = courseService.findCourseById(score.getCourseId()).orElseThrow(() -> new RuntimeException("Course not found"));
+                System.out.println("验证通过的课程: ID=" + course.getId() + ", 名称=" + course.getName());
+            }
+            
+            // 准备创建成绩记录...
             Score createdScore = scoreService.createScore(score);
+            System.out.println("成绩记录创建成功: ID=" + createdScore.getId());
+            
             return new ResponseEntity<>(createdScore, HttpStatus.CREATED);
         } catch (Exception e) {
+            System.out.println("创建成绩记录失败: " + e.getMessage());
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -46,8 +100,14 @@ public class ScoreController {
      */
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @PutMapping("/{id}")
-    public ResponseEntity<Score> updateScore(@PathVariable("id") Integer id, @RequestBody Score score) {
+    public ResponseEntity<Score> updateScore(@PathVariable("id") Long id, @RequestBody Score score) {
         try {
+            // 如果前端传递了courseCode，转换为courseId
+            if (score.getCourseCode() != null && !score.getCourseCode().isEmpty()) {
+                String courseCode = score.getCourseCode();
+                Course course = courseService.findCourseByCode(courseCode).orElseThrow(() -> new RuntimeException("Course not found"));
+                score.setCourseId(course.getId());
+            }
             Score updatedScore = scoreService.updateScore(id, score);
             if (updatedScore != null) {
                 return new ResponseEntity<>(updatedScore, HttpStatus.OK);
@@ -65,7 +125,7 @@ public class ScoreController {
      */
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteScore(@PathVariable("id") Integer id) {
+    public ResponseEntity<HttpStatus> deleteScore(@PathVariable("id") Long id) {
         try {
             scoreService.deleteScore(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -81,7 +141,7 @@ public class ScoreController {
      */
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @GetMapping("/{id}")
-    public ResponseEntity<Score> findScoreById(@PathVariable("id") Integer id) {
+    public ResponseEntity<Score> findScoreById(@PathVariable("id") Long id) {
         Optional<Score> score = scoreService.findScoreById(id);
         if (score.isPresent()) {
             return new ResponseEntity<>(score.get(), HttpStatus.OK);
@@ -115,7 +175,7 @@ public class ScoreController {
      * @return 成绩列表
      */
     @GetMapping("/course/{courseId}")
-    public ResponseEntity<List<Score>> findScoresByCourseId(@PathVariable("courseId") Integer courseId) {
+    public ResponseEntity<List<Score>> findScoresByCourseId(@PathVariable("courseId") Long courseId) {
         try {
             List<Score> scores = scoreService.findScoresByCourseId(courseId);
             if (scores.isEmpty()) {
@@ -136,7 +196,7 @@ public class ScoreController {
     @GetMapping("/student/{studentId}/course/{courseId}")
     public ResponseEntity<Score> findScoreByStudentIdAndCourseId(
             @PathVariable("studentId") Long studentId,
-            @PathVariable("courseId") Integer courseId) {
+            @PathVariable("courseId") Long courseId) {
         Optional<Score> score = scoreService.findScoreByStudentIdAndCourseId(studentId, courseId);
         if (score.isPresent()) {
             return new ResponseEntity<>(score.get(), HttpStatus.OK);
@@ -174,7 +234,7 @@ public class ScoreController {
      */
     @GetMapping("/course/{courseId}/semester/{semester}")
     public ResponseEntity<List<Score>> findScoresByCourseIdAndSemester(
-            @PathVariable("courseId") Integer courseId,
+            @PathVariable("courseId") Long courseId,
             @PathVariable("semester") String semester) {
         try {
             List<Score> scores = scoreService.findScoresByCourseIdAndSemester(courseId, semester);
@@ -211,13 +271,15 @@ public class ScoreController {
      */
     @GetMapping
     public ResponseEntity<List<Score>> findAllScores() {
+        // 添加日志记录
+        org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ScoreController.class);
+        logger.info("进入findAllScores方法");
         try {
             List<Score> scores = scoreService.findAllScores();
-            if (scores.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(scores, HttpStatus.OK);
-        } catch (Exception e) {
+            logger.info("findAllScores成功，获取到" + scores.size() + "条记录");
+            return ResponseEntity.ok(scores);
+        } catch (Throwable t) {
+            logger.error("findAllScores方法发生异常", t);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -231,9 +293,12 @@ public class ScoreController {
     @GetMapping("/page")
     public ResponseEntity<IPage<Score>> findScoresByPage(
             @RequestParam(defaultValue = "1") Integer current,
-            @RequestParam(defaultValue = "10") Integer size) {
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(required = false) String studentNumber,
+            @RequestParam(required = false) String courseCode,
+            @RequestParam(required = false) String semester) {
         try {
-            IPage<Score> scores = scoreService.findScoresByPage(current, size);
+            IPage<Score> scores = scoreService.findScoresByPage(current, size, studentNumber, courseCode, semester);
             return new ResponseEntity<>(scores, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -312,7 +377,7 @@ public class ScoreController {
      * @return 平均成绩
      */
     @GetMapping("/course/{courseId}/average")
-    public ResponseEntity<Double> getAverageScoreByCourseId(@PathVariable("courseId") Integer courseId) {
+    public ResponseEntity<Double> getAverageScoreByCourseId(@PathVariable("courseId") Long courseId) {
         try {
             Double averageScore = scoreService.getAverageScoreByCourseId(courseId);
             return new ResponseEntity<>(averageScore, HttpStatus.OK);
@@ -329,7 +394,7 @@ public class ScoreController {
      */
     @GetMapping("/course/{courseId}/semester/{semester}/average")
     public ResponseEntity<Double> getAverageScoreByCourseIdAndSemester(
-            @PathVariable("courseId") Integer courseId,
+            @PathVariable("courseId") Long courseId,
             @PathVariable("semester") String semester) {
         try {
             Double averageScore = scoreService.getAverageScoreByCourseIdAndSemester(courseId, semester);
@@ -370,6 +435,27 @@ public class ScoreController {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             return new ResponseEntity<>(sortedScores, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    /**
+     * 获取成绩统计数据
+     * @param studentNumber 学生学号（可选）
+     * @param courseCode 课程代码（可选）
+     * @param semester 学期（可选）
+     * @return 统计数据
+     */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
+    @GetMapping("/statistics")
+    public ResponseEntity<java.util.Map<String, Object>> getScoreStatistics(
+            @RequestParam(required = false) String studentNumber,
+            @RequestParam(required = false) String courseCode,
+            @RequestParam(required = false) String semester) {
+        try {
+            java.util.Map<String, Object> statistics = scoreService.getScoreStatistics(studentNumber, courseCode, semester);
+            return ResponseEntity.ok(statistics);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

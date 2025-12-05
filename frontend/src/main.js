@@ -5,6 +5,9 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 
+// 配置axios基础URL，指向后端服务
+axios.defaults.baseURL = 'http://localhost:8080'
+
 // 添加axios拦截器，自动为每个请求添加Authorization头
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem('token')

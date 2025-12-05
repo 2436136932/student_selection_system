@@ -4,8 +4,8 @@
       <template #header>
         <div class="card-header">
           <span>评奖标准管理</span>
-          <el-button v-if="hasRole('admin') || hasRole('teacher')" type="primary" @click="dialogVisible = true">
-            <el-icon-plus></el-icon-plus> 新增评奖标准
+          <el-button v-if="hasRole('admin') || hasRole('teacher')" type="primary" @click="handleAdd">
+            <el-icon><Plus /></el-icon> 新增评奖标准
           </el-button>
         </div>
       </template>
@@ -95,6 +95,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
 import axios from 'axios'
 
 // 获取用户信息
@@ -134,10 +135,13 @@ const form = reactive({
 
 // 获取评奖标准列表
 const getStandards = () => {
-  axios.get('/api/standards', {
+  axios.get('/api/standards/page', {
     params: {
       current: currentPage.value,
-      size: pageSize.value
+      size: pageSize.value,
+      code: searchForm.code,
+      name: searchForm.name,
+      teacher: searchForm.teacher
     }
   }).then(response => {
     standards.value = response.data.records
@@ -201,6 +205,20 @@ const handleSubmit = () => {
         console.error('Error creating standard:', error)
       })
   }
+}
+
+// 新增评奖标准
+const handleAdd = () => {
+  // 重置表单
+  form.id = null
+  form.code = ''
+  form.name = ''
+  form.teacher = ''
+  form.weight = null
+  form.capacity = null
+  form.enrolled = 0
+  form.semester = ''
+  dialogVisible.value = true
 }
 
 // 编辑评奖标准

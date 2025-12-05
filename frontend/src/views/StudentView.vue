@@ -4,7 +4,7 @@
       <template #header>
         <div class="card-header">
           <span>学生管理</span>
-          <el-button v-if="hasRole('admin')" type="primary" @click="dialogVisible = true">
+          <el-button v-if="hasRole('admin')" type="primary" @click="handleAdd">
             <el-icon><Plus /></el-icon> 新增学生
           </el-button>
         </div>
@@ -35,6 +35,9 @@
           <el-table-column prop="major" label="专业" width="150"></el-table-column>
           <el-table-column prop="admissionYear" label="入学年份" width="120"></el-table-column>
           <el-table-column prop="status" label="状态" width="100"></el-table-column>
+          <el-table-column prop="phone" label="手机号" width="150"></el-table-column>
+          <el-table-column prop="email" label="邮箱" width="200"></el-table-column>
+          <el-table-column prop="userId" label="用户ID" width="100"></el-table-column>
           <el-table-column label="操作" width="150" fixed="right" v-if="hasRole('admin')">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
@@ -68,7 +71,7 @@
           <el-input v-model="form.studentNumber" placeholder="请输入学号"></el-input>
         </el-form-item>
         <el-form-item label="姓名">
-          <el-input v-model="form.name" placeholder="请输入姓名"></el-input>
+          <el-input v-model="form.name" placeholder="请输入姓名" @change="findUserByStudentName"></el-input>
         </el-form-item>
         <el-form-item label="性别">
           <el-select v-model="form.gender" placeholder="请选择性别">
@@ -93,6 +96,15 @@
             <el-option label="在读" value="1"></el-option>
             <el-option label="毕业" value="0"></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="手机号">
+          <el-input v-model="form.phone" placeholder="请输入手机号"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
+        </el-form-item>
+        <el-form-item label="用户ID">
+          <el-input-number v-model="form.userId" placeholder="请输入用户ID"></el-input-number>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -155,7 +167,10 @@ const form = reactive({
   className: '',
   major: '',
   admissionYear: null,
-  status: 1
+  status: 1,
+  phone: '',
+  email: '',
+  userId: null
 })
 
 // 获取学生列表
@@ -190,6 +205,29 @@ const resetForm = () => {
   searchForm.className = ''
   currentPage.value = 1
   getStudents()
+}
+
+// 重置学生表单数据
+const resetStudentForm = () => {
+  form.studentNumber = ''
+  form.name = ''
+  form.gender = ''
+  form.birthDate = null
+  form.className = ''
+  form.major = ''
+  form.admissionYear = null
+  form.status = 1
+  form.phone = ''
+  form.email = ''
+  form.userId = null
+  // 移除id属性
+  delete form.id
+}
+
+// 新增学生
+const handleAdd = () => {
+  resetStudentForm()
+  dialogVisible.value = true
 }
 
 // 分页处理
@@ -243,8 +281,58 @@ const handleSubmit = () => {
   }
 }
 
+// 根据姓名查找用户信息
+const findUserByStudentName = async () => {
+  console.log('开始查找用户信息，姓名:', form.name)
+  if (!form.name) {
+    console.log('姓名为空，不执行查找')
+    return
+  }
+  
+  try {
+    // 尝试根据姓名（真实姓名）查找用户
+    const url = `/api/users/realname/${encodeURIComponent(form.name)}`
+    console.log('请求URL:', url)
+    const response = await axios.get(url)
+    console.log('用户查询响应:', response)
+    if (response.data) {
+      // 自动填充用户信息
+      form.phone = response.data.phone || ''
+      form.email = response.data.email || ''
+      form.userId = response.data.id
+      console.log('自动填充后的表单数据:', form)
+      ElMessage.success('已自动填充用户信息')
+    } else {
+      console.log('响应数据为空')
+      ElMessage.info('未找到匹配的用户信息，请手动输入')
+    }
+  } catch (error) {
+    console.error('查找用户信息时发生错误:', error)
+    if (error.response) {
+      console.error('错误响应状态:', error.response.status)
+      console.error('错误响应数据:', error.response.data)
+      if (error.response.status === 404) {
+        ElMessage.info('未找到该姓名对应的用户信息，请手动输入')
+      } else if (error.response.status === 403) {
+        ElMessage.warning('您没有权限访问此信息，请手动输入')
+      } else {
+        ElMessage.error('获取用户信息失败，请稍后重试')
+      }
+    } else if (error.request) {
+      console.error('请求发送失败:', error.request)
+      ElMessage.error('网络连接失败，请检查网络设置')
+    } else {
+      console.error('请求配置错误:', error.message)
+      ElMessage.error('请求配置错误，请稍后重试')
+    }
+  }
+}
+
 // 编辑学生
 const handleEdit = (row) => {
+  // 先重置表单
+  resetStudentForm()
+  // 再赋值编辑数据
   Object.assign(form, row)
   dialogVisible.value = true
 }
@@ -272,6 +360,12 @@ const handleDelete = (row) => {
 
 // 初始化数据
 getStudents()
+
+// 页面加载时打印提示信息
+console.log('学生管理页面已加载，自动填充功能说明：')
+console.log('1. 输入学号后，系统会自动从用户表中查找匹配的用户信息')
+console.log('2. 如果找到匹配的用户信息，会自动填充姓名、手机号、邮箱和用户ID字段')
+console.log('3. 如果未找到匹配的用户信息，请手动输入相关信息')
 </script>
 
 <style scoped>

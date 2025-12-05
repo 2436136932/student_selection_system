@@ -29,14 +29,26 @@ public class Award implements Serializable {
     /**
      * 奖项名称
      */
-    @TableField("name")
-    private String name;
+    @TableField("award_name")
+    private String awardName;
+
+    /**
+     * 奖项级别（国家级、省级、校级等）
+     */
+    @TableField("award_level")
+    private String awardLevel;
 
     /**
      * 奖项类型（奖学金、优秀学生、优秀干部等）
      */
-    @TableField("type")
-    private String type;
+    @TableField("award_type")
+    private String awardType;
+
+    /**
+     * 评奖要求
+     */
+    @TableField("requirement")
+    private String requirement;
 
     /**
      * 奖项描述
@@ -97,20 +109,36 @@ public class Award implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getAwardName() {
+        return awardName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAwardName(String awardName) {
+        this.awardName = awardName;
     }
 
-    public String getType() {
-        return type;
+    public String getAwardLevel() {
+        return awardLevel;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setAwardLevel(String awardLevel) {
+        this.awardLevel = awardLevel;
+    }
+
+    public String getAwardType() {
+        return awardType;
+    }
+
+    public void setAwardType(String awardType) {
+        this.awardType = awardType;
+    }
+
+    public String getRequirement() {
+        return requirement;
+    }
+
+    public void setRequirement(String requirement) {
+        this.requirement = requirement;
     }
 
     public String getDescription() {

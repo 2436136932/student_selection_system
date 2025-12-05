@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * 评奖标准实体类
  */
-@TableName("courses") // 保持原有表名，避免数据库修改
+@TableName("standards")
 public class Standard implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -27,16 +27,40 @@ public class Standard implements Serializable {
     private Integer id;
 
     /**
+     * 标准代码
+     */
+    @TableField("code")
+    private String code;
+
+    /**
      * 标准名称
      */
     @TableField("name")
     private String name;
 
     /**
+     * 负责人
+     */
+    @TableField("teacher")
+    private String teacher;
+
+    /**
      * 权重
      */
-    @TableField("credit") // 使用原有字段存储权重
+    @TableField("weight")
     private BigDecimal weight;
+
+    /**
+     * 达标值
+     */
+    @TableField("capacity")
+    private Integer capacity;
+
+    /**
+     * 符合人数
+     */
+    @TableField("enrolled")
+    private Integer enrolled;
 
     /**
      * 学期
@@ -47,9 +71,16 @@ public class Standard implements Serializable {
     /**
      * 创建时间
      */
-    @TableField(value = "create_time", updateStrategy = com.baomidou.mybatisplus.annotation.FieldStrategy.NEVER)
+    @TableField("create_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    @TableField("update_time")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
 
     /**
      * 评分关联（不映射到数据库）
@@ -66,6 +97,14 @@ public class Standard implements Serializable {
         this.id = id;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     public String getName() {
         return name;
     }
@@ -74,12 +113,36 @@ public class Standard implements Serializable {
         this.name = name;
     }
 
+    public String getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(String teacher) {
+        this.teacher = teacher;
+    }
+
     public BigDecimal getWeight() {
         return weight;
     }
 
     public void setWeight(BigDecimal weight) {
         this.weight = weight;
+    }
+
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
+    }
+
+    public Integer getEnrolled() {
+        return enrolled;
+    }
+
+    public void setEnrolled(Integer enrolled) {
+        this.enrolled = enrolled;
     }
 
     public String getSemester() {
@@ -96,6 +159,14 @@ public class Standard implements Serializable {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 
     public List<Score> getScores() {

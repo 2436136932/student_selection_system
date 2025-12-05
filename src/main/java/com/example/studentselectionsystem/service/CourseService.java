@@ -24,20 +24,20 @@ public interface CourseService {
      * @param course 课程信息
      * @return 更新后的课程
      */
-    Course updateCourse(Integer id, Course course);
+    Course updateCourse(Long id, Course course);
 
     /**
      * 删除课程
      * @param id 课程ID
      */
-    void deleteCourse(Integer id);
+    void deleteCourse(Long id);
 
     /**
      * 根据ID查找课程
      * @param id 课程ID
      * @return 课程信息
      */
-    Optional<Course> findCourseById(Integer id);
+    Optional<Course> findCourseById(Long id);
 
     /**
      * 根据课程名称查找课程
