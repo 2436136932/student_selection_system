@@ -63,18 +63,44 @@ public class Award implements Serializable {
     private Integer quota;
 
     /**
+     * 开始时间
+     */
+    @TableField("start_time")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date startTime;
+
+    /**
+     * 结束时间
+     */
+    @TableField("end_time")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date endTime;
+
+    /**
      * 创建时间
      */
-    @TableField(value = "create_time", updateStrategy = FieldStrategy.NEVER)
+    @TableField("created_at")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * 更新时间
      */
-    @TableField("update_time")
+    @TableField("updated_at")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
+
+    /**
+     * 奖项状态：未发布/已发布/已结束
+     */
+    @TableField("status")
+    private String status;
+
+    /**
+     * 当前状态：待开始/进行中/已完成/已关闭
+     */
+    @TableField("current_status")
+    private String currentStatus;
 
     /**
      * 奖项评选标准关联（不映射到数据库）
@@ -157,6 +183,22 @@ public class Award implements Serializable {
         this.quota = quota;
     }
 
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
@@ -203,5 +245,21 @@ public class Award implements Serializable {
 
     public void setSelectionResults(List<SelectionResult> selectionResults) {
         this.selectionResults = selectionResults;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getCurrentStatus() {
+        return currentStatus;
+    }
+
+    public void setCurrentStatus(String currentStatus) {
+        this.currentStatus = currentStatus;
     }
 }

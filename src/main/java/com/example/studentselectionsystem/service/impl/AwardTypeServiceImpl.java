@@ -31,7 +31,7 @@ public class AwardTypeServiceImpl implements AwardTypeService {
         // 使用MyBatis Plus的QueryWrapper统计不同奖项类型的数量
         com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<Award> queryWrapper = 
             new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
-        queryWrapper.select("DISTINCT type");
+        queryWrapper.select("DISTINCT award_type");
         
         // 获取不同类型的列表并计算大小
         List<Award> distinctTypes = awardMapper.selectList(queryWrapper);
@@ -45,6 +45,7 @@ public class AwardTypeServiceImpl implements AwardTypeService {
 
     @Override
     public List<Award> getAllAwardTypes() {
+        // 获取所有奖项，不进行类型去重
         return awardMapper.selectList(Wrappers.emptyWrapper());
     }
 
@@ -53,7 +54,7 @@ public class AwardTypeServiceImpl implements AwardTypeService {
         // 创建MyBatis Plus的Page对象
         IPage<Award> pageResult = new Page<>(page, size);
         
-        // 先获取所有符合条件的奖项
+        // 创建查询条件
         com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<Award> queryWrapper = new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
         
         // 添加奖项名称模糊查询条件
@@ -66,33 +67,8 @@ public class AwardTypeServiceImpl implements AwardTypeService {
             queryWrapper.eq("award_type", awardType);
         }
         
-        // 获取所有符合条件的奖项
-        List<Award> allAwards = awardMapper.selectList(queryWrapper);
-        
-        // 使用Set来存储不同的奖项类型
-        Set<String> distinctTypes = new HashSet<>();
-        List<Award> uniqueTypeAwards = new ArrayList<>();
-        
-        // 遍历所有奖项，只保留不同类型的奖项
-        for (Award award : allAwards) {
-            if (!distinctTypes.contains(award.getAwardType())) {
-                distinctTypes.add(award.getAwardType());
-                uniqueTypeAwards.add(award);
-            }
-        }
-        
-        // 计算总数
-        pageResult.setTotal(uniqueTypeAwards.size());
-        
-        // 进行分页处理
-        if (uniqueTypeAwards.isEmpty()) {
-            pageResult.setRecords(new ArrayList<>());
-        } else {
-            int startIndex = (page - 1) * size;
-            int endIndex = Math.min(startIndex + size, uniqueTypeAwards.size());
-            List<Award> paginatedTypes = uniqueTypeAwards.subList(startIndex, endIndex);
-            pageResult.setRecords(paginatedTypes);
-        }
+        // 使用MyBatis Plus的分页查询功能，直接查询符合条件的所有奖项，不进行类型去重
+        pageResult = awardMapper.selectPage(pageResult, queryWrapper);
         
         return pageResult;
     }
@@ -112,5 +88,15 @@ public class AwardTypeServiceImpl implements AwardTypeService {
     @Override
     public void deleteAwardType(Integer id) {
         awardMapper.deleteById(id);
+    }
+    
+    @Override
+    public Award publishAwardType(Integer id) {
+        Award award = awardMapper.selectById(id);
+        if (award != null) {
+            award.setStatus("已发布"); // 设置奖项状态为已发布
+            awardMapper.updateById(award);
+        }
+        return award;
     }
 }

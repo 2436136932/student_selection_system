@@ -107,4 +107,20 @@ public class AwardTypeController {
         List<Award> awards = awardTypeService.getAllAwardTypes();
         return ResponseEntity.ok(awards);
     }
+    
+    /**
+     * 发布奖项
+     * @param id 奖项ID
+     * @return 响应结果
+     */
+    @PutMapping("/{id}/publish")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Award> publishAwardType(@PathVariable Integer id) {
+        Award publishedAward = awardTypeService.publishAwardType(id);
+        if (publishedAward != null) {
+            return ResponseEntity.ok(publishedAward);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

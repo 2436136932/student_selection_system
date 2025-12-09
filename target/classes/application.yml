@@ -15,17 +15,8 @@ spring:
   sql:
     init:
       schema-locations: classpath:database_init.sql
+      data-locations: classpath:database_init.sql
       mode: never
-  
-  # JPA Configuration (Removed - using MyBatis Plus instead)
-  # jpa:
-  #   hibernate:
-  #     ddl-auto: update
-  #   show-sql: true
-  #   properties:
-  #     hibernate:
-  #       format_sql: true
-  #       dialect: org.hibernate.dialect.MySQL8Dialect
   
   # Thymeleaf Configuration
   thymeleaf:

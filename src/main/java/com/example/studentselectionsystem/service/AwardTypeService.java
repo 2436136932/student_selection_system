@@ -60,4 +60,11 @@ public interface AwardTypeService {
      * @param id 奖项ID
      */
     void deleteAwardType(Integer id);
+    
+    /**
+     * 发布奖项
+     * @param id 奖项ID
+     * @return 发布后的奖项
+     */
+    Award publishAwardType(Integer id);
 }

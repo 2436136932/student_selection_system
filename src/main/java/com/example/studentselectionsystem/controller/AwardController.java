@@ -3,7 +3,6 @@ package com.example.studentselectionsystem.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.studentselectionsystem.model.Award;
 import com.example.studentselectionsystem.service.AwardService;
-import com.example.studentselectionsystem.service.AwardTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,15 +13,13 @@ import java.util.Optional;
 /**
  * 评奖评优Controller
  */
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/awards")
 public class AwardController {
     
     @Autowired
     private AwardService awardService;
-    
-    @Autowired
-    private AwardTypeService awardTypeService;
 
     /**
      * 新增奖项
@@ -42,15 +39,15 @@ public class AwardController {
 
     /**
      * 更新奖项信息
-     * @param awardId 奖项ID
+     * @param id 奖项ID
      * @param award 奖项信息
      * @return 响应结果
      */
-    @PutMapping("/{awardId}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> updateAward(@PathVariable String awardId, @RequestBody Award award) {
+    public ResponseEntity<String> updateAward(@PathVariable Integer id, @RequestBody Award award) {
         // 确保路径参数和请求体中的ID一致
-        award.setAwardId(awardId);
+        award.setAwardId(String.valueOf(id));
         boolean success = awardService.updateAward(award);
         if (success) {
             return ResponseEntity.ok("更新奖项成功");
@@ -61,13 +58,13 @@ public class AwardController {
 
     /**
      * 删除奖项
-     * @param awardId 奖项ID
+     * @param id 奖项ID
      * @return 响应结果
      */
-    @DeleteMapping("/{awardId}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deleteAward(@PathVariable String awardId) {
-        boolean success = awardService.deleteAward(awardId);
+    public ResponseEntity<String> deleteAward(@PathVariable Integer id) {
+        boolean success = awardService.deleteAward(String.valueOf(id));
         if (success) {
             return ResponseEntity.ok("删除奖项成功");
         } else {
@@ -104,16 +101,20 @@ public class AwardController {
      * @return 奖项列表
      */
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    public ResponseEntity<IPage<Award>> getAwardsByPage(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String studentId,
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
+    public ResponseEntity<?> getAwardsByPage(
+            @RequestParam(defaultValue = "1") int pageNum,
+            @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(required = false) String awardName,
-            @RequestParam(required = false) String year) {
+            @RequestParam(required = false) String awardType) {
         
-        IPage<Award> awards = awardService.getAwardsByPage(page, size, studentId, awardName, year);
-        return ResponseEntity.ok(awards);
+        IPage<Award> awards = awardService.getAwardsByPage(pageNum, pageSize, null, awardName, null);
+        
+        // 转换为前端期望的格式
+        return ResponseEntity.ok(new Object() {
+            public final List<Award> records = awards.getRecords();
+            public final long total = awards.getTotal();
+        });
     }
 
     /**

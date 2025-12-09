@@ -40,10 +40,10 @@
             <template #default="scope">{{ scope.row.award?.awardLevel || '未知级别' }}</template>
           </el-table-column>
           <el-table-column prop="applicationTime" label="申请时间" width="180" formatter="formatDate"></el-table-column>
-          <el-table-column prop="status" label="申请状态" width="120">
+          <el-table-column prop="status" label="申请状态" width="180">
             <template #default="scope">
-              <el-tag :type="getStatusType(scope.row.status)">
-                {{ getStatusText(scope.row.status) }}
+              <el-tag :type="getStatusType(scope.row)">
+                {{ getStatusText(scope.row) }}
               </el-tag>
             </template>
           </el-table-column>
@@ -186,7 +186,7 @@ const searchForm = reactive({
 
 const form = reactive({
   id: '',
-  studentId: getUserInfo().studentId || '',
+  studentId: getUserInfo().id || '',
   awardId: '',
   description: ''
 })
@@ -201,23 +201,25 @@ const formatDate = (row, column, cellValue) => {
 }
 
 // 获取状态文本
-const getStatusText = (status) => {
-  switch (status) {
-    case 0: return '待审核'
-    case 1: return '通过'
-    case 2: return '未通过'
-    default: return '未知状态'
-  }
+const getStatusText = (row) => {
+  // 支持两级审批流程
+  if (row.status === 0) return '待教师审核'
+  if (row.status === 1) return '教师审核通过，待管理员审批'
+  if (row.status === 2) return '教师审核拒绝'
+  if (row.status === 3) return '管理员审批通过'
+  if (row.status === 4) return '管理员审批拒绝'
+  return '未知状态'
 }
 
 // 获取状态标签类型
-const getStatusType = (status) => {
-  switch (status) {
-    case 0: return 'warning'
-    case 1: return 'success'
-    case 2: return 'danger'
-    default: return 'info'
-  }
+const getStatusType = (row) => {
+  // 支持两级审批流程
+  if (row.status === 0) return 'warning'
+  if (row.status === 1) return 'info'
+  if (row.status === 2) return 'danger'
+  if (row.status === 3) return 'success'
+  if (row.status === 4) return 'danger'
+  return 'info'
 }
 
 // 获取申请列表
@@ -227,7 +229,7 @@ const getApplications = () => {
   
   // 如果是学生角色，只获取当前学生的申请
   if (isStudent.value) {
-    apiPath += `/student/${getUserInfo().studentId}`
+    apiPath += `/student/${getUserInfo().id}`
   } else {
     apiPath += '/page'
   }
@@ -367,17 +369,45 @@ const handleCancelApplication = (row) => {
 
 // 审核通过
 const handleApproveApplication = (row) => {
-  ElMessageBox.confirm(`确定要通过该奖项申请吗？`, '提示', {
+  // 根据用户角色和当前状态决定新状态
+  let confirmMessage = '';
+  let successMessage = '';
+  let apiEndpoint = '';
+  
+  if (hasRole('teacher')) {
+    // 教师审核通过，状态变为待管理员审批
+    confirmMessage = '确定要通过该奖项申请吗？通过后将提交给管理员进行二次审批。';
+    successMessage = '教师审核通过成功';
+    apiEndpoint = `/api/student-award-applications/${row.id}/teacher-approve`;
+  } else if (hasRole('admin')) {
+    // 管理员审核通过，状态变为最终通过
+    confirmMessage = '确定要通过该奖项申请吗？';
+    successMessage = '管理员审批通过成功';
+    apiEndpoint = `/api/student-award-applications/${row.id}/admin-approve`;
+  } else {
+    ElMessage.error('您没有权限进行此操作');
+    return;
+  }
+  
+  // 显示评论输入框
+  ElMessageBox.prompt(confirmMessage, '审核通过', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
+    inputType: 'textarea',
+    inputPlaceholder: '请输入审核意见（可选）',
+    inputValue: '',
     type: 'success'
-  }).then(() => {
-    axios.put(`/api/student-award-applications/${row.id}/status`, null, {
+  }).then(({ value }) => {
+    const comments = value || '';
+    let status = 1; // 通过状态
+    
+    axios.put(apiEndpoint, null, {
       params: {
-        status: 1 // 1表示通过
+        status: status,
+        comments: comments
       }
     }).then(response => {
-      ElMessage.success('审核通过成功')
+      ElMessage.success(successMessage)
       getApplications()
     }).catch(error => {
       ElMessage.error('审核通过失败')
@@ -390,17 +420,45 @@ const handleApproveApplication = (row) => {
 
 // 审核拒绝
 const handleRejectApplication = (row) => {
-  ElMessageBox.confirm(`确定要拒绝该奖项申请吗？`, '提示', {
+  // 根据用户角色和当前状态决定新状态
+  let confirmMessage = '';
+  let successMessage = '';
+  let apiEndpoint = '';
+  
+  if (hasRole('teacher')) {
+    // 教师直接拒绝，状态变为教师拒绝
+    confirmMessage = '确定要拒绝该奖项申请吗？';
+    successMessage = '教师审核拒绝成功';
+    apiEndpoint = `/api/student-award-applications/${row.id}/teacher-approve`;
+  } else if (hasRole('admin')) {
+    // 管理员拒绝，状态变为管理员拒绝
+    confirmMessage = '确定要拒绝该奖项申请吗？';
+    successMessage = '管理员审批拒绝成功';
+    apiEndpoint = `/api/student-award-applications/${row.id}/admin-approve`;
+  } else {
+    ElMessage.error('您没有权限进行此操作');
+    return;
+  }
+  
+  // 显示评论输入框
+  ElMessageBox.prompt(confirmMessage, '审核拒绝', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
+    inputType: 'textarea',
+    inputPlaceholder: '请输入拒绝理由',
+    inputValue: '',
     type: 'danger'
-  }).then(() => {
-    axios.put(`/api/student-award-applications/${row.id}/status`, null, {
+  }).then(({ value }) => {
+    const comments = value || '';
+    let status = 2; // 拒绝状态
+    
+    axios.put(apiEndpoint, null, {
       params: {
-        status: 2 // 2表示拒绝
+        status: status,
+        comments: comments
       }
     }).then(response => {
-      ElMessage.success('审核拒绝成功')
+      ElMessage.success(successMessage)
       getApplications()
     }).catch(error => {
       ElMessage.error('审核拒绝失败')

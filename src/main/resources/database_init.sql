@@ -111,9 +111,36 @@ CREATE TABLE IF NOT EXISTS awards (
     award_type VARCHAR(50) NOT NULL COMMENT '奖项类型',
     description TEXT COMMENT '奖项描述',
     requirement TEXT COMMENT '评奖要求',
+    quota INT DEFAULT 0 COMMENT '名额',
+    start_time DATETIME COMMENT '开始时间',
+    end_time DATETIME COMMENT '结束时间',
+    status VARCHAR(20) DEFAULT '未发布' COMMENT '奖项状态：未发布/已发布/已结束',
+    current_status VARCHAR(20) DEFAULT '待开始' COMMENT '当前状态：待开始/进行中/已完成/已关闭',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='奖项表';
+
+-- 专业表
+CREATE TABLE IF NOT EXISTS majors (
+    id INT PRIMARY KEY AUTO_INCREMENT COMMENT '专业ID',
+    name VARCHAR(100) NOT NULL UNIQUE COMMENT '专业名称',
+    department VARCHAR(100) NOT NULL COMMENT '所属院系',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='专业表';
+
+-- 插入初始专业数据
+INSERT INTO majors (name, department) VALUES
+('计算机科学与技术', '计算机学院'),
+('软件工程', '计算机学院'),
+('网络工程', '计算机学院'),
+('数学与应用数学', '数学学院'),
+('信息与计算科学', '数学学院'),
+('电子信息工程', '电子工程学院'),
+('通信工程', '电子工程学院'),
+('自动化', '自动化学院'),
+('机械工程', '机械工程学院'),
+('会计学', '经济管理学院'),
+('市场营销', '经济管理学院');
 
 -- 学生奖项关联表
 CREATE TABLE IF NOT EXISTS student_awards (
@@ -146,11 +173,17 @@ CREATE TABLE IF NOT EXISTS selection_criteria (
 
 -- 创建学生奖项申请表
 CREATE TABLE IF NOT EXISTS student_award_applications (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID',
+    application_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID',
     student_id BIGINT NOT NULL COMMENT '学生ID',
     award_id BIGINT NOT NULL COMMENT '奖项ID',
     application_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '申请时间',
-    status TINYINT NOT NULL DEFAULT 0 COMMENT '状态：0-待审核, 1-通过, 2-未通过',
+    status TINYINT NOT NULL DEFAULT 0 COMMENT '状态：0-待审核, 1-教师审核通过，待管理员审批, 2-教师审核拒绝, 3-管理员审批通过, 4-管理员审批拒绝',
+    teacher_approval_status TINYINT DEFAULT 0 COMMENT '教师审批状态：0-待审核, 1-通过, 2-不通过',
+    teacher_approval_time DATETIME COMMENT '教师审批时间',
+    teacher_approval_comments TEXT COMMENT '教师审批意见',
+    admin_approval_status TINYINT DEFAULT 0 COMMENT '管理员审批状态：0-待审核, 1-通过, 2-不通过',
+    admin_approval_time DATETIME COMMENT '管理员审批时间',
+    admin_approval_comments TEXT COMMENT '管理员审批意见',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
@@ -180,7 +213,7 @@ CREATE TABLE IF NOT EXISTS selection_result (
     review_date DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '评审时间',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    FOREIGN KEY (application_id) REFERENCES student_award_applications(id) ON DELETE CASCADE
+    FOREIGN KEY (application_id) REFERENCES student_award_applications(application_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评选结果表';
 
 -- 插入初始数据

@@ -24,6 +24,7 @@ com\example\studentselectionsystem\mapper\ResearchAchievementMapper.class
 com\example\studentselectionsystem\util\JwtUtil.class
 com\example\studentselectionsystem\entity\Major.class
 com\example\studentselectionsystem\mapper\SelectionCriteriaMapper.class
+com\example\studentselectionsystem\controller\AwardController$1.class
 com\example\studentselectionsystem\controller\UserController.class
 com\example\studentselectionsystem\service\impl\StudentServiceImpl.class
 com\example\studentselectionsystem\service\StudentAwardApplicationService.class
@@ -53,7 +54,6 @@ com\example\studentselectionsystem\entity\Course.class
 com\example\studentselectionsystem\mapper\ScoreMapper.class
 com\example\studentselectionsystem\config\CustomUserDetailsService.class
 com\example\studentselectionsystem\controller\PermissionController.class
-com\example\studentselectionsystem\controller\StudentFilterController.class
 com\example\studentselectionsystem\mapper\CompetitionMapper.class
 com\example\studentselectionsystem\mapper\StudentCompetitionMapper.class
 com\example\studentselectionsystem\mapper\RoleMapper.class

@@ -14,6 +14,7 @@ import java.util.Optional;
 /**
  * 专业信息控制器
  */
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/majors")
 public class MajorController {
@@ -83,10 +84,10 @@ public class MajorController {
     /**
      * 获取所有专业
      */
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<List<Major>> findAllMajors() {
         List<Major> majors = majorService.findAllMajors();
-        return new ResponseEntity<>(majors, HttpStatus.OK);
+        return ResponseEntity.ok(majors);
     }
 
     /**

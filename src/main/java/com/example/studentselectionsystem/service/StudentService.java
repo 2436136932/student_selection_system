@@ -139,31 +139,7 @@ public interface StudentService {
      */
     com.baomidou.mybatisplus.core.metadata.IPage<Student> findStudentsByPageWithSearch(Integer page, Integer size, String studentNumber, String name, String className);
 
-    /**
-     * 线性搜索：根据平均成绩筛选符合奖学金条件的学生
-     * @param minAverageScore 最低平均成绩
-     * @return 符合条件的学生列表
-     */
-    List<Student> filterStudentsByScholarshipCriteria(double minAverageScore);
 
-    /**
-     * 线性搜索：根据获奖情况筛选符合荣誉称号条件的学生
-     * @param minAwardCount 最低获奖次数
-     * @param awardLevel 奖项级别（可选）
-     * @return 符合条件的学生列表
-     */
-    List<Student> filterStudentsByHonorCriteria(int minAwardCount, String awardLevel);
-
-    /**
-     * 线性搜索：根据综合条件筛选学生
-     * @param minAverageScore 最低平均成绩（可选）
-     * @param minAwardCount 最低获奖次数（可选）
-     * @param majorId 专业ID（可选）
-     * @param year 年级（可选）
-     * @param awardLevel 奖项级别（可选）
-     * @return 符合条件的学生列表
-     */
-    List<Student> filterStudentsByComprehensiveCriteria(Double minAverageScore, Integer minAwardCount, Integer majorId, Integer year, String awardLevel);
 
     /**
      * 获取学生总数

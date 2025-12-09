@@ -47,6 +47,38 @@ public class StudentAwardApplicationController {
     }
 
     /**
+     * 教师审批申请
+     */
+    @PutMapping("/{id}/teacher-approve")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<StudentAwardApplication> teacherApproveApplication(
+            @PathVariable Integer id,
+            @RequestParam Integer status,
+            @RequestParam(required = false) String comments) {
+        StudentAwardApplication updatedApplication = studentAwardApplicationService.teacherApproveApplication(id, status, comments);
+        if (updatedApplication != null) {
+            return new ResponseEntity<>(updatedApplication, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * 管理员审批申请
+     */
+    @PutMapping("/{id}/admin-approve")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StudentAwardApplication> adminApproveApplication(
+            @PathVariable Integer id,
+            @RequestParam Integer status,
+            @RequestParam(required = false) String comments) {
+        StudentAwardApplication updatedApplication = studentAwardApplicationService.adminApproveApplication(id, status, comments);
+        if (updatedApplication != null) {
+            return new ResponseEntity<>(updatedApplication, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    /**
      * 删除申请
      */
     @DeleteMapping("/{id}")
@@ -98,6 +130,20 @@ public class StudentAwardApplicationController {
         Page<StudentAwardApplication> pageParam = new Page<>(page, size);
         IPage<StudentAwardApplication> applicationsPage = studentAwardApplicationService.findAllApplications(pageParam);
         return new ResponseEntity<>(applicationsPage, HttpStatus.OK);
+    }
+
+    @GetMapping("/page/search")
+    @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_ADMIN', 'TEACHER', 'ADMIN')")
+    public ResponseEntity<IPage<StudentAwardApplication>> searchApplications(
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(required = false) Integer awardId,
+            @RequestParam(required = false) String studentName,
+            @RequestParam(required = false) Integer status) {
+        Page<StudentAwardApplication> page = new Page<>(pageNum, pageSize);
+        IPage<StudentAwardApplication> applicationPage = 
+            studentAwardApplicationService.findApplicationsByCondition(page, awardId, studentName, status);
+        return ResponseEntity.ok(applicationPage);
     }
 
     /**

@@ -1,178 +1,231 @@
 <template>
   <div class="award-container">
-    <el-card shadow="hover">
-      <template #header>
-        <div class="card-header">
-          <span>奖项管理</span>
+    <!-- 评奖评优管理卡片式布局 -->
+    <div class="award-management">
+      <h2 class="page-title">评奖评优管理</h2>
+      <div class="card-header" style="margin-bottom: 20px;">
+          <el-button v-if="hasRole('admin')" type="primary" @click="handleAdd">
+            <el-icon><plus /></el-icon> 新建奖项
+          </el-button>
         </div>
-      </template>
-      <el-tabs v-model="activeTab" type="card">
-        <el-tab-pane label="奖项类型管理" name="awards">
-          <div class="card-header" style="margin-top: 10px;">
-            <el-button v-if="hasRole('admin')" type="primary" @click="dialogVisible = true">
-              <el-icon><plus /></el-icon> 新增奖项类型
-            </el-button>
+      
+      <!-- 奖项卡片列表 -->
+      <div class="award-cards-container">
+        <el-card
+          v-for="award in awards"
+          :key="award.id"
+          class="award-card"
+          shadow="hover"
+          :body-style="{ padding: '15px' }"
+        >
+          <div class="award-card-header">
+            <h3 class="award-name">{{ award.awardName }}</h3>
+            <el-tag
+              :type="{
+                '进行中': 'warning',
+                '已完成': 'success',
+                '未开始': 'info',
+                '已关闭': 'danger'
+              }[award.currentStatus || '待开始']"
+              :effect="'light'"
+              size="small"
+            >
+              {{ award.currentStatus || '待开始' }}
+            </el-tag>
           </div>
-          <div class="card-body">
-            <el-form :model="searchForm" :inline="true" class="search-form">
-              <el-form-item label="奖项名称">
-                <el-input v-model="searchForm.awardName" placeholder="请输入奖项名称"></el-input>
-              </el-form-item>
-              <el-form-item label="奖项类型">
-                <el-input v-model="searchForm.awardType" placeholder="请输入奖项类型"></el-input>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="handleSearch">搜索</el-button>
-                <el-button @click="resetForm">重置</el-button>
-              </el-form-item>
-            </el-form>
-
-            <el-table :data="awards" style="width: 100%" stripe v-loading="loading">
-              <el-table-column prop="id" label="奖项ID" width="80"></el-table-column>
-              <el-table-column prop="awardName" label="奖项名称" width="150"></el-table-column>
-              <el-table-column prop="awardLevel" label="奖项级别" width="100"></el-table-column>
-              <el-table-column prop="awardType" label="奖项类型" width="100"></el-table-column>
-              <el-table-column prop="description" label="奖项描述" min-width="200"></el-table-column>
-              <el-table-column prop="requirement" label="评奖要求" min-width="200"></el-table-column>
-              <el-table-column label="操作" width="150" fixed="right" v-if="hasRole('admin')">
-                <template #default="scope">
-                  <el-button size="small" type="primary" @click="handleEdit(scope.row)">
-                    <el-icon><edit /></el-icon> 编辑
-                  </el-button>
-                  <el-button size="small" type="danger" @click="handleDelete(scope.row)">
-                    <el-icon><delete /></el-icon> 删除
-                  </el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-
-            <div class="pagination">
-              <el-pagination
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                :current-page="currentPage"
-                :page-sizes="[10, 20, 50, 100]"
-                :page-size="pageSize"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="total"
-              ></el-pagination>
+          <div class="award-card-content">
+            <div class="award-date">
+              {{ award.startTime ? new Date(award.startTime).toLocaleDateString() : '未设置' }} 至 {{ award.endTime ? new Date(award.endTime).toLocaleDateString() : '未设置' }}
             </div>
-
-            <div class="filter-section" style="margin-top: 20px">
-              <el-card shadow="hover">
-                <template #header>
-                  <div class="card-header">
-                    <span>学生筛选</span>
-                  </div>
-                </template>
-                <div class="filter-body">
-                  <el-form :model="filterForm" :inline="true" class="student-filter-form">
-                    <el-form-item label="GPA大于">
-                      <el-input-number v-model="filterForm.minGpa" :min="0" :max="100" :step="0.1" placeholder="请输入GPA"></el-input-number>
-                    </el-form-item>
-                    <el-form-item label="获奖次数大于">
-                      <el-input-number v-model="filterForm.minAwardCount" :min="0" :step="1" placeholder="请输入次数"></el-input-number>
-                    </el-form-item>
-                    <el-form-item label="奖项级别">
-                      <el-select v-model="filterForm.awardLevel" placeholder="请选择级别">
-                        <el-option label="全部" value=""></el-option>
-                        <el-option label="国家级" value="国家级"></el-option>
-                        <el-option label="省级" value="省级"></el-option>
-                        <el-option label="校级" value="校级"></el-option>
-                        <el-option label="院级" value="院级"></el-option>
-                      </el-select>
-                    </el-form-item>
-                    <el-form-item label="专业">
-                      <el-select v-model="filterForm.majorId" placeholder="请选择专业">
-                        <el-option label="全部" value=""></el-option>
-                        <el-option v-for="major in majors" :key="major.id" :label="major.name" :value="major.id"></el-option>
-                      </el-select>
-                    </el-form-item>
-                    <el-form-item label="年级">
-                      <el-input-number v-model="filterForm.year" :min="2000" :max="new Date().getFullYear()" :step="1" placeholder="请输入年级"></el-input-number>
-                    </el-form-item>
-                    <el-form-item>
-                      <el-button type="primary" @click="handleFilter">筛选</el-button>
-                      <el-button @click="resetFilter">重置</el-button>
-                    </el-form-item>
-                  </el-form>
-                  <div v-if="filteredStudents.length > 0" style="margin-top: 20px">
-                    <el-table :data="filteredStudents" style="width: 100%" stripe>
-                      <el-table-column prop="studentNumber" label="学生学号" width="120"></el-table-column>
-                      <el-table-column prop="name" label="学生姓名" width="120"></el-table-column>
-                      <el-table-column prop="gender" label="性别" width="80">
-                        <template #default="scope">
-                          {{ scope.row.gender === '男' ? '男' : '女' }}
-                        </template>
-                      </el-table-column>
-                      <el-table-column prop="major" label="专业" width="150"></el-table-column>
-                      <el-table-column prop="className" label="班级" width="150"></el-table-column>
-                      <el-table-column prop="averageScore" label="平均成绩" width="120"></el-table-column>
-                      <el-table-column prop="awardCount" label="获奖次数" width="120"></el-table-column>
-                    </el-table>
-                  </div>
-                  <div v-else-if="filterApplied" class="no-data">
-                    <el-empty description="暂无符合条件的学生" style="margin-top: 20px;"></el-empty>
-                  </div>
-                </div>
-              </el-card>
+            <div class="award-quota">
+              名额: {{ award.quota || '不限' }}
             </div>
+            <div class="award-requirement">
+              最低要求: {{ award.requirement || '暂无要求' }}
+            </div>
+            <div class="award-actions">
+                <!-- 根据状态显示不同操作按钮 -->
+                <el-button 
+                  type="primary" 
+                  size="small" 
+                  @click="handleViewApplications(award)"
+                >
+                  查看详情
+                </el-button>
+                <el-button 
+                  v-if="hasRole('admin') && award.status !== '已发布'" 
+                  type="success" 
+                  size="small" 
+                  @click="handlePublish(award)"
+                >
+                  发布奖项
+                </el-button>
+                <el-button 
+                  v-if="award.currentStatus === '进行中'" 
+                  type="success" 
+                  size="small" 
+                  @click="handleStartSelection(award)"
+                >
+                  开始评选
+                </el-button>
+                <el-button 
+                  v-if="award.currentStatus === '已完成'" 
+                  type="success" 
+                  size="small" 
+                  @click="handleViewResults(award)"
+                >
+                  查看结果
+                </el-button>
+                <el-button 
+                  v-if="hasRole('admin') && (award.currentStatus === '未开始' || award.currentStatus === '进行中')" 
+                  type="info" 
+                  size="small" 
+                  @click="handleEdit(award)"
+                >
+                  编辑
+                </el-button>
+              </div>
           </div>
-        </el-tab-pane>
-        <el-tab-pane label="评奖标准管理" name="criteria">
-          <div class="card-header" style="margin-top: 10px;">
-            <el-button v-if="hasRole('admin')" type="primary" @click="criteriaDialogVisible = true">
-              <el-icon><plus /></el-icon> 新增评奖标准
-            </el-button>
+        </el-card>
+      </div>
+      
+      <!-- 奖项列表分页 -->
+      <div class="pagination">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        ></el-pagination>
+      </div>
+    </div>
+
+    <!-- 评选流程管理 -->
+    <div class="selection-process" style="margin-top: 40px;">
+      <h2 class="page-title">评选流程管理</h2>
+      <div class="process-table-container">
+        <el-table
+          :data="awards"
+          style="width: 100%"
+          border
+          stripe
+          :row-style="{height: '60px'}"
+          :cell-style="{padding: '0 15px'}"
+          :header-cell-style="{backgroundColor: '#fafafa', fontWeight: '600', fontSize: '14px'}"
+        >
+          <el-table-column prop="awardName" label="奖项名称" width="220">
+            <template #default="scope">
+              <span class="award-name">{{ scope.row.awardName }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="currentStage" label="当前阶段" width="180">
+            <template #default="scope">
+              <el-tag
+                :type="{
+                  '学生申请': 'info',
+                  '教师审批': 'warning',
+                  '管理员审批': 'primary',
+                  '结果公示': 'success',
+                  '未开始': 'info'
+                }[scope.row.currentStage || '未开始']"
+                size="small"
+                effect="light"
+              >
+                {{ scope.row.currentStage || '未开始' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="progress" label="进度" min-width="250">
+            <template #default="scope">
+              <div class="progress-container">
+                <el-progress
+                  :percentage="calculateProgress(scope.row)"
+                  :stroke-width="8"
+                  :color="{
+                    100: '#67C23A',
+                    75: '#409EFF',
+                    50: '#E6A23C',
+                    25: '#E6A23C',
+                    0: '#909399'
+                  }[calculateProgress(scope.row)]"
+                  :show-text="false"
+                ></el-progress>
+                <span class="progress-text">{{ calculateProgress(scope.row) }}% 完成</span>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="120" align="right">
+            <template #default="scope">
+              <el-button 
+                type="primary" 
+                size="small" 
+                @click="handleViewProcessDetails(scope.row)"
+              >
+                查看详情
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </div>
+
+    <!-- 传统管理界面（保留原功能） -->
+    <div class="traditional-management" style="margin-top: 40px;">
+      <el-card shadow="hover">
+        <template #header>
+          <div class="card-header">
+            <span>奖项详细管理</span>
           </div>
-          <div class="card-body">
-            <el-form :model="criteriaSearchForm" :inline="true" class="search-form">
-              <el-form-item label="奖项">
-                <el-select v-model="criteriaSearchForm.awardId" placeholder="请选择奖项">
-                  <el-option label="全部" value=""></el-option>
-                  <el-option v-for="award in awards" :key="award.id" :label="award.awardName" :value="award.id"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="标准类型">
-                <el-input v-model="criteriaSearchForm.criterionType" placeholder="请输入标准类型"></el-input>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="handleCriteriaSearch">搜索</el-button>
-                <el-button @click="resetCriteriaForm">重置</el-button>
-              </el-form-item>
-            </el-form>
+        </template>
+        <el-tabs v-model="activeTab" type="card">
+          <el-tab-pane label="奖项管理" name="awards">
+            <div class="card-body">
+              <el-form :model="searchForm" :inline="true" class="search-form">
+                <el-form-item label="奖项名称">
+                  <el-input v-model="searchForm.awardName" placeholder="请输入奖项名称"></el-input>
+                </el-form-item>
+                <el-form-item label="奖项类型">
+                  <el-input v-model="searchForm.awardType" placeholder="请输入奖项类型"></el-input>
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" @click="handleSearch">搜索</el-button>
+                  <el-button @click="resetForm">重置</el-button>
+                </el-form-item>
+              </el-form>
 
-            <el-table :data="criteria" style="width: 100%" stripe v-loading="criteriaLoading">
-              <el-table-column prop="id" label="标准ID" width="80"></el-table-column>
-              <el-table-column prop="criterionName" label="标准名称" width="150"></el-table-column>
-              <el-table-column prop="criterionType" label="标准类型" width="120"></el-table-column>
-              <el-table-column prop="weight" label="权重" width="80"></el-table-column>
-              <el-table-column prop="threshold" label="阈值" width="80"></el-table-column>
-              <el-table-column prop="award.awardName" label="所属奖项" width="150"></el-table-column>
-              <el-table-column prop="description" label="标准描述" min-width="200"></el-table-column>
-              <el-table-column label="操作" width="150" fixed="right" v-if="hasRole('admin')">
-                <template #default="scope">
-                  <el-button size="small" type="primary" @click="handleCriteriaEdit(scope.row)">
-                    <el-icon><edit /></el-icon> 编辑
-                  </el-button>
-                  <el-button size="small" type="danger" @click="handleCriteriaDelete(scope.row)">
-                    <el-icon><delete /></el-icon> 删除
-                  </el-button>
-                </template>
-              </el-table-column>
-            </el-table>
+              <el-table :data="awards" style="width: 100%" stripe v-loading="loading">
+                <el-table-column prop="id" label="奖项ID" width="80"></el-table-column>
+                <el-table-column prop="awardName" label="奖项名称" width="150"></el-table-column>
+                <el-table-column prop="awardLevel" label="奖项级别" width="100"></el-table-column>
+                <el-table-column prop="awardType" label="奖项类型" width="100"></el-table-column>
+                <el-table-column prop="description" label="奖项描述" min-width="200"></el-table-column>
+                <el-table-column prop="requirement" label="评奖要求" min-width="200"></el-table-column>
+                <el-table-column label="操作" width="150" fixed="right" v-if="hasRole('admin')">
+                  <template #default="scope">
+                    <el-button size="small" type="primary" @click="handleEdit(scope.row)">
+                      <el-icon><edit /></el-icon> 编辑
+                    </el-button>
+                    <el-button size="small" type="danger" @click="handleDelete(scope.row)">
+                      <el-icon><delete /></el-icon> 删除
+                    </el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
 
-            <div class="pagination">
-              <el-pagination
-                @size-change="handleCriteriaSizeChange"
-                @current-change="handleCriteriaCurrentChange"
-                :current-page="criteriaCurrentPage"
-                :page-sizes="[10, 20, 50, 100]"
-                :page-size="criteriaPageSize"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="criteriaTotal"
-              ></el-pagination>
-            </div>
+              <div class="pagination">
+                <el-pagination
+                  @size-change="handleSizeChange"
+                  @current-change="handleCurrentChange"
+                  :current-page="currentPage"
+                  :page-sizes="[10, 20, 50, 100]"
+                  :page-size="pageSize"
+                  layout="total, sizes, prev, pager, next, jumper"
+                  :total="total"
+                ></el-pagination>
+              </div>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -181,7 +234,7 @@
     <!-- 新增/编辑奖项类型对话框 -->
     <el-dialog
       v-model="dialogVisible"
-      title="奖项类型信息"
+      title="奖项信息"
       width="500px"
     >
       <el-form :model="form" label-width="100px">
@@ -202,11 +255,41 @@
         <el-form-item label="奖项类型">
           <el-input v-model="form.awardType" placeholder="请输入奖项类型"></el-input>
         </el-form-item>
+        <el-form-item label="开始时间">
+          <el-date-picker
+            v-model="form.startTime"
+            type="datetime"
+            placeholder="选择开始时间"
+            style="width: 100%;"
+            format="YYYY-MM-DD HH:mm:ss"
+            value-format="YYYY-MM-DD HH:mm:ss"
+          />
+        </el-form-item>
+        <el-form-item label="结束时间">
+          <el-date-picker
+            v-model="form.endTime"
+            type="datetime"
+            placeholder="选择结束时间"
+            style="width: 100%;"
+            format="YYYY-MM-DD HH:mm:ss"
+            value-format="YYYY-MM-DD HH:mm:ss"
+          />
+        </el-form-item>
+        <el-form-item label="名额">
+          <el-input-number v-model="form.quota" :min="0" :step="1" placeholder="请输入名额"></el-input-number>
+        </el-form-item>
         <el-form-item label="奖项描述">
           <el-input v-model="form.description" type="textarea" placeholder="请输入奖项描述" :rows="3"></el-input>
         </el-form-item>
         <el-form-item label="评奖要求">
           <el-input v-model="form.requirement" type="textarea" placeholder="请输入评奖要求" :rows="3"></el-input>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="form.status" placeholder="请选择状态">
+            <el-option label="未发布" value="未发布"></el-option>
+            <el-option label="已发布" value="已发布"></el-option>
+            <el-option label="已结束" value="已结束"></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -217,51 +300,202 @@
       </template>
     </el-dialog>
 
-    <!-- 新增/编辑评奖标准对话框 -->
+
+
+    <!-- 奖项详情对话框 -->
     <el-dialog
-      v-model="criteriaDialogVisible"
-      title="评奖标准信息"
-      width="500px"
+      v-model="detailDialogVisible"
+      :title="`${currentAward?.awardName} - 奖项详情`"
+      width="600px"
     >
-      <el-form :model="criteriaForm" label-width="100px">
-        <el-form-item v-if="criteriaForm.id" label="标准ID">
-          <el-input v-model="criteriaForm.id" placeholder="标准ID" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="标准名称">
-          <el-input v-model="criteriaForm.criterionName" placeholder="请输入标准名称"></el-input>
-        </el-form-item>
-        <el-form-item label="标准类型">
-          <el-input v-model="criteriaForm.criterionType" placeholder="请输入标准类型"></el-input>
-        </el-form-item>
-        <el-form-item label="权重">
-          <el-input-number v-model="criteriaForm.weight" :min="0" :max="100" :step="0.1" placeholder="请输入权重"></el-input-number>
-        </el-form-item>
-        <el-form-item label="阈值">
-          <el-input v-model="criteriaForm.threshold" placeholder="请输入阈值"></el-input>
-        </el-form-item>
-        <el-form-item label="所属奖项">
-          <el-select v-model="criteriaForm.awardId" placeholder="请选择奖项">
-            <el-option v-for="award in awards" :key="award.id" :label="award.awardName" :value="award.id"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="标准描述">
-          <el-input v-model="criteriaForm.description" type="textarea" placeholder="请输入标准描述" :rows="3"></el-input>
-        </el-form-item>
-      </el-form>
+      <div class="award-detail">
+        <el-descriptions :column="2" border>
+          <el-descriptions-item label="奖项名称">{{ currentAward?.awardName }}</el-descriptions-item>
+          <el-descriptions-item label="奖项级别">
+            <el-tag
+              :type="{
+                'national': 'success',
+                'provincial': 'warning',
+                'school': 'info',
+                'department': 'primary'
+              }[currentAward?.awardLevel || 'school']"
+            >
+              {{ currentAward?.awardLevel }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="奖项类型">{{ currentAward?.awardType }}</el-descriptions-item>
+          <el-descriptions-item label="状态">
+            <el-tag
+              :type="{
+                '未发布': 'info',
+                '已发布': 'success',
+                '已结束': 'warning'
+              }[currentAward?.status || '未发布']"
+            >
+              {{ currentAward?.status }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="当前状态">
+            <el-tag
+              :type="{
+                '待开始': 'info',
+                '进行中': 'warning',
+                '已完成': 'success',
+                '已关闭': 'danger'
+              }[currentAward?.currentStatus || '待开始']"
+            >
+              {{ currentAward?.currentStatus }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="名额">{{ currentAward?.quota || '不限' }}</el-descriptions-item>
+          <el-descriptions-item label="开始时间" :span="2">
+            {{ currentAward?.startTime ? new Date(currentAward?.startTime).toLocaleString() : '未设置' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="结束时间" :span="2">
+            {{ currentAward?.endTime ? new Date(currentAward?.endTime).toLocaleString() : '未设置' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="评奖要求" :span="2">
+            <div class="detail-content">{{ currentAward?.requirement || '暂无要求' }}</div>
+          </el-descriptions-item>
+          <el-descriptions-item label="奖项描述" :span="2">
+            <div class="detail-content">{{ currentAward?.description || '暂无描述' }}</div>
+          </el-descriptions-item>
+          <el-descriptions-item label="创建时间" :span="2">
+            {{ currentAward?.createdAt ? new Date(currentAward?.createdAt).toLocaleString() : '未设置' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="更新时间" :span="2">
+            {{ currentAward?.updatedAt ? new Date(currentAward?.updatedAt).toLocaleString() : '未设置' }}
+          </el-descriptions-item>
+        </el-descriptions>
+      </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="criteriaDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleCriteriaSubmit">确定</el-button>
+          <el-button @click="detailDialogVisible = false">关闭</el-button>
+          <el-button v-if="hasRole('admin')" type="primary" @click="handleEdit(currentAward)">
+            编辑
+          </el-button>
         </span>
       </template>
     </el-dialog>
+
+    <!-- 学生申请列表对话框 -->
+    <el-dialog
+      v-model="applicationDialogVisible"
+      :title="`${currentAward?.awardName} - 学生申请列表`"
+      width="800px"
+    >
+      <el-form :model="applicationSearchForm" :inline="true" class="search-form">
+        <el-form-item label="学生姓名">
+          <el-input v-model="applicationSearchForm.studentName" placeholder="请输入学生姓名"></el-input>
+        </el-form-item>
+        <el-form-item label="审批状态">
+          <el-select v-model="applicationSearchForm.approvalStatus" placeholder="请选择审批状态">
+            <el-option label="待教师审批" value="待教师审批"></el-option>
+            <el-option label="教师已通过" value="教师已通过"></el-option>
+            <el-option label="教师已拒绝" value="教师已拒绝"></el-option>
+            <el-option label="待管理员审批" value="待管理员审批"></el-option>
+            <el-option label="管理员已通过" value="管理员已通过"></el-option>
+            <el-option label="管理员已拒绝" value="管理员已拒绝"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleApplicationSearch">搜索</el-button>
+          <el-button @click="resetApplicationForm">重置</el-button>
+        </el-form-item>
+      </el-form>
+
+      <el-table :data="studentApplications" style="width: 100%" stripe v-loading="applicationLoading">
+        <el-table-column prop="id" label="申请ID" width="80"></el-table-column>
+        <el-table-column prop="student.name" label="学生姓名" width="120"></el-table-column>
+        <el-table-column prop="student.studentId" label="学号" width="150"></el-table-column>
+        <el-table-column prop="student.major.name" label="专业" width="150"></el-table-column>
+        <el-table-column prop="student.className" label="班级" width="120"></el-table-column>
+        <el-table-column prop="student.gpa" label="GPA" width="80"></el-table-column>
+        <el-table-column prop="applicationDate" label="申请日期" width="150">
+          <template #default="scope">{{ scope.row.applicationDate ? new Date(scope.row.applicationDate).toLocaleString() : '-' }}</template>
+        </el-table-column>
+        <el-table-column prop="approvalStatus" label="审批状态" width="120">
+          <template #default="scope">
+            <el-tag
+              :type="{
+                '待教师审批': 'info',
+                '教师已通过': 'primary',
+                '教师已拒绝': 'danger',
+                '待管理员审批': 'warning',
+                '管理员已通过': 'success',
+                '管理员已拒绝': 'danger'
+              }[scope.row.approvalStatus || '待教师审批']"
+            >
+              {{ scope.row.approvalStatus || '待教师审批' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="200" fixed="right">
+          <template #default="scope">
+            <!-- 教师审批按钮 -->
+            <el-button
+              v-if="hasRole('teacher') && scope.row.approvalStatus === '待教师审批'"
+              type="success"
+              size="small"
+              @click="handleTeacherApproval(scope.row, true)"
+            >
+              审批通过
+            </el-button>
+            <el-button
+              v-if="hasRole('teacher') && scope.row.approvalStatus === '待教师审批'"
+              type="danger"
+              size="small"
+              @click="handleTeacherApproval(scope.row, false)"
+              style="margin-left: 5px"
+            >
+              审批拒绝
+            </el-button>
+            <!-- 管理员二次审批按钮 -->
+            <el-button
+              v-if="hasRole('admin') && scope.row.approvalStatus === '待管理员审批'"
+              type="success"
+              size="small"
+              @click="handleAdminApproval(scope.row, true)"
+            >
+              终审通过
+            </el-button>
+            <el-button
+              v-if="hasRole('admin') && scope.row.approvalStatus === '待管理员审批'"
+              type="danger"
+              size="small"
+              @click="handleAdminApproval(scope.row, false)"
+              style="margin-left: 5px"
+            >
+              终审拒绝
+            </el-button>
+            <span v-else-if="scope.row.approvalStatus && (scope.row.approvalStatus.includes('已通过') || scope.row.approvalStatus.includes('已拒绝'))">
+              已处理
+            </span>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- 申请列表分页 -->
+      <div class="pagination">
+        <el-pagination
+          @size-change="handleApplicationSizeChange"
+          @current-change="handleApplicationCurrentChange"
+          :current-page="applicationCurrentPage"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="applicationPageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="applicationTotal"
+        ></el-pagination>
+      </div>
+    </el-dialog>
+  </div>
   </div>
 </template>
 
 <script>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage } from 'element-plus'
-import { hasRole } from '../utils/role'
+import { hasRole, getUserInfo } from '../utils/role'
 import axios from 'axios'
 
 export default {
@@ -277,66 +511,67 @@ export default {
     const majors = ref([])
     const activeTab = ref('awards')
     const form = reactive({
-      id: '',
+      id: null,
       awardName: '',
       awardLevel: '',
       awardType: '',
+      startTime: '',
+      endTime: '',
+      quota: null,
       description: '',
-      requirement: ''
+      requirement: '',
+      status: '未发布' // 添加状态字段
     })
+    
+    // 评选流程管理
+    const selectionProcessList = ref([])
     const searchForm = reactive({
       awardName: '',
       awardType: ''
     })
 
-    // 学生筛选
-    const filterForm = reactive({
-      minGpa: 0,
-      minAwardCount: 0,
-      awardLevel: '',
-      majorId: '',
-      year: 0
-    })
-    const filterApplied = ref(false)
-    const filteredStudents = ref([])
 
-    // 评奖标准管理
-    const criteriaDialogVisible = ref(false)
-    const criteriaLoading = ref(false)
-    const criteriaCurrentPage = ref(1)
-    const criteriaPageSize = ref(10)
-    const criteriaTotal = ref(0)
-    const criteria = ref([])
-    const criteriaForm = reactive({
-      id: '',
-      criterionName: '',
-      criterionType: '',
-      weight: 0,
-      threshold: '',
-      awardId: '',
-      description: ''
+
+    // 学生申请列表管理
+    const applicationDialogVisible = ref(false)
+    const applicationLoading = ref(false)
+    const applicationCurrentPage = ref(1)
+    const applicationPageSize = ref(10)
+    const applicationTotal = ref(0)
+    const studentApplications = ref([])
+    const currentAward = ref(null)
+    const applicationSearchForm = reactive({
+      studentName: '',
+      approvalStatus: ''
     })
-    const criteriaSearchForm = reactive({
-      awardId: '',
-      criterionType: ''
-    })
+
+    // 奖项详情对话框
+    const detailDialogVisible = ref(false)
+    const currentDetailAward = ref(null)
+
+
 
     // 获取奖项类型列表
     const getAwards = async () => {
       loading.value = true
       try {
-        const response = await axios.get('/api/award-types', {
-          params: {
-            page: currentPage.value,
-            size: pageSize.value,
-            awardName: searchForm.awardName,
-            awardType: searchForm.awardType
-          }
-        })
+        // 构建请求参数
+        const params = {
+          page: currentPage.value,
+          size: pageSize.value,
+          awardName: searchForm.awardName,
+          awardType: searchForm.awardType
+        }
+        
+        const response = await axios.get('/api/award-types', { params })
         awards.value = response.data.content
         total.value = response.data.totalElements
+        // 更新评选流程列表
+        updateSelectionProcessList()
       } catch (error) {
-        ElMessage.error('获取奖项类型列表失败')
+        ElMessage.error('获取奖项列表失败')
+        console.error('获取奖项列表失败:', error)
+        console.error('错误详情:', error.response)
         awards.value = []
       } finally {
         loading.value = false
@@ -354,39 +589,19 @@ export default {
       }
     }
 
-    // 获取评奖标准列表
-    const getCriteria = async () => {
-      criteriaLoading.value = true
-      try {
-        const response = await axios.get('/api/award-criteria', {
-          params: {
-            page: criteriaCurrentPage.value,
-            size: criteriaPageSize.value,
-            awardId: criteriaSearchForm.awardId,
-            criterionType: criteriaSearchForm.criterionType
-          }
-        })
-        criteria.value = response.data.content
-        criteriaTotal.value = response.data.totalElements
-      } catch (error) {
-        ElMessage.error('获取评奖标准列表失败')
-        criteria.value = []
-      } finally {
-        criteriaLoading.value = false
-      }
-    }
 
-    // 新增/编辑奖项类型
+
+    // 新增/编辑奖项
     const handleSubmit = async () => {
       try {
         if (form.id) {
           // 编辑
           await axios.put(`/api/award-types/${form.id}`, form)
-          ElMessage.success('奖项类型更新成功')
+          ElMessage.success('奖项更新成功')
         } else {
           // 新增
           await axios.post('/api/award-types', form)
-          ElMessage.success('奖项类型新增成功')
+          ElMessage.success('奖项新增成功')
         }
         dialogVisible.value = false
         getAwards()
@@ -398,15 +613,26 @@ export default {
 
     // 编辑奖项类型
     const handleEdit = (row) => {
-      Object.assign(form, row)
+      // 深拷贝行数据，避免直接修改原数据
+      const formData = JSON.parse(JSON.stringify(row))
+      
+      // 确保时间格式正确，与后端期望的yyyy-MM-dd HH:mm:ss格式一致
+      if (formData.startTime) {
+        formData.startTime = new Date(formData.startTime).toISOString().slice(0, 19).replace('T', ' ')
+      }
+      if (formData.endTime) {
+        formData.endTime = new Date(formData.endTime).toISOString().slice(0, 19).replace('T', ' ')
+      }
+      
+      Object.assign(form, formData)
       dialogVisible.value = true
     }
 
-    // 删除奖项类型
+    // 删除奖项
     const handleDelete = async (row) => {
       try {
         await axios.delete(`/api/award-types/${row.id}`)
-        ElMessage.success('奖项类型删除成功')
+        ElMessage.success('奖项删除成功')
         getAwards()
       } catch (error) {
         ElMessage.error('删除失败，请重试')
@@ -420,11 +646,36 @@ export default {
     }
 
     // 重置搜索表单
-    const resetForm = () => {
+    const resetSearchForm = () => {
       searchForm.awardName = ''
       searchForm.awardType = ''
       currentPage.value = 1
       getAwards()
+    }
+    
+    // 重置编辑表单
+    const resetEditForm = () => {
+      form.id = null
+      form.awardName = ''
+      form.awardLevel = ''
+      form.awardType = ''
+      form.startTime = ''
+      form.endTime = ''
+      form.quota = null
+      form.description = ''
+      form.requirement = ''
+      form.status = '未发布'
+    }
+    
+    // 新建奖项
+    const handleAdd = () => {
+      resetEditForm()
+      dialogVisible.value = true
+    }
+    
+    // 重置表单（保持向后兼容）
+    const resetForm = () => {
+      resetSearchForm()
     }
 
     // 分页处理
@@ -438,105 +689,286 @@ export default {
       getAwards()
     }
 
-    // 新增/编辑评奖标准
-    const handleCriteriaSubmit = async () => {
+
+
+
+
+    // 获取学生申请列表
+    const getStudentApplications = async (award) => {
+      if (!award) return
+      applicationLoading.value = true
       try {
-        if (criteriaForm.id) {
-          // 编辑
-          await axios.put(`/api/award-criteria/${criteriaForm.id}`, criteriaForm)
-          ElMessage.success('评奖标准更新成功')
-        } else {
-          // 新增
-          await axios.post('/api/award-criteria', criteriaForm)
-          ElMessage.success('评奖标准新增成功')
+        // 构建搜索参数
+        const params = {
+          pageNum: applicationCurrentPage.value,
+          pageSize: applicationPageSize.value,
+          awardId: award.id
         }
-        criteriaDialogVisible.value = false
-        getCriteria()
-        resetCriteriaForm()
-      } catch (error) {
-        ElMessage.error('操作失败，请重试')
-      }
-    }
-
-    // 编辑评奖标准
-    const handleCriteriaEdit = (row) => {
-      Object.assign(criteriaForm, row)
-      criteriaDialogVisible.value = true
-    }
-
-    // 删除评奖标准
-    const handleCriteriaDelete = async (row) => {
-      try {
-        await axios.delete(`/api/award-criteria/${row.id}`)
-        ElMessage.success('评奖标准删除成功')
-        getCriteria()
-      } catch (error) {
-        ElMessage.error('删除失败，请重试')
-      }
-    }
-
-    // 搜索评奖标准
-    const handleCriteriaSearch = () => {
-      criteriaCurrentPage.value = 1
-      getCriteria()
-    }
-
-    // 重置搜索表单
-    const resetCriteriaForm = () => {
-      criteriaSearchForm.awardId = ''
-      criteriaSearchForm.criterionType = ''
-      criteriaCurrentPage.value = 1
-      getCriteria()
-    }
-
-    // 分页处理
-    const handleCriteriaSizeChange = (size) => {
-      criteriaPageSize.value = size
-      getCriteria()
-    }
-
-    const handleCriteriaCurrentChange = (current) => {
-      criteriaCurrentPage.value = current
-      getCriteria()
-    }
-
-    // 学生筛选
-    const handleFilter = async () => {
-      try {
-        const response = await axios.get('/api/students/filter', {
-          params: {
-            minGpa: filterForm.minGpa,
-            minAwardCount: filterForm.minAwardCount,
-            awardLevel: filterForm.awardLevel,
-            majorId: filterForm.majorId,
-            year: filterForm.year
+        
+        // 只有当搜索条件不为空时才添加到参数中
+        if (applicationSearchForm.studentName) {
+          params.studentName = applicationSearchForm.studentName
+        }
+        
+        if (applicationSearchForm.approvalStatus) {
+          // 将字符串状态转换为数字状态
+          let status = 0
+          if (applicationSearchForm.approvalStatus === '待管理员审批') {
+            status = 1
+          } else if (applicationSearchForm.approvalStatus === '教师已拒绝') {
+            status = 2
+          } else if (applicationSearchForm.approvalStatus === '管理员已通过') {
+            status = 3
+          } else if (applicationSearchForm.approvalStatus === '管理员已拒绝') {
+            status = 4
+          }
+          params.status = status
+        }
+        
+        // 使用新的搜索API获取申请列表
+        const response = await axios.get(`/api/student-award-applications/page/search`, {
+          params
+        })
+        
+        // 将后端返回的数字状态转换为字符串状态
+        studentApplications.value = response.data.records.map(app => {
+          let approvalStatus = '待教师审批'
+          if (app.status === 1) {
+            approvalStatus = '待管理员审批'
+          } else if (app.status === 2) {
+            approvalStatus = '教师已拒绝'
+          } else if (app.status === 3) {
+            approvalStatus = '管理员已通过'
+          } else if (app.status === 4) {
+            approvalStatus = '管理员已拒绝'
+          }
+          return {
+            ...app,
+            approvalStatus,
+            applicationDate: app.applicationTime,
+            // 确保学生信息正确映射
+            student: {
+              ...app.student,
+              studentId: app.student?.id || '',
+              gpa: 0 // 默认值，实际项目中可能需要从其他字段获取
+            }
           }
         })
-        filteredStudents.value = response.data
-        filterApplied.value = true
+        
+        applicationTotal.value = response.data.total
       } catch (error) {
-        ElMessage.error('筛选失败，请重试')
-        filteredStudents.value = []
-        filterApplied.value = true
+        console.error('获取学生申请列表失败:', error)
+        // 显示更详细的错误信息
+        let errorMsg = '获取学生申请列表失败'
+        if (error.response) {
+            // 服务器返回了错误状态码
+            errorMsg += `: ${error.response.status} - ${error.response.data?.message || error.response.statusText}`
+        } else if (error.request) {
+            // 请求发出但没有收到响应
+            errorMsg += ': 服务器无响应'
+        } else {
+            // 请求配置时发生错误
+            errorMsg += `: ${error.message}`
+        }
+        ElMessage.error(errorMsg)
+        console.error('获取学生申请列表失败:', error)
+      } finally {
+        applicationLoading.value = false
       }
     }
 
-    // 重置筛选表单
-    const resetFilter = () => {
-      filterForm.minGpa = 0
-      filterForm.minAwardCount = 0
-      filterForm.awardLevel = ''
-      filterForm.majorId = ''
-      filterForm.year = 0
-      filteredStudents.value = []
-      filterApplied.value = false
+    // 查看申请列表
+    const handleViewApplications = (award) => {
+      currentAward.value = award
+      applicationDialogVisible.value = true
+      applicationCurrentPage.value = 1
+      // 重置搜索表单
+      applicationSearchForm.studentName = ''
+      applicationSearchForm.approvalStatus = ''
+      // 获取申请列表
+      getStudentApplications(award)
+    }
+
+    // 教师审批
+    const handleTeacherApproval = async (application, approve) => {
+      const status = approve ? 1 : 2;
+      const comments = approve ? '教师审批通过' : '教师审批拒绝';
+      try {
+        await axios.put(`/api/student-award-applications/${application.id}/teacher-approve`, null, {
+          params: { status, comments }
+        })
+        ElMessage.success(approve ? '审批通过成功' : '审批拒绝成功')
+        getStudentApplications(currentAward.value)
+      } catch (error) {
+        ElMessage.error('审批失败，请重试')
+        console.error('教师审批失败:', error);
+      }
+    }
+
+    // 管理员二次审批
+    const handleAdminApproval = async (application, approve) => {
+      const status = approve ? 1 : 2;
+      const comments = approve ? '管理员终审通过' : '管理员终审拒绝';
+      try {
+        await axios.put(`/api/student-award-applications/${application.id}/admin-approve`, null, {
+          params: { status, comments }
+        })
+        ElMessage.success(approve ? '终审通过成功' : '终审拒绝成功')
+        getStudentApplications(currentAward.value)
+      } catch (error) {
+        ElMessage.error('审批失败，请重试')
+        console.error('管理员审批失败:', error);
+      }
+    }
+
+    // 搜索申请
+    const handleApplicationSearch = () => {
+      applicationCurrentPage.value = 1
+      getStudentApplications(currentAward.value)
+    }
+
+    // 重置申请搜索表单
+    const resetApplicationForm = () => {
+      applicationSearchForm.studentName = ''
+      applicationSearchForm.approvalStatus = ''
+      applicationCurrentPage.value = 1
+      getStudentApplications(currentAward.value)
+    }
+
+    // 申请列表分页处理
+    const handleApplicationSizeChange = (size) => {
+      applicationPageSize.value = size
+      getStudentApplications(currentAward.value)
+    }
+
+    const handleApplicationCurrentChange = (current) => {
+      applicationCurrentPage.value = current
+      getStudentApplications(currentAward.value)
+    }
+
+    // 计算评选流程进度
+    const calculateProgress = (award) => {
+      // 根据奖项状态和当前阶段计算进度
+      if (award.status === '已结束') {
+        return 100
+      } else if (award.status === '已发布') {
+        switch (award.currentStage) {
+          case '学生申请':
+            return 25
+          case '教师审批':
+            return 50
+          case '管理员审批':
+            return 75
+          default:
+            return 0
+        }
+      } else {
+        return 0
+      }
+    }
+
+    // 获取进度颜色
+    const getProgressColor = (progress) => {
+      // 根据进度返回不同颜色
+      if (progress === 0) {
+        return '#909399' // 未开始 - 灰色
+      } else if (progress < 100) {
+        return '#67c23a' // 进行中 - 绿色
+      } else {
+        return '#e6a23c' // 已完成 - 橙色
+      }
+    }
+
+    // 更新评选流程列表
+    const updateSelectionProcessList = () => {
+      // 计算每个奖项的当前阶段和进度
+      awards.value.forEach(award => {
+        // 根据奖项状态和时间计算当前阶段
+        let currentStage = '未开始'
+        let currentStatus = '未开始'
+        const now = new Date()
+        const startTime = award.startTime ? new Date(award.startTime) : null
+        const endTime = award.endTime ? new Date(award.endTime) : null
+        
+        if (award.status === '已发布') {
+          if (!startTime || now < startTime) {
+            currentStage = '未开始'
+            currentStatus = '未开始'
+          } else if (endTime && now > endTime) {
+            currentStage = '已结束'
+            currentStatus = '已完成'
+          } else {
+            currentStatus = '进行中'
+            // 这里可以根据实际的申请和审批情况计算更准确的阶段
+            // 暂时根据时间估算阶段
+            if (startTime && endTime) {
+              const totalDuration = endTime.getTime() - startTime.getTime()
+              const elapsedDuration = now.getTime() - startTime.getTime()
+              const progress = Math.min(Math.round((elapsedDuration / totalDuration) * 100), 100)
+              
+              if (progress < 33) {
+                currentStage = '学生申请'
+              } else if (progress < 66) {
+                currentStage = '教师审批'
+              } else {
+                currentStage = '管理员审批'
+              }
+            } else {
+              currentStage = '学生申请'
+            }
+          }
+        } else if (award.status === '已结束') {
+          currentStage = '结果公示'
+          currentStatus = '已完成'
+        }
+        
+        // 将当前阶段和状态保存到奖项对象中
+        award.currentStage = currentStage
+        award.currentStatus = currentStatus
+      })
+      
+      // 更新评选流程列表
+      selectionProcessList.value = awards.value.map(award => ({
+        id: award.id,
+        awardName: award.awardName,
+        currentStage: award.currentStage,
+        progress: calculateProgress(award)
+      }))
+    }
+
+    // 查看奖项详情
+    const handleViewDetails = (award) => {
+      console.log('查看奖项详情:', award)
+      currentDetailAward.value = award
+      detailDialogVisible.value = true
+    }
+
+    // 查看流程详情
+
+    // 查看流程详情
+    const handleViewProcessDetails = (process) => {
+      console.log('查看流程详情:', process)
+      // 这里可以打开流程详情对话框
+      ElMessage.info('查看流程详情功能待实现')
+    }
+
+    // 发布奖项
+    const handlePublish = async (award) => {
+      try {
+        await axios.put(`/api/award-types/${award.id}/publish`)
+        ElMessage.success('奖项发布成功')
+        getAwards()
+      } catch (error) {
+        ElMessage.error('发布失败，请重试')
+      }
     }
 
     // 页面加载时获取数据
+
+
     onMounted(() => {
       getAwards()
       getMajors()
-      getCriteria()
     })
 
     return {
@@ -551,47 +983,40 @@ export default {
       searchForm,
       activeTab,
       majors,
-
-      // 学生筛选
-      filterForm,
-      filterApplied,
-      filteredStudents,
-
-      // 评奖标准管理
-      criteriaDialogVisible,
-      criteriaLoading,
-      criteriaCurrentPage,
-      criteriaPageSize,
-      criteriaTotal,
-      criteria,
-      criteriaForm,
-      criteriaSearchForm,
+      
+      // 评选流程管理
+      selectionProcessList,
+      calculateProgress,
+      
+      // 奖项详情
+      detailDialogVisible,
+      currentDetailAward,
 
       // 角色判断
       hasRole,
 
       // 奖项类型管理方法
       getAwards,
+      handleAdd,
       handleSubmit,
       handleEdit,
       handleDelete,
       handleSearch,
       resetForm,
+      resetEditForm,
       handleSizeChange,
       handleCurrentChange,
+      handlePublish,
+      
+      // 评选流程管理方法
+      getProgressColor,
+      handleViewDetails,
+      handleViewApplications,
+      handleViewProcessDetails,
 
-      // 评奖标准管理方法
-      handleCriteriaSubmit,
-      handleCriteriaEdit,
-      handleCriteriaDelete,
-      handleCriteriaSearch,
-      resetCriteriaForm,
-      handleCriteriaSizeChange,
-      handleCriteriaCurrentChange,
 
-      // 学生筛选方法
-      handleFilter,
-      resetFilter
+
+
     }
   }
 }
@@ -600,6 +1025,14 @@ export default {
 <style scoped>
 .award-container {
   padding: 20px;
+}
+
+/* 评奖评优管理界面样式 */
+.page-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #303133;
 }
 
 .card-header {
@@ -638,6 +1071,117 @@ export default {
   gap: 10px;
 }
 
+/* 奖项卡片样式 */
+.award-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.award-card {
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  border: 1px solid #ebeef5;
+}
+
+.award-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.award-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.award-card-header .award-name {
+  margin: 0;
+  font-size: 16px;
+  color: #303133;
+  font-weight: 600;
+}
+
+.award-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.award-date {
+  font-size: 13px;
+  color: #909399;
+  margin-bottom: 4px;
+}
+
+.award-quota {
+  font-size: 13px;
+  color: #909399;
+  margin-bottom: 4px;
+}
+
+.award-requirement {
+  font-size: 13px;
+  color: #909399;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.award-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.award-actions .el-button {
+  padding: 4px 12px;
+  font-size: 12px;
+}
+
+/* 评选流程表格样式 */
+.process-table-container {
+  border: 1px solid #ebeef5;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+}
+
+.process-table-container .el-table {
+  border: none;
+}
+
+.process-table-container .el-table__header-wrapper th {
+  background-color: #fafafa;
+  font-weight: 600;
+  font-size: 14px;
+  color: #303133;
+}
+
+.process-table-container .el-table__body-wrapper tr:hover > td {
+  background-color: #f5f7fa;
+}
+
+/* 进度条样式 */
+.progress-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.progress-text {
+  margin-left: 10px;
+  font-size: 13px;
+  color: #606266;
+  min-width: 60px;
+}
+
+.el-progress {
+  flex: 1;
+}
+
 @media (max-width: 768px) {
   .award-container {
     padding: 10px;
@@ -646,6 +1190,10 @@ export default {
   .search-form {
     flex-direction: column;
     align-items: stretch;
+  }
+  
+  .award-cards-container {
+    grid-template-columns: 1fr;
   }
 }
 </style>

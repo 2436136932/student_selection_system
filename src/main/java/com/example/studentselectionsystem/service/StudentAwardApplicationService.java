@@ -28,6 +28,24 @@ public interface StudentAwardApplicationService {
     StudentAwardApplication updateApplicationStatus(Integer id, Integer status);
 
     /**
+     * 教师审批申请
+     * @param id 申请ID
+     * @param status 审批状态（1-通过，2-不通过）
+     * @param comments 审批意见
+     * @return 更新后的申请
+     */
+    StudentAwardApplication teacherApproveApplication(Integer id, Integer status, String comments);
+
+    /**
+     * 管理员审批申请
+     * @param id 申请ID
+     * @param status 审批状态（1-通过，2-不通过）
+     * @param comments 审批意见
+     * @return 更新后的申请
+     */
+    StudentAwardApplication adminApproveApplication(Integer id, Integer status, String comments);
+
+    /**
      * 删除申请
      * @param id 申请ID
      */
@@ -60,6 +78,16 @@ public interface StudentAwardApplicationService {
      * @return 申请分页结果
      */
     IPage<StudentAwardApplication> findAllApplications(Page<StudentAwardApplication> page);
+
+    /**
+     * 分页按条件查找申请
+     * @param page 分页参数
+     * @param awardId 奖项ID
+     * @param studentName 学生姓名
+     * @param status 审批状态
+     * @return 申请分页结果
+     */
+    IPage<StudentAwardApplication> findApplicationsByCondition(Page<StudentAwardApplication> page, Integer awardId, String studentName, Integer status);
 
     /**
      * 根据学生ID和奖项ID查找申请

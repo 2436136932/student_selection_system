@@ -15,7 +15,7 @@ import java.util.Date;
  * 学生奖项申请表实体类
  */
 @Data
-@TableName("student_award_application")
+@TableName("student_award_applications")
 public class StudentAwardApplication implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -59,10 +59,48 @@ public class StudentAwardApplication implements Serializable {
     private Date applicationTime;
 
     /**
-     * 状态（0-待审核，1-通过，2-未通过）
+     * 状态（0-待审核，1-通过，2-未通过）- 最终状态
      */
     @TableField("status")
     private Integer status;
+
+    /**
+     * 教师审批状态（0-待审核，1-通过，2-不通过）
+     */
+    @TableField("teacher_approval_status")
+    private Integer teacherApprovalStatus;
+
+    /**
+     * 教师审批时间
+     */
+    @TableField("teacher_approval_time")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date teacherApprovalTime;
+
+    /**
+     * 教师审批意见
+     */
+    @TableField("teacher_approval_comments")
+    private String teacherApprovalComments;
+
+    /**
+     * 管理员审批状态（0-待审核，1-通过，2-不通过）
+     */
+    @TableField("admin_approval_status")
+    private Integer adminApprovalStatus;
+
+    /**
+     * 管理员审批时间
+     */
+    @TableField("admin_approval_time")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date adminApprovalTime;
+
+    /**
+     * 管理员审批意见
+     */
+    @TableField("admin_approval_comments")
+    private String adminApprovalComments;
 
     /**
      * 创建时间
@@ -107,6 +145,30 @@ public class StudentAwardApplication implements Serializable {
         return status;
     }
 
+    public Integer getTeacherApprovalStatus() {
+        return teacherApprovalStatus;
+    }
+
+    public Date getTeacherApprovalTime() {
+        return teacherApprovalTime;
+    }
+
+    public String getTeacherApprovalComments() {
+        return teacherApprovalComments;
+    }
+
+    public Integer getAdminApprovalStatus() {
+        return adminApprovalStatus;
+    }
+
+    public Date getAdminApprovalTime() {
+        return adminApprovalTime;
+    }
+
+    public String getAdminApprovalComments() {
+        return adminApprovalComments;
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
@@ -142,6 +204,30 @@ public class StudentAwardApplication implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public void setTeacherApprovalStatus(Integer teacherApprovalStatus) {
+        this.teacherApprovalStatus = teacherApprovalStatus;
+    }
+
+    public void setTeacherApprovalTime(Date teacherApprovalTime) {
+        this.teacherApprovalTime = teacherApprovalTime;
+    }
+
+    public void setTeacherApprovalComments(String teacherApprovalComments) {
+        this.teacherApprovalComments = teacherApprovalComments;
+    }
+
+    public void setAdminApprovalStatus(Integer adminApprovalStatus) {
+        this.adminApprovalStatus = adminApprovalStatus;
+    }
+
+    public void setAdminApprovalTime(Date adminApprovalTime) {
+        this.adminApprovalTime = adminApprovalTime;
+    }
+
+    public void setAdminApprovalComments(String adminApprovalComments) {
+        this.adminApprovalComments = adminApprovalComments;
     }
 
     public void setCreateTime(Date createTime) {

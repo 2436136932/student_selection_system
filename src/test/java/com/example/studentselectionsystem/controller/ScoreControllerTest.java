@@ -2,8 +2,10 @@ package com.example.studentselectionsystem.controller;
 
 import com.example.studentselectionsystem.entity.Score;
 import com.example.studentselectionsystem.entity.Course;
+import com.example.studentselectionsystem.entity.Student;
 import com.example.studentselectionsystem.service.ScoreService;
 import com.example.studentselectionsystem.service.CourseService;
+import com.example.studentselectionsystem.service.StudentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +33,9 @@ public class ScoreControllerTest {
     
     @Mock
     private CourseService courseService;
+    
+    @Mock
+    private StudentService studentService;
 
     @InjectMocks
     private ScoreController scoreController;
@@ -69,7 +74,13 @@ public class ScoreControllerTest {
         course.setName("计算机导论");
         course.setCode("CS101");
 
+        // 模拟学生对象
+        Student student = new Student();
+        student.setId(4L);
+        student.setName("测试学生");
+        
         // 模拟服务层行为
+        when(studentService.findStudentById(4L)).thenReturn(Optional.of(student));
         when(courseService.findCourseById(1L)).thenReturn(Optional.of(course));
         when(scoreService.createScore(any(Score.class))).thenReturn(createdScore);
 
@@ -113,7 +124,13 @@ public class ScoreControllerTest {
         createdScore.setExamScore(BigDecimal.valueOf(90));
         createdScore.setSemester("2024-2025秋季");
 
+        // 模拟学生对象
+        Student student = new Student();
+        student.setId(4L);
+        student.setName("测试学生");
+        
         // 模拟服务层行为
+        when(studentService.findStudentById(4L)).thenReturn(Optional.of(student));
         when(courseService.findCourseByCode("CS101")).thenReturn(Optional.of(course));
         when(scoreService.createScore(any(Score.class))).thenReturn(createdScore);
 
