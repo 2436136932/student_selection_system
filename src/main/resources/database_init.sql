@@ -225,17 +225,17 @@ UPDATE students SET user_id = (SELECT id FROM users WHERE username = 'student2')
 UPDATE students SET user_id = (SELECT id FROM users WHERE username = 'student3') WHERE student_number = 'S003';
 
 -- 创建索引
-CREATE INDEX idx_students_major ON students(major);
-CREATE INDEX idx_students_class_name ON students(class_name);
-CREATE INDEX idx_courses_department ON courses(department);
-CREATE INDEX idx_courses_teacher_id ON courses(teacher_id);
-CREATE INDEX idx_courses_semester ON courses(semester);
-CREATE INDEX idx_scores_student_id ON scores(student_id);
-CREATE INDEX idx_scores_course_id ON scores(course_id);
-CREATE INDEX idx_scores_total_score ON scores(total_score);
-CREATE INDEX idx_student_awards_student_id ON student_awards(student_id);
-CREATE INDEX idx_student_awards_award_id ON student_awards(award_id);
-CREATE INDEX idx_student_awards_award_year ON student_awards(award_year);
+CREATE INDEX IF NOT EXISTS idx_students_major ON students(major);
+CREATE INDEX IF NOT EXISTS idx_students_class_name ON students(class_name);
+CREATE INDEX IF NOT EXISTS idx_courses_department ON courses(department);
+CREATE INDEX IF NOT EXISTS idx_courses_teacher_id ON courses(teacher_id);
+CREATE INDEX IF NOT EXISTS idx_courses_semester ON courses(semester);
+CREATE INDEX IF NOT EXISTS idx_scores_student_id ON scores(student_id);
+CREATE INDEX IF NOT EXISTS idx_scores_course_id ON scores(course_id);
+CREATE INDEX IF NOT EXISTS idx_scores_total_score ON scores(total_score);
+CREATE INDEX IF NOT EXISTS idx_student_awards_student_id ON student_awards(student_id);
+CREATE INDEX IF NOT EXISTS idx_student_awards_award_id ON student_awards(award_id);
+CREATE INDEX IF NOT EXISTS idx_student_awards_award_year ON student_awards(award_year);
 
 --密码本
 --账号testuser2 密码testpassword2

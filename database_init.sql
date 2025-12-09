@@ -225,17 +225,17 @@ UPDATE students SET user_id = (SELECT id FROM users WHERE username = 'student2')
 UPDATE students SET user_id = (SELECT id FROM users WHERE username = 'student3') WHERE student_number = 'S003';
 
 -- 创建索引
-CREATE INDEX idx_students_major ON students(major);
-CREATE INDEX idx_students_class_name ON students(class_name);
-CREATE INDEX idx_courses_department ON courses(department);
-CREATE INDEX idx_courses_teacher_id ON courses(teacher_id);
-CREATE INDEX idx_courses_semester ON courses(semester);
-CREATE INDEX idx_scores_student_id ON scores(student_id);
-CREATE INDEX idx_scores_course_id ON scores(course_id);
-CREATE INDEX idx_scores_total_score ON scores(total_score);
-CREATE INDEX idx_student_awards_student_id ON student_awards(student_id);
-CREATE INDEX idx_student_awards_award_id ON student_awards(award_id);
-CREATE INDEX idx_student_awards_award_year ON student_awards(award_year);
+CREATE INDEX IF NOT EXISTS idx_students_major ON students(major);
+CREATE INDEX IF NOT EXISTS idx_students_class_name ON students(class_name);
+CREATE INDEX IF NOT EXISTS idx_courses_department ON courses(department);
+CREATE INDEX IF NOT EXISTS idx_courses_teacher_id ON courses(teacher_id);
+CREATE INDEX IF NOT EXISTS idx_courses_semester ON courses(semester);
+CREATE INDEX IF NOT EXISTS idx_scores_student_id ON scores(student_id);
+CREATE INDEX IF NOT EXISTS idx_scores_course_id ON scores(course_id);
+CREATE INDEX IF NOT EXISTS idx_scores_total_score ON scores(total_score);
+CREATE INDEX IF NOT EXISTS idx_student_awards_student_id ON student_awards(student_id);
+CREATE INDEX IF NOT EXISTS idx_student_awards_award_id ON student_awards(award_id);
+CREATE INDEX IF NOT EXISTS idx_student_awards_award_year ON student_awards(award_year);
 
 -- 创建standards表用于存储评奖标准信息
 CREATE TABLE IF NOT EXISTS standards (
@@ -251,10 +251,42 @@ CREATE TABLE IF NOT EXISTS standards (
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 ) COMMENT '评奖标准表';
 
+-- 创建events表用于存储评选活动信息
+CREATE TABLE IF NOT EXISTS events (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '活动ID',
+    event_name VARCHAR(100) NOT NULL COMMENT '活动名称',
+    status VARCHAR(20) NOT NULL COMMENT '活动状态：进行中/已完成/待开始/已逾期',
+    deadline DATETIME NOT NULL COMMENT '截止日期',
+    description TEXT COMMENT '活动描述',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评选活动表';
+
+-- 创建notices表用于存储通知信息
+CREATE TABLE IF NOT EXISTS notices (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '通知ID',
+    title VARCHAR(100) NOT NULL COMMENT '通知标题',
+    content TEXT NOT NULL COMMENT '通知内容',
+    publisher_id BIGINT NOT NULL COMMENT '发布人ID',
+    publisher_name VARCHAR(50) NOT NULL COMMENT '发布人姓名',
+    publish_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    status TINYINT DEFAULT 1 COMMENT '状态：1-已发布，0-未发布'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='通知表';
+
 -- 添加standards表索引
-CREATE INDEX idx_standards_semester ON standards(semester);
-CREATE INDEX idx_standards_code ON standards(code);
-CREATE INDEX idx_standards_name ON standards(name);
+CREATE INDEX IF NOT EXISTS idx_standards_semester ON standards(semester);
+CREATE INDEX IF NOT EXISTS idx_standards_code ON standards(code);
+CREATE INDEX IF NOT EXISTS idx_standards_name ON standards(name);
+
+-- 添加events表索引
+CREATE INDEX IF NOT EXISTS idx_events_status ON events(status);
+CREATE INDEX IF NOT EXISTS idx_events_deadline ON events(deadline);
+
+-- 添加notices表索引
+CREATE INDEX IF NOT EXISTS idx_notices_status ON notices(status);
+CREATE INDEX IF NOT EXISTS idx_notices_publisher_id ON notices(publisher_id);
+CREATE INDEX IF NOT EXISTS idx_notices_publish_time ON notices(publish_time);
 
 --密码本
 --账号testuser2 密码testpassword2

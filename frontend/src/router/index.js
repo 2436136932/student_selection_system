@@ -56,6 +56,12 @@ const router = createRouter({
       name: 'StudentAwardApplications',
       component: () => import('../views/StudentAwardApplicationView.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/notices',
+      name: 'Notices',
+      component: () => import('../views/NoticeView.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })

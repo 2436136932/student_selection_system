@@ -107,7 +107,8 @@ import {
   Menu, 
   ArrowDown,
   Setting,
-  SwitchButton
+  SwitchButton,
+  Bell
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -133,6 +134,7 @@ const menuItems = [
   { index: '/scores', icon: DataLine, text: '成绩管理', roles: ['admin', 'teacher', 'student'] },
   { index: '/awards', icon: Medal, text: '评奖评优', roles: ['admin', 'teacher', 'student'] },
   { index: '/student-award-applications', icon: Document, text: '奖项申请', roles: ['admin', 'teacher', 'student'] },
+  { index: '/notices', icon: Bell, text: '通知管理', roles: ['admin'] },
   { index: '/users', icon: User, text: '用户管理', roles: ['admin'] }
 ]
 
@@ -144,6 +146,7 @@ const menuMap = {
   '/scores': '成绩管理',
   '/awards': '评奖评优',
   '/student-award-applications': '奖项申请',
+  '/notices': '通知管理',
   '/users': '用户管理'
 }
 
