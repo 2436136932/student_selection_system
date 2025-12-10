@@ -87,4 +87,12 @@ public interface StudentRepository extends BaseMapper<Student> {
     @Select("SELECT * FROM students")
     List<Student> selectAllWithMajor();
 
+    /**
+     * 根据用户ID查找学生
+     * @param userId 用户ID
+     * @return 学生信息
+     */
+    @Select("SELECT * FROM students WHERE user_id = #{userId}")
+    Optional<Student> selectByUserId(@Param("userId") Long userId);
+
 }

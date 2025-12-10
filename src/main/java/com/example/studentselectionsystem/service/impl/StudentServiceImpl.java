@@ -41,7 +41,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student createStudent(Student student) {
         // 检查学号是否已存在
-        if (existsByStudentId(student.getStudentNumber())) {
+        if (existsByStudentNumber(student.getStudentNumber())) {
             throw new RuntimeException("学号已存在");
         }
         // 设置创建时间和更新时间
@@ -105,8 +105,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Optional<Student> findStudentByStudentId(String studentId) {
-        return studentRepository.selectByStudentId(studentId);
+    public Optional<Student> findStudentByStudentNumber(String studentNumber) {
+        return studentRepository.selectByStudentId(studentNumber);
     }
 
     @Override
@@ -180,8 +180,13 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public boolean existsByStudentId(String studentId) {
-        return studentRepository.existsByStudentId(studentId);
+    public boolean existsByStudentNumber(String studentNumber) {
+        return studentRepository.existsByStudentId(studentNumber);
+    }
+
+    @Override
+    public Optional<Student> findStudentByUserId(Long userId) {
+        return studentRepository.selectByUserId(userId);
     }
 
 

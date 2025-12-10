@@ -193,6 +193,7 @@ CREATE TABLE IF NOT EXISTS student_award_applications (
     student_id BIGINT NOT NULL COMMENT '学生ID',
     award_id BIGINT NOT NULL COMMENT '奖项ID',
     application_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '申请时间',
+    description VARCHAR(255) NULL COMMENT '申请理由',
     status TINYINT NOT NULL DEFAULT 0 COMMENT '状态：0-待审核, 1-教师审核通过，待管理员审批, 2-教师审核拒绝, 3-管理员审批通过, 4-管理员审批拒绝',
     teacher_approval_status TINYINT DEFAULT 0 COMMENT '教师审批状态：0-待审核, 1-通过, 2-不通过',
     teacher_approval_time DATETIME COMMENT '教师审批时间',

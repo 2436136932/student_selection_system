@@ -110,10 +110,10 @@ public class StudentController {
     /**
      * 根据学号查找学生
      */
-    @GetMapping("/student-id/{studentId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or authentication.principal.username == #studentId")
-    public ResponseEntity<Student> findStudentByStudentId(@PathVariable String studentId) {
-        Optional<Student> optionalStudent = studentService.findStudentByStudentId(studentId);
+    @GetMapping("/id/{studentNumber}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or authentication.principal.username == #studentNumber")
+    public ResponseEntity<Student> findStudentByStudentNumber(@PathVariable String studentNumber) {
+        Optional<Student> optionalStudent = studentService.findStudentByStudentNumber(studentNumber);
         return optionalStudent.map(student -> new ResponseEntity<>(student, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -190,9 +190,9 @@ public class StudentController {
     /**
      * 检查学号是否已存在
      */
-    @GetMapping("/check-student-id/{studentId}")
-    public ResponseEntity<Boolean> checkStudentIdExists(@PathVariable String studentId) {
-        boolean exists = studentService.existsByStudentId(studentId);
+    @GetMapping("/check-student-id/{studentNumber}")
+    public ResponseEntity<Boolean> checkStudentNumberExists(@PathVariable String studentNumber) {
+        boolean exists = studentService.existsByStudentNumber(studentNumber);
         return new ResponseEntity<>(exists, HttpStatus.OK);
     }
 

@@ -54,10 +54,17 @@ public interface StudentService {
 
     /**
      * 根据学号查找学生
-     * @param studentId 学号
+     * @param studentNumber 学号
      * @return 学生信息
      */
-    Optional<Student> findStudentByStudentId(String studentId);
+    Optional<Student> findStudentByStudentNumber(String studentNumber);
+
+    /**
+     * 根据用户ID查找学生
+     * @param userId 用户ID
+     * @return 学生信息
+     */
+    Optional<Student> findStudentByUserId(Long userId);
 
     /**
      * 根据姓名查找学生
@@ -115,10 +122,10 @@ public interface StudentService {
 
     /**
      * 检查学号是否已存在
-     * @param studentId 学号
+     * @param studentNumber 学号
      * @return 是否存在
      */
-    boolean existsByStudentId(String studentId);
+    boolean existsByStudentNumber(String studentNumber);
 
     /**
      * 分页获取学生

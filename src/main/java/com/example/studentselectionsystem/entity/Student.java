@@ -2,6 +2,7 @@ package com.example.studentselectionsystem.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -27,6 +28,7 @@ public class Student implements Serializable {
      * 学号
      */
     @TableField("student_number")
+    @JsonProperty("student_number")
     private String studentNumber;
 
     /**

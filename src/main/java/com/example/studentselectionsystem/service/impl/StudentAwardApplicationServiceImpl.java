@@ -107,10 +107,29 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     @Override
     public List<StudentAwardApplication> findApplicationsByStudentId(Long studentId) {
         // 使用MyBatis-Plus的Lambda条件构造器查询
-        return studentAwardApplicationMapper.selectList(
+        List<StudentAwardApplication> applications = studentAwardApplicationMapper.selectList(
                 new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
                         .eq(StudentAwardApplication::getStudentId, studentId)
         );
+        
+        // 加载学生信息
+        for (StudentAwardApplication application : applications) {
+            Optional<Student> studentOptional = studentService.findStudentById(application.getStudentId());
+            if (studentOptional.isPresent()) {
+                application.setStudent(studentOptional.get());
+            }
+        }
+        
+        return applications;
+    }
+
+    @Override
+    public List<StudentAwardApplication> findApplicationsByStudentNumber(String studentNumber) {
+        Optional<Student> studentOptional = studentService.findStudentByStudentNumber(studentNumber);
+        if (studentOptional.isPresent()) {
+            return findApplicationsByStudentId(studentOptional.get().getId());
+        }
+        return new ArrayList<>();
     }
 
     @Override
@@ -121,6 +140,11 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
         );
     }
 
+    @Override
+    public List<StudentAwardApplication> findAllApplications() {
+        return studentAwardApplicationMapper.selectList(null);
+    }
+    
     @Override
     public IPage<StudentAwardApplication> findAllApplications(Page<StudentAwardApplication> page) {
         return studentAwardApplicationMapper.selectPage(page, null);
@@ -198,12 +222,30 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     }
 
     @Override
+    public Optional<StudentAwardApplication> findApplicationByStudentNumberAndAward(String studentNumber, Integer awardId) {
+        Optional<Student> studentOptional = studentService.findStudentByStudentNumber(studentNumber);
+        if (studentOptional.isPresent()) {
+            return findApplicationByStudentAndAward(studentOptional.get().getId(), awardId);
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public boolean checkStudentApplicationExists(Long studentId, Integer awardId) {
         return studentAwardApplicationMapper.exists(
                 new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
                         .eq(StudentAwardApplication::getStudentId, studentId)
                         .eq(StudentAwardApplication::getAwardId, awardId)
         );
+    }
+
+    @Override
+    public boolean checkStudentApplicationExistsByStudentNumber(String studentNumber, Integer awardId) {
+        Optional<Student> studentOptional = studentService.findStudentByStudentNumber(studentNumber);
+        if (studentOptional.isPresent()) {
+            return checkStudentApplicationExists(studentOptional.get().getId(), awardId);
+        }
+        return false;
     }
 
     @Override

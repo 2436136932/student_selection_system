@@ -25,7 +25,7 @@ public class User implements Serializable {
      * 用户ID
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 用户名
@@ -95,14 +95,14 @@ public class User implements Serializable {
      */
     @TableField(exist = false)
     @JsonIgnore
-    private List<Integer> roleIds;
+    private List<Long> roleIds;
 
     // Getter and Setter methods
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -186,11 +186,11 @@ public class User implements Serializable {
         this.roles = roles;
     }
 
-    public List<Integer> getRoleIds() {
+    public List<Long> getRoleIds() {
         return roleIds;
     }
 
-    public void setRoleIds(List<Integer> roleIds) {
+    public void setRoleIds(List<Long> roleIds) {
         this.roleIds = roleIds;
     }
 }

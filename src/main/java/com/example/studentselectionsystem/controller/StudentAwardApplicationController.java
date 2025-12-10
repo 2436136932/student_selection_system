@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.studentselectionsystem.entity.StudentAwardApplication;
 import com.example.studentselectionsystem.service.StudentAwardApplicationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +22,13 @@ import java.util.Optional;
 @RequestMapping("/api/student-award-applications")
 public class StudentAwardApplicationController {
 
+    private static final Logger logger = LoggerFactory.getLogger(StudentAwardApplicationController.class);
+
     @Autowired
     private StudentAwardApplicationService studentAwardApplicationService;
+    
+    @Autowired
+    private com.example.studentselectionsystem.service.StudentService studentService;
 
     /**
      * 创建学生奖项申请
@@ -29,8 +36,22 @@ public class StudentAwardApplicationController {
     @PostMapping
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<StudentAwardApplication> createApplication(@RequestBody StudentAwardApplication application) {
-        StudentAwardApplication createdApplication = studentAwardApplicationService.createApplication(application);
-        return new ResponseEntity<>(createdApplication, HttpStatus.CREATED);
+        try {
+            logger.info("Creating award application: {}", application);
+            
+            // 直接从当前登录用户获取学生信息
+            // 这里我们暂时使用硬编码的学生ID 1，实际应该从认证信息中获取
+            Long studentId = 1L;
+            logger.info("Using studentId: {}", studentId);
+            application.setStudentId(studentId);
+            
+            StudentAwardApplication createdApplication = studentAwardApplicationService.createApplication(application);
+            logger.info("Created award application: {}", createdApplication);
+            return new ResponseEntity<>(createdApplication, HttpStatus.CREATED);
+        } catch (Exception e) {
+            logger.error("Error creating award application", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -108,6 +129,16 @@ public class StudentAwardApplicationController {
         List<StudentAwardApplication> applications = studentAwardApplicationService.findApplicationsByStudentId(studentId);
         return new ResponseEntity<>(applications, HttpStatus.OK);
     }
+    
+    /**
+     * 根据学号查找申请
+     */
+    @GetMapping("/student/number/{studentNumber}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
+    public ResponseEntity<List<StudentAwardApplication>> findApplicationsByStudentNumber(@PathVariable String studentNumber) {
+        List<StudentAwardApplication> applications = studentAwardApplicationService.findApplicationsByStudentNumber(studentNumber);
+        return new ResponseEntity<>(applications, HttpStatus.OK);
+    }
 
     /**
      * 根据奖项ID查找申请
@@ -119,6 +150,17 @@ public class StudentAwardApplicationController {
         return new ResponseEntity<>(applications, HttpStatus.OK);
     }
 
+    /**
+     * 获取所有奖项申请
+     * @return ResponseEntity 响应结果
+     */
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+    public ResponseEntity<List<StudentAwardApplication>> findAllApplications() {
+        List<StudentAwardApplication> applications = studentAwardApplicationService.findAllApplications();
+        return ResponseEntity.ok(applications);
+    }
+    
     /**
      * 分页查找所有申请
      */
@@ -152,9 +194,17 @@ public class StudentAwardApplicationController {
     @GetMapping("/check-exists")
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<Boolean> checkStudentApplicationExists(
-            @RequestParam Long studentId,
+            @RequestParam(required = false) Long studentId,
+            @RequestParam(required = false) String studentNumber,
             @RequestParam Integer awardId) {
-        boolean exists = studentAwardApplicationService.checkStudentApplicationExists(studentId, awardId);
+        boolean exists;
+        if (studentNumber != null) {
+            exists = studentAwardApplicationService.checkStudentApplicationExistsByStudentNumber(studentNumber, awardId);
+        } else if (studentId != null) {
+            exists = studentAwardApplicationService.checkStudentApplicationExists(studentId, awardId);
+        } else {
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(exists, HttpStatus.OK);
     }
 

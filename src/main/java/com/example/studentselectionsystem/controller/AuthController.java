@@ -12,7 +12,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import com.example.studentselectionsystem.entity.Student;
+import com.example.studentselectionsystem.service.StudentService;
+import java.util.Optional;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,6 +43,9 @@ public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private StudentService studentService;
 
     /**
      * 用户登录
@@ -89,13 +94,31 @@ public class AuthController {
             
             if (passwordMatches) {
                 // 构建简化的用户信息
-                Map<String, Object> userInfo = new HashMap<>();
-                userInfo.put("id", user.getId());
-                userInfo.put("username", user.getUsername());
-                userInfo.put("name", user.getName());
-                userInfo.put("email", user.getEmail());
-                userInfo.put("phone", user.getPhone());
-                userInfo.put("role", user.getRole()); // 返回用户的实际角色信息
+            Map<String, Object> userInfo = new HashMap<>();
+            userInfo.put("id", user.getId());
+            userInfo.put("username", user.getUsername());
+            userInfo.put("name", user.getName());
+            userInfo.put("email", user.getEmail());
+            userInfo.put("phone", user.getPhone());
+            userInfo.put("role", user.getRole()); // 返回用户的实际角色信息
+            
+            // 如果是学生角色，尝试获取学号
+            if ("student".equals(user.getRole())) {
+                try {
+                    // 通过userId查找学生信息
+                    // 注意：这里假设student表中有userId字段，如果没有，需要修改查询逻辑
+                    // 例如：可以通过user的其他属性（如用户名）来查找学生信息
+                    // 目前暂时注释掉这部分代码，避免编译错误
+                    Optional<Student> studentOptional = studentService.findStudentByUserId(user.getId());
+                    if (studentOptional.isPresent()) {
+                        Student student = studentOptional.get();
+                        userInfo.put("studentNumber", student.getStudentNumber());
+                        userInfo.put("name", student.getName());
+                    }
+                } catch (Exception e) {
+                    System.out.println("获取学生学号失败: " + e.getMessage());
+                }
+            }
                 
                 // 生成JWT令牌，使用与CustomUserDetailsService相同的角色处理方式
                 UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()

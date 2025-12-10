@@ -64,6 +64,8 @@ public interface StudentAwardApplicationService {
      * @return 申请列表
      */
     List<StudentAwardApplication> findApplicationsByStudentId(Long studentId);
+    
+    List<StudentAwardApplication> findApplicationsByStudentNumber(String studentNumber);
 
     /**
      * 根据奖项ID查找申请
@@ -72,6 +74,12 @@ public interface StudentAwardApplicationService {
      */
     List<StudentAwardApplication> findApplicationsByAwardId(Integer awardId);
 
+    /**
+     * 查找所有申请
+     * @return 申请列表
+     */
+    List<StudentAwardApplication> findAllApplications();
+    
     /**
      * 分页查找所有申请
      * @param page 分页参数
@@ -96,6 +104,8 @@ public interface StudentAwardApplicationService {
      * @return 申请信息
      */
     Optional<StudentAwardApplication> findApplicationByStudentAndAward(Long studentId, Integer awardId);
+    
+    Optional<StudentAwardApplication> findApplicationByStudentNumberAndAward(String studentNumber, Integer awardId);
 
     /**
      * 检查学生是否已申请该奖项
@@ -104,6 +114,8 @@ public interface StudentAwardApplicationService {
      * @return 是否已申请
      */
     boolean checkStudentApplicationExists(Long studentId, Integer awardId);
+    
+    boolean checkStudentApplicationExistsByStudentNumber(String studentNumber, Integer awardId);
 
     /**
      * 获取所有申请总数

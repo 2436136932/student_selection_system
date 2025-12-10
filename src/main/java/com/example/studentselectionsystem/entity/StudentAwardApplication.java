@@ -58,6 +58,12 @@ public class StudentAwardApplication implements Serializable {
     private Date applicationTime;
 
     /**
+     * 申请理由
+     */
+    @TableField("description")
+    private String description;
+
+    /**
      * 状态（0-待审核，1-通过，2-未通过）- 最终状态
      */
     @TableField("status")
@@ -140,6 +146,10 @@ public class StudentAwardApplication implements Serializable {
         return applicationTime;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public Integer getStatus() {
         return status;
     }
@@ -199,6 +209,10 @@ public class StudentAwardApplication implements Serializable {
 
     public void setApplicationTime(Date applicationTime) {
         this.applicationTime = applicationTime;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setStatus(Integer status) {

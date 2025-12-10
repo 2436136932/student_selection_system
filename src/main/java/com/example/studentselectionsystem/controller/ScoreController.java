@@ -56,7 +56,7 @@ public class ScoreController {
             if (score.getStudentNumber() != null && !score.getStudentNumber().isEmpty()) {
                 String studentNumber = score.getStudentNumber();
                 System.out.println("正在根据学号查询学生: " + studentNumber);
-                Student student = studentService.findStudentByStudentId(studentNumber).orElseThrow(() -> new RuntimeException("Student not found"));
+                Student student = studentService.findStudentByStudentNumber(studentNumber).orElseThrow(() -> new RuntimeException("Student not found"));
                 System.out.println("查询到的学生: ID=" + student.getId() + ", 姓名=" + student.getName());
                 score.setStudentId(student.getId());
             } else if (score.getStudentId() != null) {

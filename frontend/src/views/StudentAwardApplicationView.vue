@@ -32,7 +32,9 @@
 
         <el-table :data="applications" style="width: 100%" stripe v-loading="loading">
           <el-table-column prop="id" label="申请ID" width="100"></el-table-column>
-          <el-table-column prop="studentId" label="学生学号" width="120"></el-table-column>
+          <el-table-column prop="student.student_number" label="学生学号" width="120">
+      <template #default="scope">{{ scope.row.student?.student_number }}</template>
+    </el-table-column>
           <el-table-column prop="award.awardName" label="奖项名称" width="180">
             <template #default="scope">{{ scope.row.award?.awardName || '未知奖项' }}</template>
           </el-table-column>
@@ -131,8 +133,8 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="学生学号" prop="studentId">
-          <el-input v-model="form.studentId" placeholder="请输入学生学号" readonly :disabled="true"></el-input>
+        <el-form-item label="学生学号" prop="studentNumber">
+          <el-input v-model="form.studentNumber" placeholder="请输入学生学号" readonly :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="申请理由" prop="description">
           <el-input v-model="form.description" type="textarea" placeholder="请输入申请理由" rows="4"></el-input>
@@ -186,7 +188,7 @@ const searchForm = reactive({
 
 const form = reactive({
   id: '',
-  studentId: getUserInfo().id || '',
+  studentNumber: getUserInfo().studentNumber || getUserInfo().id || '',
   awardId: '',
   description: ''
 })
@@ -229,7 +231,9 @@ const getApplications = () => {
   
   // 如果是学生角色，只获取当前学生的申请
   if (isStudent.value) {
-    apiPath += `/student/${getUserInfo().id}`
+    // 使用学号获取申请列表
+    const userInfo = getUserInfo()
+    apiPath += `/student/number/${userInfo.studentNumber || userInfo.id}`
   } else {
     apiPath += '/page'
   }
@@ -260,7 +264,8 @@ const getApplications = () => {
 // 获取奖项列表
 const getAwards = () => {
   axios.get('/api/awards').then(response => {
-    awards.value = response.data.content || response.data
+    // 后端返回的是分页对象，需要获取records数组
+    awards.value = response.data.records || response.data.content || response.data
   }).catch(error => {
     ElMessage.error('获取奖项列表失败')
     console.error('Error fetching awards:', error)
@@ -315,8 +320,11 @@ const handleSubmit = () => {
     
     // 提交申请
     axios.post('/api/student-award-applications', {
-      studentId: form.studentId,
-      awardId: form.awardId
+      student: {
+        studentNumber: form.studentNumber  // 这里form.studentNumber是学号
+      },
+      awardId: form.awardId,
+      description: form.description  // 添加申请理由
     }).then(response => {
       ElMessage.success('申请奖项成功')
       dialogVisible.value = false
@@ -335,7 +343,7 @@ const handleSubmit = () => {
 const checkApplicationExists = () => {
   return axios.get('/api/student-award-applications/check-exists', {
     params: {
-      studentId: form.studentId,
+      studentNumber: form.studentNumber,  // 这里form.studentNumber是学号
       awardId: form.awardId
     }
   }).then(response => {
