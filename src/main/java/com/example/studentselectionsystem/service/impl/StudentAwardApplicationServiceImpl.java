@@ -128,6 +128,7 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
 
     @Override
     public IPage<StudentAwardApplication> findApplicationsByCondition(Page<StudentAwardApplication> page, Integer awardId, String studentName, Integer status) {
+        System.out.println("收到查询学生申请列表请求，参数：awardId=" + awardId + ", studentName=" + studentName + ", status=" + status + ", pageNum=" + page.getCurrent() + ", pageSize=" + page.getSize());
         // 使用MyBatis-Plus的Lambda条件构造器构建查询条件
         com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication> wrapper = 
             new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<>();

@@ -1,5 +1,7 @@
 package com.example.studentselectionsystem.model;
 
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +31,26 @@ public class Award {
     private String awardLevel;
     
     /**
+     * 奖项类型
+     */
+    private String awardType;
+    
+    /**
+     * 评奖要求
+     */
+    private String requirement;
+    
+    /**
+     * 名额
+     */
+    private Integer quota;
+    
+    /**
+     * 开始时间
+     */
+    private Date startTime;
+    
+    /**
      * 评选年份
      */
     private String year;
@@ -38,6 +60,21 @@ public class Award {
      */
     private String description;
     
+    /**
+     * 当前状态：待开始/进行中/已完成/已关闭
+     */
+    private String currentStatus;
+    
+    /**
+     * 奖项状态：未发布/已发布/已结束
+     */
+    private String status;
+    
+    /**
+     * 截止时间
+     */
+    private Date endTime;
+    
     // Constructor with all arguments
     public Award(String awardId, String studentId, String awardName, String awardLevel, String year, String description) {
         this.awardId = awardId;
@@ -46,6 +83,18 @@ public class Award {
         this.awardLevel = awardLevel;
         this.year = year;
         this.description = description;
+    }
+    
+    // Constructor with all fields including currentStatus and endTime
+    public Award(String awardId, String studentId, String awardName, String awardLevel, String year, String description, String currentStatus, Date endTime) {
+        this.awardId = awardId;
+        this.studentId = studentId;
+        this.awardName = awardName;
+        this.awardLevel = awardLevel;
+        this.year = year;
+        this.description = description;
+        this.currentStatus = currentStatus;
+        this.endTime = endTime;
     }
     
     // No-argument constructor
@@ -99,5 +148,61 @@ public class Award {
     
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public String getCurrentStatus() {
+        return currentStatus;
+    }
+    
+    public void setCurrentStatus(String currentStatus) {
+        this.currentStatus = currentStatus;
+    }
+    
+    public Date getEndTime() {
+        return endTime;
+    }
+    
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+    
+    public String getAwardType() {
+        return awardType;
+    }
+    
+    public void setAwardType(String awardType) {
+        this.awardType = awardType;
+    }
+    
+    public String getRequirement() {
+        return requirement;
+    }
+    
+    public void setRequirement(String requirement) {
+        this.requirement = requirement;
+    }
+    
+    public Integer getQuota() {
+        return quota;
+    }
+    
+    public void setQuota(Integer quota) {
+        this.quota = quota;
+    }
+    
+    public Date getStartTime() {
+        return startTime;
+    }
+    
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+    
+    public String getStatus() {
+        return status;
+    }
+    
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

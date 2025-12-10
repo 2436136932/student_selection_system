@@ -1,4 +1,5 @@
 -- 创建数据库
+DROP DATABASE IF EXISTS student_selection_system;
 CREATE DATABASE IF NOT EXISTS student_selection_system DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 USE student_selection_system;
@@ -120,6 +121,21 @@ CREATE TABLE IF NOT EXISTS awards (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='奖项表';
 
+
+
+-- 通知表
+CREATE TABLE IF NOT EXISTS notices (
+    id INT PRIMARY KEY AUTO_INCREMENT COMMENT '通知ID',
+    title VARCHAR(100) NOT NULL COMMENT '通知标题',
+    content TEXT NOT NULL COMMENT '通知内容',
+    publisher_id BIGINT NOT NULL COMMENT '发布人ID',
+    publisher_name VARCHAR(50) NOT NULL COMMENT '发布人姓名',
+    publish_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    status INT DEFAULT 1 COMMENT '状态（0：未发布，1：已发布）',
+    type VARCHAR(20) DEFAULT 'info' COMMENT '通知类型：info/warning/error'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='通知表';
+
 -- 专业表
 CREATE TABLE IF NOT EXISTS majors (
     id INT PRIMARY KEY AUTO_INCREMENT COMMENT '专业ID',
@@ -173,7 +189,7 @@ CREATE TABLE IF NOT EXISTS selection_criteria (
 
 -- 创建学生奖项申请表
 CREATE TABLE IF NOT EXISTS student_award_applications (
-    application_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID',
+    application_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID',
     student_id BIGINT NOT NULL COMMENT '学生ID',
     award_id BIGINT NOT NULL COMMENT '奖项ID',
     application_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '申请时间',
@@ -216,7 +232,31 @@ CREATE TABLE IF NOT EXISTS selection_result (
     FOREIGN KEY (application_id) REFERENCES student_award_applications(application_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评选结果表';
 
--- 插入初始数据
+-- 插入初始数据（先清空相关表）
+-- 禁用外键约束检查
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- 先清空有外键依赖的表（按依赖关系从下往上清空）
+TRUNCATE TABLE selections;
+TRUNCATE TABLE scores;
+TRUNCATE TABLE student_awards;
+TRUNCATE TABLE student_award_applications;
+TRUNCATE TABLE selection_result;
+TRUNCATE TABLE selection_criteria;
+
+-- 然后清空没有直接外键被引用的表
+TRUNCATE TABLE students;
+TRUNCATE TABLE teachers;
+TRUNCATE TABLE courses;
+TRUNCATE TABLE awards;
+
+TRUNCATE TABLE notices;
+TRUNCATE TABLE users;
+TRUNCATE TABLE majors;
+
+-- 启用外键约束检查
+SET FOREIGN_KEY_CHECKS = 1;
+
 -- 插入管理员用户 (密码为: adminpassword)
 INSERT INTO users (username, password, role, real_name, email, phone, status) VALUES
 ('admin', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'admin', '系统管理员', 'admin@example.com', '13800138000', 1);
@@ -247,6 +287,7 @@ INSERT INTO students (student_number, name, gender, birth_date, major, class_nam
 ('S003', '孙同学', '男', '2002-03-03', '物理学', '物理2001', 2020, '13800138003', 'sunstudent@example.com', 1);
 
 -- 插入学生用户账号（密码为: 123456）
+-- 注意：这里不需要TRUNCATE TABLE users，因为我们已经在前面清空过了
 INSERT INTO users (username, password, role, real_name, email, phone, status) VALUES
 ('student1', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '赵同学', 'zhaostudent@example.com', '13800138001', 1),
 ('student2', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '钱同学', 'qianstudent@example.com', '13800138002', 1),
@@ -257,22 +298,36 @@ UPDATE students SET user_id = (SELECT id FROM users WHERE username = 'student1')
 UPDATE students SET user_id = (SELECT id FROM users WHERE username = 'student2') WHERE student_number = 'S002';
 UPDATE students SET user_id = (SELECT id FROM users WHERE username = 'student3') WHERE student_number = 'S003';
 
+
+
+-- 插入示例通知数据
+INSERT INTO notices (title, content, publisher_id, publisher_name, publish_time, status, type) VALUES
+('2025年校级奖学金评选开始通知', '各位同学：2025年校级奖学金评选工作已经开始，请符合条件的同学及时申请。申请截止时间：2025年9月15日。', 1, '系统管理员', '2025-09-01 09:00:00', 1, 'info'),
+('关于规范学生评优材料提交的通知', '为确保评优工作的公平公正，现将评优材料提交要求进行规范，请各位同学认真阅读并按照要求提交材料。', 1, '系统管理员', '2025-09-02 10:30:00', 1, 'warning'),
+('2024年度奖学金发放通知', '2024年度奖学金已经发放，请各位获奖同学及时查收。如有疑问，请联系学生工作处。', 1, '系统管理员', '2025-01-10 14:00:00', 1, 'info'),
+('评优系统使用说明', '为方便各位同学使用评优系统，现将系统使用方法和注意事项进行说明，请大家仔细阅读。', 1, '系统管理员', '2025-08-20 09:00:00', 1, 'info'),
+('关于推迟科技创新大赛申报截止时间的通知', '由于部分同学反映准备时间不足，经研究决定，将科技创新大赛申报截止时间推迟至2025年4月25日。', 1, '系统管理员', '2025-04-10 16:00:00', 1, 'warning');
+
 -- 创建索引
-CREATE INDEX IF NOT EXISTS idx_students_major ON students(major);
-CREATE INDEX IF NOT EXISTS idx_students_class_name ON students(class_name);
-CREATE INDEX IF NOT EXISTS idx_courses_department ON courses(department);
-CREATE INDEX IF NOT EXISTS idx_courses_teacher_id ON courses(teacher_id);
-CREATE INDEX IF NOT EXISTS idx_courses_semester ON courses(semester);
-CREATE INDEX IF NOT EXISTS idx_scores_student_id ON scores(student_id);
-CREATE INDEX IF NOT EXISTS idx_scores_course_id ON scores(course_id);
-CREATE INDEX IF NOT EXISTS idx_scores_total_score ON scores(total_score);
-CREATE INDEX IF NOT EXISTS idx_student_awards_student_id ON student_awards(student_id);
-CREATE INDEX IF NOT EXISTS idx_student_awards_award_id ON student_awards(award_id);
-CREATE INDEX IF NOT EXISTS idx_student_awards_award_year ON student_awards(award_year);
+-- 注意：去掉IF NOT EXISTS语法以兼容不同MySQL版本
+CREATE INDEX idx_students_major ON students(major);
+CREATE INDEX idx_students_class_name ON students(class_name);
+CREATE INDEX idx_courses_department ON courses(department);
+CREATE INDEX idx_courses_teacher_id ON courses(teacher_id);
+CREATE INDEX idx_courses_semester ON courses(semester);
+CREATE INDEX idx_scores_student_id ON scores(student_id);
+CREATE INDEX idx_scores_course_id ON scores(course_id);
+CREATE INDEX idx_scores_total_score ON scores(total_score);
+CREATE INDEX idx_student_awards_student_id ON student_awards(student_id);
+CREATE INDEX idx_student_awards_award_id ON student_awards(award_id);
+CREATE INDEX idx_student_awards_award_year ON student_awards(award_year);
+
+CREATE INDEX idx_notices_publish_time ON notices(publish_time);
+CREATE INDEX idx_notices_status ON notices(status);
 
 --密码本
 --账号testuser2 密码testpassword2
---账号admin 密码adminpassword
+--账号admin 密码password
 --账号testuser_new 密码123456
 --账号testuserS 密码123456
 --账号studentY 密码123456

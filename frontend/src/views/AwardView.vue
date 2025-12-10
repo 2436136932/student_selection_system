@@ -11,9 +11,9 @@
       
       <!-- 奖项卡片列表 -->
       <div class="award-cards-container">
-        <el-card
-          v-for="award in awards"
-          :key="award.id"
+        <el-card 
+          v-for="award in awards" 
+          :key="award.awardId" 
           class="award-card"
           shadow="hover"
           :body-style="{ padding: '15px' }"
@@ -46,11 +46,18 @@
             <div class="award-actions">
                 <!-- 根据状态显示不同操作按钮 -->
                 <el-button 
+                  type="info" 
+                  size="small" 
+                  @click="handleViewDetails(award)"
+                >
+                  查看奖项详情
+                </el-button>
+                <el-button 
                   type="primary" 
                   size="small" 
                   @click="handleViewApplications(award)"
                 >
-                  查看详情
+                  查看申请
                 </el-button>
                 <el-button 
                   v-if="hasRole('admin') && award.status !== '已发布'" 
@@ -77,13 +84,13 @@
                   查看结果
                 </el-button>
                 <el-button 
-                  v-if="hasRole('admin') && (award.currentStatus === '未开始' || award.currentStatus === '进行中')" 
-                  type="info" 
-                  size="small" 
-                  @click="handleEdit(award)"
-                >
-                  编辑
-                </el-button>
+              v-if="hasRole('admin')" 
+              type="info" 
+              size="small" 
+              @click="handleEdit(award)"
+            >
+              编辑
+            </el-button>
               </div>
           </div>
         </el-card>
@@ -197,7 +204,7 @@
               </el-form>
 
               <el-table :data="awards" style="width: 100%" stripe v-loading="loading">
-                <el-table-column prop="id" label="奖项ID" width="80"></el-table-column>
+                <el-table-column prop="awardId" label="奖项ID" width="80"></el-table-column>
                 <el-table-column prop="awardName" label="奖项名称" width="150"></el-table-column>
                 <el-table-column prop="awardLevel" label="奖项级别" width="100"></el-table-column>
                 <el-table-column prop="awardType" label="奖项类型" width="100"></el-table-column>
@@ -238,8 +245,8 @@
       width="500px"
     >
       <el-form :model="form" label-width="100px">
-        <el-form-item v-if="form.id" label="奖项ID">
-          <el-input v-model="form.id" placeholder="奖项ID" disabled></el-input>
+        <el-form-item v-if="form.awardId" label="奖项ID">
+          <el-input v-model="form.awardId" placeholder="奖项ID" disabled></el-input>
         </el-form-item>
         <el-form-item label="奖项名称">
           <el-input v-model="form.awardName" placeholder="请输入奖项名称"></el-input>
@@ -296,6 +303,7 @@
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
           <el-button type="primary" @click="handleSubmit">确定</el-button>
+          <el-button type="danger" @click="handleDelete(form)">删除</el-button>
         </span>
       </template>
     </el-dialog>
@@ -305,12 +313,12 @@
     <!-- 奖项详情对话框 -->
     <el-dialog
       v-model="detailDialogVisible"
-      :title="`${currentAward?.awardName} - 奖项详情`"
+      :title="`${currentDetailAward?.awardName} - 奖项详情`"
       width="600px"
     >
       <div class="award-detail">
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="奖项名称">{{ currentAward?.awardName }}</el-descriptions-item>
+          <el-descriptions-item label="奖项名称">{{ currentDetailAward?.awardName }}</el-descriptions-item>
           <el-descriptions-item label="奖项级别">
             <el-tag
               :type="{
@@ -318,21 +326,21 @@
                 'provincial': 'warning',
                 'school': 'info',
                 'department': 'primary'
-              }[currentAward?.awardLevel || 'school']"
+              }[currentDetailAward?.awardLevel || 'school']"
             >
-              {{ currentAward?.awardLevel }}
+              {{ currentDetailAward?.awardLevel }}
             </el-tag>
           </el-descriptions-item>
-          <el-descriptions-item label="奖项类型">{{ currentAward?.awardType }}</el-descriptions-item>
+          <el-descriptions-item label="奖项类型">{{ currentDetailAward?.awardType }}</el-descriptions-item>
           <el-descriptions-item label="状态">
             <el-tag
               :type="{
                 '未发布': 'info',
                 '已发布': 'success',
                 '已结束': 'warning'
-              }[currentAward?.status || '未发布']"
+              }[currentDetailAward?.status || '未发布']"
             >
-              {{ currentAward?.status }}
+              {{ currentDetailAward?.status }}
             </el-tag>
           </el-descriptions-item>
           <el-descriptions-item label="当前状态">
@@ -342,36 +350,36 @@
                 '进行中': 'warning',
                 '已完成': 'success',
                 '已关闭': 'danger'
-              }[currentAward?.currentStatus || '待开始']"
+              }[currentDetailAward?.currentStatus || '待开始']"
             >
-              {{ currentAward?.currentStatus }}
+              {{ currentDetailAward?.currentStatus }}
             </el-tag>
           </el-descriptions-item>
-          <el-descriptions-item label="名额">{{ currentAward?.quota || '不限' }}</el-descriptions-item>
+          <el-descriptions-item label="名额">{{ currentDetailAward?.quota || '不限' }}</el-descriptions-item>
           <el-descriptions-item label="开始时间" :span="2">
-            {{ currentAward?.startTime ? new Date(currentAward?.startTime).toLocaleString() : '未设置' }}
+            {{ currentDetailAward?.startTime ? new Date(currentDetailAward?.startTime).toLocaleString() : '未设置' }}
           </el-descriptions-item>
           <el-descriptions-item label="结束时间" :span="2">
-            {{ currentAward?.endTime ? new Date(currentAward?.endTime).toLocaleString() : '未设置' }}
+            {{ currentDetailAward?.endTime ? new Date(currentDetailAward?.endTime).toLocaleString() : '未设置' }}
           </el-descriptions-item>
           <el-descriptions-item label="评奖要求" :span="2">
-            <div class="detail-content">{{ currentAward?.requirement || '暂无要求' }}</div>
+            <div class="detail-content">{{ currentDetailAward?.requirement || '暂无要求' }}</div>
           </el-descriptions-item>
           <el-descriptions-item label="奖项描述" :span="2">
-            <div class="detail-content">{{ currentAward?.description || '暂无描述' }}</div>
+            <div class="detail-content">{{ currentDetailAward?.description || '暂无描述' }}</div>
           </el-descriptions-item>
           <el-descriptions-item label="创建时间" :span="2">
-            {{ currentAward?.createdAt ? new Date(currentAward?.createdAt).toLocaleString() : '未设置' }}
+            {{ currentDetailAward?.createdAt ? new Date(currentDetailAward?.createdAt).toLocaleString() : '未设置' }}
           </el-descriptions-item>
           <el-descriptions-item label="更新时间" :span="2">
-            {{ currentAward?.updatedAt ? new Date(currentAward?.updatedAt).toLocaleString() : '未设置' }}
+            {{ currentDetailAward?.updatedAt ? new Date(currentDetailAward?.updatedAt).toLocaleString() : '未设置' }}
           </el-descriptions-item>
         </el-descriptions>
       </div>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="detailDialogVisible = false">关闭</el-button>
-          <el-button v-if="hasRole('admin')" type="primary" @click="handleEdit(currentAward)">
+          <el-button v-if="hasRole('admin')" type="primary" @click="handleEdit(currentDetailAward)">
             编辑
           </el-button>
         </span>
@@ -489,7 +497,7 @@
       </div>
     </el-dialog>
   </div>
-  </div>
+</div>
 </template>
 
 <script>
@@ -511,7 +519,7 @@ export default {
     const majors = ref([])
     const activeTab = ref('awards')
     const form = reactive({
-      id: null,
+      awardId: null,
       awardName: '',
       awardLevel: '',
       awardType: '',
@@ -557,15 +565,15 @@ export default {
       try {
         // 构建请求参数
         const params = {
-          page: currentPage.value,
-          size: pageSize.value,
+          pageNum: currentPage.value,
+          pageSize: pageSize.value,
           awardName: searchForm.awardName,
           awardType: searchForm.awardType
         }
         
-        const response = await axios.get('/api/award-types', { params })
-        awards.value = response.data.content
-        total.value = response.data.totalElements
+        const response = await axios.get('/api/awards', { params })
+        awards.value = response.data.records
+        total.value = response.data.total
         // 更新评选流程列表
         updateSelectionProcessList()
       } catch (error) {
@@ -594,13 +602,13 @@ export default {
     // 新增/编辑奖项
     const handleSubmit = async () => {
       try {
-        if (form.id) {
+        if (form.awardId) {
           // 编辑
-          await axios.put(`/api/award-types/${form.id}`, form)
+          await axios.put(`/api/awards/${form.awardId}`, form)
           ElMessage.success('奖项更新成功')
         } else {
           // 新增
-          await axios.post('/api/award-types', form)
+          await axios.post('/api/awards', form)
           ElMessage.success('奖项新增成功')
         }
         dialogVisible.value = false
@@ -631,7 +639,7 @@ export default {
     // 删除奖项
     const handleDelete = async (row) => {
       try {
-        await axios.delete(`/api/award-types/${row.id}`)
+        await axios.delete(`/api/awards/${row.awardId}`)
         ElMessage.success('奖项删除成功')
         getAwards()
       } catch (error) {
@@ -655,7 +663,7 @@ export default {
     
     // 重置编辑表单
     const resetEditForm = () => {
-      form.id = null
+      form.awardId = null
       form.awardName = ''
       form.awardLevel = ''
       form.awardType = ''
@@ -695,15 +703,25 @@ export default {
 
     // 获取学生申请列表
     const getStudentApplications = async (award) => {
-      if (!award) return
+      console.log('===== 开始获取学生申请列表 =====')
+      console.log('当前award对象:', award)
+      console.log('当前pageNum:', applicationCurrentPage.value)
+      console.log('当前pageSize:', applicationPageSize.value)
+      console.log('当前搜索条件:', applicationSearchForm)
+      if (!award || !award.awardId) {
+        console.error('award参数为空或awardId不存在')
+        return
+      }
+      
       applicationLoading.value = true
       try {
         // 构建搜索参数
         const params = {
           pageNum: applicationCurrentPage.value,
           pageSize: applicationPageSize.value,
-          awardId: award.id
+          awardId: parseInt(award.awardId) // 确保awardId是数字类型
         }
+        console.log('请求参数:', params)
         
         // 只有当搜索条件不为空时才添加到参数中
         if (applicationSearchForm.studentName) {
@@ -711,18 +729,16 @@ export default {
         }
         
         if (applicationSearchForm.approvalStatus) {
-          // 将字符串状态转换为数字状态
-          let status = 0
-          if (applicationSearchForm.approvalStatus === '待管理员审批') {
-            status = 1
-          } else if (applicationSearchForm.approvalStatus === '教师已拒绝') {
-            status = 2
-          } else if (applicationSearchForm.approvalStatus === '管理员已通过') {
-            status = 3
-          } else if (applicationSearchForm.approvalStatus === '管理员已拒绝') {
-            status = 4
+          // 将字符串状态转换为数字状态码
+          const statusMap = {
+            '待教师审批': 0,
+            '教师已通过': 1,
+            '教师已拒绝': 2,
+            '待管理员审批': 3,
+            '管理员已通过': 4,
+            '管理员已拒绝': 5
           }
-          params.status = status
+          params.status = statusMap[applicationSearchForm.approvalStatus] // 完整的状态映射
         }
         
         // 使用新的搜索API获取申请列表
@@ -758,14 +774,19 @@ export default {
         applicationTotal.value = response.data.total
       } catch (error) {
         console.error('获取学生申请列表失败:', error)
+        console.error('错误详细信息:', JSON.stringify(error, null, 2))
         // 显示更详细的错误信息
         let errorMsg = '获取学生申请列表失败'
         if (error.response) {
             // 服务器返回了错误状态码
             errorMsg += `: ${error.response.status} - ${error.response.data?.message || error.response.statusText}`
+            console.error('响应数据:', error.response.data)
+            console.error('响应状态:', error.response.status)
+            console.error('响应头:', error.response.headers)
         } else if (error.request) {
             // 请求发出但没有收到响应
             errorMsg += ': 服务器无响应'
+            console.error('请求对象:', error.request)
         } else {
             // 请求配置时发生错误
             errorMsg += `: ${error.message}`
@@ -779,14 +800,35 @@ export default {
 
     // 查看申请列表
     const handleViewApplications = (award) => {
+      // 简化方法，只设置必要的状态
+      console.log('查看申请按钮被点击，award对象:', award)
+      
+      // 1. 设置当前选中的奖项
       currentAward.value = award
-      applicationDialogVisible.value = true
-      applicationCurrentPage.value = 1
-      // 重置搜索表单
+      
+      // 2. 重置搜索表单
       applicationSearchForm.studentName = ''
       applicationSearchForm.approvalStatus = ''
-      // 获取申请列表
+      
+      // 3. 重置分页
+      applicationCurrentPage.value = 1
+      
+      // 4. 强制设置对话框为可见
+      console.log('设置applicationDialogVisible.value = true')
+      applicationDialogVisible.value = true
+      
+      // 5. 获取申请列表
       getStudentApplications(award)
+    }
+    
+    // 测试函数：用于快速测试查看申请功能
+    window.testViewApplications = () => {
+      console.log('测试查看申请功能...')
+      const testAward = {
+        awardId: 1,
+        awardName: '测试奖项'
+      }
+      handleViewApplications(testAward)
     }
 
     // 教师审批
@@ -929,7 +971,7 @@ export default {
       
       // 更新评选流程列表
       selectionProcessList.value = awards.value.map(award => ({
-        id: award.id,
+        id: award.awardId,
         awardName: award.awardName,
         currentStage: award.currentStage,
         progress: calculateProgress(award)
@@ -938,9 +980,15 @@ export default {
 
     // 查看奖项详情
     const handleViewDetails = (award) => {
-      console.log('查看奖项详情:', award)
+      console.log('handleViewDetails被调用，award对象:', award)
+      console.log('调用前currentDetailAward:', currentDetailAward.value)
+      console.log('调用前detailDialogVisible:', detailDialogVisible.value)
+      
       currentDetailAward.value = award
       detailDialogVisible.value = true
+      
+      console.log('调用后currentDetailAward:', currentDetailAward.value)
+      console.log('调用后detailDialogVisible:', detailDialogVisible.value)
     }
 
     // 查看流程详情
@@ -955,10 +1003,12 @@ export default {
     // 发布奖项
     const handlePublish = async (award) => {
       try {
-        await axios.put(`/api/award-types/${award.id}/publish`)
+        // 更新奖项状态为已发布
+        await axios.put(`/api/awards/${award.awardId}`, { ...award, status: '已发布' })
         ElMessage.success('奖项发布成功')
         getAwards()
       } catch (error) {
+        console.error('发布奖项失败:', error)
         ElMessage.error('发布失败，请重试')
       }
     }
@@ -1013,9 +1063,20 @@ export default {
       handleViewDetails,
       handleViewApplications,
       handleViewProcessDetails,
-
-
-
+      
+      // 学生申请管理
+      applicationDialogVisible,
+      applicationCurrentPage,
+      applicationPageSize,
+      applicationLoading,
+      applicationTotal,
+      studentApplications,
+      currentAward,
+      applicationSearchForm,
+      handleApplicationSearch,
+      resetApplicationForm,
+      handleApplicationSizeChange,
+      handleApplicationCurrentChange
 
     }
   }

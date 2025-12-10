@@ -23,8 +23,7 @@ public class StudentAwardApplication implements Serializable {
     /**
      * 申请ID
      */
-    @TableId(type = IdType.AUTO)
-    @TableField("application_id")
+    @TableId(type = IdType.AUTO, value = "application_id")
     private Integer id;
 
     /**

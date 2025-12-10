@@ -41,7 +41,7 @@ public class Notice implements Serializable {
      * 发布人ID
      */
     @TableField("publisher_id")
-    private Integer publisherId;
+    private Long publisherId;
 
     /**
      * 发布人姓名
@@ -69,6 +69,12 @@ public class Notice implements Serializable {
     @TableField("status")
     private Integer status;
 
+    /**
+     * 通知类型：info/warning/error
+     */
+    @TableField("type")
+    private String type;
+
     // Getter and Setter methods
     public Integer getId() {
         return id;
@@ -94,11 +100,11 @@ public class Notice implements Serializable {
         this.content = content;
     }
 
-    public Integer getPublisherId() {
+    public Long getPublisherId() {
         return publisherId;
     }
 
-    public void setPublisherId(Integer publisherId) {
+    public void setPublisherId(Long publisherId) {
         this.publisherId = publisherId;
     }
 
@@ -132,5 +138,13 @@ public class Notice implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

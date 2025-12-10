@@ -50,15 +50,15 @@
           </div>
         </template>
         <el-table :data="recentEvents" stripe style="width: 100%">
-          <el-table-column prop="eventName" label="活动名称" />
-          <el-table-column prop="status" label="状态" width="120">
+          <el-table-column prop="awardName" label="活动名称" />
+          <el-table-column prop="currentStatus" label="状态" width="120">
             <template #default="scope">
-              <el-tag :type="getStatusType(scope.row.status)" size="small">
-                {{ getStatusText(scope.row.status) }}
+              <el-tag :type="getStatusType(scope.row.currentStatus)" size="small">
+                {{ getStatusText(scope.row.currentStatus) }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="deadline" label="截止日期" width="150" />
+          <el-table-column prop="endTime" label="截止日期" width="150" />
         </el-table>
       </el-card>
     </div>
@@ -130,7 +130,7 @@ const getStatistics = async () => {
 // 获取最近评选活动
 const getRecentEvents = async () => {
   try {
-    const res = await axios.get('/api/events/recent')
+    const res = await axios.get('/api/awards/recent')
     recentEvents.value = res.data
   } catch (error) {
     console.error('获取最近评选活动失败:', error)

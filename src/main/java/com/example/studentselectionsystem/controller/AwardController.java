@@ -139,4 +139,17 @@ public class AwardController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    /**
+     * 获取最近的奖项
+     */
+    @GetMapping("/recent")
+    public ResponseEntity<List<Award>> getRecentAwards() {
+        try {
+            List<Award> awards = awardService.getRecentAwards();
+            return ResponseEntity.ok(awards);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

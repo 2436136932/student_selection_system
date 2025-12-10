@@ -73,4 +73,10 @@ public interface AwardService {
      * @return 奖项总数
      */
     long countAwards();
+    
+    /**
+     * 获取最近的奖项
+     * @return 最近的奖项列表
+     */
+    List<Award> getRecentAwards();
 }

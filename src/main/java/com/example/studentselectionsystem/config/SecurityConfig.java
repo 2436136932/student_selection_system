@@ -96,7 +96,7 @@ public class SecurityConfig {
             // 基本认证配置
             .authorizeHttpRequests(auth -> auth
                 // 允许公开访问的接口
-                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/public/**", "/api/test/**").permitAll()
+                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/public/**", "/api/test/**", "/api/events/recent", "/api/notices/recent").permitAll()
                 // 统计类接口允许公开访问
                 .requestMatchers("/api/students/count", "/api/awards/count", "/api/student-award-applications/count").permitAll()
                 // 管理员接口需要ADMIN角色

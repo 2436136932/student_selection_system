@@ -66,7 +66,6 @@ com\example\studentselectionsystem\service\PermissionService.class
 com\example\studentselectionsystem\config\SecurityConfig.class
 com\example\studentselectionsystem\entity\SelectionResult.class
 com\example\studentselectionsystem\mapper\SelectionProcessMapper.class
-com\example\studentselectionsystem\service\impl\EventServiceImpl.class
 com\example\studentselectionsystem\controller\TestController.class
 com\example\studentselectionsystem\entity\StudentAwardApplication.class
 com\example\studentselectionsystem\repository\RoleRepository.class
@@ -77,8 +76,6 @@ com\example\studentselectionsystem\entity\VolunteerActivity.class
 com\example\studentselectionsystem\service\impl\StudentAwardApplicationServiceImpl.class
 com\example\studentselectionsystem\repository\UserRepository.class
 com\example\studentselectionsystem\service\impl\AwardTypeServiceImpl.class
-com\example\studentselectionsystem\entity\Event.class
-com\example\studentselectionsystem\mapper\EventMapper.class
 com\example\studentselectionsystem\service\impl\RoleServiceImpl.class
 com\example\studentselectionsystem\service\MajorService.class
 com\example\studentselectionsystem\entity\Student.class
@@ -88,8 +85,6 @@ com\example\studentselectionsystem\repository\StandardRepository.class
 com\example\studentselectionsystem\controller\AwardController.class
 com\example\studentselectionsystem\entity\Competition.class
 com\example\studentselectionsystem\mapper\NoticeMapper.class
-com\example\studentselectionsystem\service\EventService.class
-com\example\studentselectionsystem\controller\EventController.class
 com\example\studentselectionsystem\mapper\MajorMapper.class
 com\example\studentselectionsystem\controller\NoticeController.class
 com\example\studentselectionsystem\service\impl\MajorServiceImpl.class
