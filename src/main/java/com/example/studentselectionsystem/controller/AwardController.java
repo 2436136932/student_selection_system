@@ -152,4 +152,20 @@ public class AwardController {
             return ResponseEntity.internalServerError().build();
         }
     }
+    
+    /**
+     * 发布奖项
+     * @param id 奖项ID
+     * @return 响应结果
+     */
+    @PutMapping("/{id}/publish")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> publishAward(@PathVariable Integer id) {
+        boolean success = awardService.publishAward(String.valueOf(id));
+        if (success) {
+            return ResponseEntity.ok("奖项发布成功");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

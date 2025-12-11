@@ -4,14 +4,21 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.studentselectionsystem.entity.StudentAwardApplication;
 import com.example.studentselectionsystem.service.StudentAwardApplicationService;
+import com.example.studentselectionsystem.service.UserService;
+import com.example.studentselectionsystem.entity.User;
+import com.example.studentselectionsystem.entity.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,21 +36,37 @@ public class StudentAwardApplicationController {
     
     @Autowired
     private com.example.studentselectionsystem.service.StudentService studentService;
+    
+    @Autowired
+    private UserService userService;
 
     /**
      * 创建学生奖项申请
      */
     @PostMapping
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<StudentAwardApplication> createApplication(@RequestBody StudentAwardApplication application) {
+    public ResponseEntity<StudentAwardApplication> createApplication(@RequestBody StudentAwardApplication application, Principal principal) {
         try {
             logger.info("Creating award application: {}", application);
             
-            // 直接从当前登录用户获取学生信息
-            // 这里我们暂时使用硬编码的学生ID 1，实际应该从认证信息中获取
-            Long studentId = 1L;
-            logger.info("Using studentId: {}", studentId);
-            application.setStudentId(studentId);
+            // 从当前登录用户获取学生信息
+            if (principal != null) {
+                Optional<User> optionalUser = userService.findUserByUsername(principal.getName());
+                if (optionalUser.isPresent()) {
+                    Optional<Student> optionalStudent = studentService.findStudentByUserId(optionalUser.get().getId());
+                    if (optionalStudent.isPresent()) {
+                        Long studentId = optionalStudent.get().getId();
+                        logger.info("Using studentId: {}", studentId);
+                        application.setStudentId(studentId);
+                    } else {
+                        logger.error("Student not found for user: {}", principal.getName());
+                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    }
+                } else {
+                    logger.error("User not found: {}", principal.getName());
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            }
             
             StudentAwardApplication createdApplication = studentAwardApplicationService.createApplication(application);
             logger.info("Created award application: {}", createdApplication);
@@ -104,9 +127,24 @@ public class StudentAwardApplicationController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('STUDENT')")
-    public ResponseEntity<Void> deleteApplication(@PathVariable Integer id) {
-        studentAwardApplicationService.deleteApplication(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<Void> deleteApplication(@PathVariable Integer id, Principal principal) {
+        Optional<StudentAwardApplication> optionalApplication = studentAwardApplicationService.findApplicationById(id);
+        if (optionalApplication.isPresent()) {
+            StudentAwardApplication application = optionalApplication.get();
+            // 如果是学生角色，只能删除自己的申请
+            if (principal != null && principal.getName() != null) {
+                Optional<User> optionalUser = userService.findUserByUsername(principal.getName());
+                if (optionalUser.isPresent() && "STUDENT".equals(optionalUser.get().getRole())) {
+                    Optional<Student> optionalStudent = studentService.findStudentByUserId(optionalUser.get().getId());
+                    if (optionalStudent.isPresent() && !optionalStudent.get().getId().equals(application.getStudentId())) {
+                        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                    }
+                }
+            }
+            studentAwardApplicationService.deleteApplication(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -114,10 +152,30 @@ public class StudentAwardApplicationController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
-    public ResponseEntity<StudentAwardApplication> findApplicationById(@PathVariable Integer id) {
+    public ResponseEntity<StudentAwardApplication> findApplicationById(@PathVariable Integer id, Principal principal) {
         Optional<StudentAwardApplication> optionalApplication = studentAwardApplicationService.findApplicationById(id);
-        return optionalApplication.map(application -> new ResponseEntity<>(application, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        if (optionalApplication.isPresent()) {
+            StudentAwardApplication application = optionalApplication.get();
+            
+            // 获取当前用户角色
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String role = authentication.getAuthorities().iterator().next().getAuthority();
+            
+            // 如果是学生角色，只能查看自己的申请
+            if ((role.equals("ROLE_STUDENT") || role.equals("STUDENT")) && principal != null) {
+                Optional<User> optionalUser = userService.findUserByUsername(principal.getName());
+                if (optionalUser.isPresent()) {
+                    Optional<Student> optionalStudent = studentService.findStudentByUserId(optionalUser.get().getId());
+                    if (optionalStudent.isPresent() && !optionalStudent.get().getId().equals(application.getStudentId())) {
+                        // 学生试图查看其他学生的申请，返回403 Forbidden
+                        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                    }
+                }
+            }
+            
+            return new ResponseEntity<>(application, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -125,7 +183,23 @@ public class StudentAwardApplicationController {
      */
     @GetMapping("/student/{studentId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
-    public ResponseEntity<List<StudentAwardApplication>> findApplicationsByStudentId(@PathVariable Long studentId) {
+    public ResponseEntity<List<StudentAwardApplication>> findApplicationsByStudentId(@PathVariable Long studentId, Principal principal) {
+        // 获取当前用户角色
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        
+        // 如果是学生角色，只能查看自己的申请
+        if ((role.equals("ROLE_STUDENT") || role.equals("STUDENT")) && principal != null) {
+            Optional<User> optionalUser = userService.findUserByUsername(principal.getName());
+            if (optionalUser.isPresent()) {
+                Optional<Student> optionalStudent = studentService.findStudentByUserId(optionalUser.get().getId());
+                if (optionalStudent.isPresent() && !optionalStudent.get().getId().equals(studentId)) {
+                    // 学生试图查看其他学生的申请，返回403 Forbidden
+                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                }
+            }
+        }
+        
         List<StudentAwardApplication> applications = studentAwardApplicationService.findApplicationsByStudentId(studentId);
         return new ResponseEntity<>(applications, HttpStatus.OK);
     }
@@ -135,7 +209,23 @@ public class StudentAwardApplicationController {
      */
     @GetMapping("/student/number/{studentNumber}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
-    public ResponseEntity<List<StudentAwardApplication>> findApplicationsByStudentNumber(@PathVariable String studentNumber) {
+    public ResponseEntity<List<StudentAwardApplication>> findApplicationsByStudentNumber(@PathVariable String studentNumber, Principal principal) {
+        // 获取当前用户角色
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        
+        // 如果是学生角色，只能查看自己的申请
+        if ((role.equals("ROLE_STUDENT") || role.equals("STUDENT")) && principal != null) {
+            Optional<User> optionalUser = userService.findUserByUsername(principal.getName());
+            if (optionalUser.isPresent()) {
+                Optional<Student> optionalStudent = studentService.findStudentByUserId(optionalUser.get().getId());
+                if (optionalStudent.isPresent() && !optionalStudent.get().getStudentNumber().equals(studentNumber)) {
+                    // 学生试图查看其他学生的申请，返回403 Forbidden
+                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                }
+            }
+        }
+        
         List<StudentAwardApplication> applications = studentAwardApplicationService.findApplicationsByStudentNumber(studentNumber);
         return new ResponseEntity<>(applications, HttpStatus.OK);
     }
@@ -175,16 +265,39 @@ public class StudentAwardApplicationController {
     }
 
     @GetMapping("/page/search")
-    @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_ADMIN', 'TEACHER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_ADMIN', 'ROLE_STUDENT', 'TEACHER', 'ADMIN', 'STUDENT')")
     public ResponseEntity<IPage<StudentAwardApplication>> searchApplications(
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(required = false) Integer awardId,
             @RequestParam(required = false) String studentName,
-            @RequestParam(required = false) Integer status) {
+            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) String studentNumber, 
+            Principal principal) {
         Page<StudentAwardApplication> page = new Page<>(pageNum, pageSize);
+        
+        // 获取当前用户角色
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        
+        // 如果是学生角色，只允许查看自己的申请
+        if ((role.equals("ROLE_STUDENT") || role.equals("STUDENT")) && principal != null) {
+            // 获取当前登录学生的学号
+            Optional<User> optionalUser = userService.findUserByUsername(principal.getName());
+            if (optionalUser.isPresent()) {
+                // 通过用户ID获取学生信息
+                Optional<Student> optionalStudent = studentService.findStudentByUserId(optionalUser.get().getId());
+                if (optionalStudent.isPresent()) {
+                    // 设置当前学生的学号，确保只能查看自己的申请
+                    studentNumber = optionalStudent.get().getStudentNumber();
+                }
+            }
+            // 学生只能查询自己的申请，忽略传入的studentName参数
+            studentName = null;
+        }
+        
         IPage<StudentAwardApplication> applicationPage = 
-            studentAwardApplicationService.findApplicationsByCondition(page, awardId, studentName, status);
+            studentAwardApplicationService.findApplicationsByCondition(page, awardId, studentName, status, studentNumber);
         return ResponseEntity.ok(applicationPage);
     }
 

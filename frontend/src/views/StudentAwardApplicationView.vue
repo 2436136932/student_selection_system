@@ -18,9 +18,11 @@
             <el-form-item label="申请状态">
               <el-select v-model="searchForm.status" placeholder="请选择申请状态">
                 <el-option label="全部" value=""></el-option>
-                <el-option label="待审核" value="0"></el-option>
-                <el-option label="通过" value="1"></el-option>
-                <el-option label="未通过" value="2"></el-option>
+                <el-option label="待教师审批" value="0"></el-option>
+                <el-option label="待管理员审批" value="1"></el-option>
+                <el-option label="教师已拒绝" value="2"></el-option>
+                <el-option label="管理员已通过" value="3"></el-option>
+                <el-option label="管理员已拒绝" value="4"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item>
@@ -31,21 +33,41 @@
         </div>
 
         <el-table :data="applications" style="width: 100%" stripe v-loading="loading">
-          <el-table-column prop="id" label="申请ID" width="100"></el-table-column>
-          <el-table-column prop="student.student_number" label="学生学号" width="120">
-      <template #default="scope">{{ scope.row.student?.student_number }}</template>
-    </el-table-column>
-          <el-table-column prop="award.awardName" label="奖项名称" width="180">
-            <template #default="scope">{{ scope.row.award?.awardName || '未知奖项' }}</template>
+          <el-table-column prop="id" label="申请ID" width="80"></el-table-column>
+          <el-table-column prop="student.name" label="学生姓名" width="120">
+            <template #default="scope">{{ scope.row.student?.name || '-' }}</template>
           </el-table-column>
-          <el-table-column prop="award.awardLevel" label="奖项级别" width="120">
-            <template #default="scope">{{ scope.row.award?.awardLevel || '未知级别' }}</template>
+          <el-table-column prop="student.student_number" label="学号" width="150">
+            <template #default="scope">{{ scope.row.student?.student_number || '-' }}</template>
           </el-table-column>
-          <el-table-column prop="applicationTime" label="申请时间" width="180" formatter="formatDate"></el-table-column>
-          <el-table-column prop="status" label="申请状态" width="180">
+          <el-table-column prop="student.major" label="专业" width="150">
+            <template #default="scope">{{ scope.row.student?.major || '-' }}</template>
+          </el-table-column>
+          <el-table-column prop="student.className" label="班级" width="120">
+            <template #default="scope">{{ scope.row.student?.className || '-' }}</template>
+          </el-table-column>
+          <el-table-column prop="award.awardName" label="奖项名称" width="220">
+            <template #default="scope">{{ scope.row.award?.awardName || '-' }}</template>
+          </el-table-column>
+          <el-table-column prop="award.awardLevel" label="奖项级别" width="100">
+            <template #default="scope">{{ scope.row.award?.awardLevel || '-' }}</template>
+          </el-table-column>
+          <el-table-column prop="applicationTime" label="申请日期" width="150">
+            <template #default="scope">{{ scope.row.applicationTime ? new Date(scope.row.applicationTime).toLocaleString() : '-' }}</template>
+          </el-table-column>
+          <el-table-column prop="approvalStatus" label="审批状态" width="120">
             <template #default="scope">
-              <el-tag :type="getStatusType(scope.row)">
-                {{ getStatusText(scope.row) }}
+              <el-tag
+                :type="{
+                  '待教师审批': 'info',
+                  '教师已通过': 'primary',
+                  '教师已拒绝': 'danger',
+                  '待管理员审批': 'warning',
+                  '管理员已通过': 'success',
+                  '管理员已拒绝': 'danger'
+                }[scope.row.approvalStatus || '待教师审批']"
+              >
+                {{ scope.row.approvalStatus || '待教师审批' }}
               </el-tag>
             </template>
           </el-table-column>
@@ -70,8 +92,10 @@
           </el-table-column>
           <el-table-column label="审核操作" width="150" fixed="right" v-if="hasRole('admin') || hasRole('teacher')">
             <template #default="scope">
+              <!-- 教师只能在状态为0（待教师审批）时看到审批按钮 -->
+              <!-- 管理员可以在状态为1（待管理员审批）时看到审批按钮 -->
               <el-button 
-                v-if="scope.row.status === 0" 
+                v-if="(hasRole('teacher') && scope.row.status === 0) || (hasRole('admin') && scope.row.status === 1)" 
                 size="small" 
                 type="success" 
                 @click="handleApproveApplication(scope.row)"
@@ -79,7 +103,7 @@
                 <el-icon><check /></el-icon> 通过
               </el-button>
               <el-button 
-                v-if="scope.row.status === 0" 
+                v-if="(hasRole('teacher') && scope.row.status === 0) || (hasRole('admin') && scope.row.status === 1)" 
                 size="small" 
                 type="danger" 
                 @click="handleRejectApplication(scope.row)"
@@ -205,19 +229,19 @@ const formatDate = (row, column, cellValue) => {
 // 获取状态文本
 const getStatusText = (row) => {
   // 支持两级审批流程
-  if (row.status === 0) return '待教师审核'
-  if (row.status === 1) return '教师审核通过，待管理员审批'
-  if (row.status === 2) return '教师审核拒绝'
-  if (row.status === 3) return '管理员审批通过'
-  if (row.status === 4) return '管理员审批拒绝'
+  if (row.status === 0) return '待教师审批'
+  if (row.status === 1) return '待管理员审批'
+  if (row.status === 2) return '教师已拒绝'
+  if (row.status === 3) return '管理员已通过'
+  if (row.status === 4) return '管理员已拒绝'
   return '未知状态'
 }
 
 // 获取状态标签类型
 const getStatusType = (row) => {
   // 支持两级审批流程
-  if (row.status === 0) return 'warning'
-  if (row.status === 1) return 'info'
+  if (row.status === 0) return 'info'
+  if (row.status === 1) return 'warning'
   if (row.status === 2) return 'danger'
   if (row.status === 3) return 'success'
   if (row.status === 4) return 'danger'
@@ -227,30 +251,64 @@ const getStatusType = (row) => {
 // 获取申请列表
 const getApplications = () => {
   loading.value = true
-  let apiPath = '/api/student-award-applications'
+  let apiPath = '/api/student-award-applications/page/search'
+  
+  const params = {
+    pageNum: currentPage.value,
+    pageSize: pageSize.value,
+    awardName: searchForm.awardName
+  }
   
   // 如果是学生角色，只获取当前学生的申请
   if (isStudent.value) {
     // 使用学号获取申请列表
     const userInfo = getUserInfo()
-    apiPath += `/student/number/${userInfo.studentNumber || userInfo.id}`
-  } else {
-    apiPath += '/page'
+    if (userInfo.studentNumber) {
+      params.studentNumber = userInfo.studentNumber
+    }
+  }
+  
+  // 处理状态参数
+  if (searchForm.status) {
+    params.status = searchForm.status
   }
   
   axios.get(apiPath, {
-    params: {
-      page: isStudent.value ? undefined : currentPage.value,
-      size: isStudent.value ? undefined : pageSize.value,
-      awardName: searchForm.awardName,
-      status: searchForm.status
-    }
+    params
   }).then(response => {
+    let data = response.data.records
+    
+    // 打印返回的数据结构，用于调试
+    console.log('Raw response data:', response.data)
+    console.log('Application records:', data)
+    
+    // 将后端返回的数字状态转换为字符串状态，与AwardView保持一致
+    data = data.map(app => {
+      // 打印每个申请的详细信息，特别是award字段
+      console.log('Application details:', app)
+      console.log('Award details in application:', app.award)
+      let approvalStatus = '待教师审批'
+      if (app.status === 1) {
+        approvalStatus = '待管理员审批'
+      } else if (app.status === 2) {
+        approvalStatus = '教师已拒绝'
+      } else if (app.status === 3) {
+        approvalStatus = '管理员已通过'
+      } else if (app.status === 4) {
+        approvalStatus = '管理员已拒绝'
+      }
+      return {
+        ...app,
+        approvalStatus,
+        applicationDate: app.applicationTime
+      }
+    })
+    
     if (isStudent.value) {
-      applications.value = response.data
-      total.value = response.data.length
+      applications.value = data
+      total.value = data.length
     } else {
-      applications.value = response.data.records
+      applications.value = data
       total.value = response.data.total
     }
     loading.value = false

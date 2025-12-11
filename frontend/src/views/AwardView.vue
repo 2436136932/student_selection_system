@@ -415,10 +415,14 @@
       <el-table :data="studentApplications" style="width: 100%" stripe v-loading="applicationLoading">
         <el-table-column prop="id" label="申请ID" width="80"></el-table-column>
         <el-table-column prop="student.name" label="学生姓名" width="120"></el-table-column>
-        <el-table-column prop="student.studentId" label="学号" width="150"></el-table-column>
-        <el-table-column prop="student.major.name" label="专业" width="150"></el-table-column>
+        <el-table-column prop="student.student_number" label="学号" width="150">
+          <template #default="scope">{{ scope.row.student?.student_number || '-' }}</template>
+        </el-table-column>
+        <el-table-column prop="student.major" label="专业" width="150">
+          <template #default="scope">{{ scope.row.student?.major || '-' }}</template>
+        </el-table-column>
         <el-table-column prop="student.className" label="班级" width="120"></el-table-column>
-        <el-table-column prop="student.gpa" label="GPA" width="80"></el-table-column>
+
         <el-table-column prop="applicationDate" label="申请日期" width="150">
           <template #default="scope">{{ scope.row.applicationDate ? new Date(scope.row.applicationDate).toLocaleString() : '-' }}</template>
         </el-table-column>
@@ -724,7 +728,7 @@ export default {
         console.log('请求参数:', params)
         
         // 只有当搜索条件不为空时才添加到参数中
-        if (applicationSearchForm.studentName) {
+        if (applicationSearchForm.studentName && (hasRole('admin') || hasRole('teacher'))) {
           params.studentName = applicationSearchForm.studentName
         }
         
@@ -741,8 +745,18 @@ export default {
           params.status = statusMap[applicationSearchForm.approvalStatus] // 完整的状态映射
         }
         
+        // 根据用户角色调用不同的API接口
+        let response;
+        if (hasRole('student')) {
+          // 学生角色只能查看自己的申请
+          const userInfo = getUserInfo();
+          if (userInfo.studentNumber) {
+            params.studentNumber = userInfo.studentNumber;
+          }
+        }
+        
         // 使用新的搜索API获取申请列表
-        const response = await axios.get(`/api/student-award-applications/page/search`, {
+        response = await axios.get(`/api/student-award-applications/page/search`, {
           params
         })
         
@@ -764,9 +778,8 @@ export default {
             applicationDate: app.applicationTime,
             // 确保学生信息正确映射
             student: {
-              ...app.student,
-              studentId: app.student?.id || '',
-              gpa: 0 // 默认值，实际项目中可能需要从其他字段获取
+              ...app.student
+              // 直接使用后端返回的student对象，包含student_number字段
             }
           }
         })
@@ -1012,6 +1025,19 @@ export default {
         ElMessage.error('发布失败，请重试')
       }
     }
+    
+    // 开始评选
+    const handleStartSelection = async (award) => {
+      try {
+        // 更新奖项当前状态为已完成（开始评选）
+        await axios.put(`/api/awards/${award.awardId}`, { ...award, currentStatus: '已完成' })
+        ElMessage.success('开始评选成功')
+        getAwards()
+      } catch (error) {
+        console.error('开始评选失败:', error)
+        ElMessage.error('操作失败，请重试')
+      }
+    }
 
     // 页面加载时获取数据
 
@@ -1057,6 +1083,7 @@ export default {
       handleSizeChange,
       handleCurrentChange,
       handlePublish,
+      handleStartSelection,
       
       // 评选流程管理方法
       getProgressColor,

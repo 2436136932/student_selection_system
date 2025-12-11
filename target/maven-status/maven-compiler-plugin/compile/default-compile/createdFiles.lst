@@ -76,6 +76,7 @@ com\example\studentselectionsystem\entity\VolunteerActivity.class
 com\example\studentselectionsystem\service\impl\StudentAwardApplicationServiceImpl.class
 com\example\studentselectionsystem\repository\UserRepository.class
 com\example\studentselectionsystem\service\impl\AwardTypeServiceImpl.class
+com\example\studentselectionsystem\service\impl\StudentAwardApplicationServiceImpl$1.class
 com\example\studentselectionsystem\service\impl\RoleServiceImpl.class
 com\example\studentselectionsystem\service\MajorService.class
 com\example\studentselectionsystem\entity\Student.class

@@ -79,4 +79,11 @@ public interface AwardService {
      * @return 最近的奖项列表
      */
     List<Award> getRecentAwards();
+    
+    /**
+     * 发布奖项
+     * @param awardId 奖项ID
+     * @return 是否发布成功
+     */
+    boolean publishAward(String awardId);
 }

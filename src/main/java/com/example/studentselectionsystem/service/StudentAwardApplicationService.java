@@ -88,14 +88,15 @@ public interface StudentAwardApplicationService {
     IPage<StudentAwardApplication> findAllApplications(Page<StudentAwardApplication> page);
 
     /**
-     * 分页按条件查找申请
+     * 根据条件查询申请列表
      * @param page 分页参数
      * @param awardId 奖项ID
      * @param studentName 学生姓名
      * @param status 审批状态
-     * @return 申请分页结果
+     * @param studentNumber 学生学号
+     * @return 申请列表
      */
-    IPage<StudentAwardApplication> findApplicationsByCondition(Page<StudentAwardApplication> page, Integer awardId, String studentName, Integer status);
+    IPage<StudentAwardApplication> findApplicationsByCondition(Page<StudentAwardApplication> page, Integer awardId, String studentName, Integer status, String studentNumber);
 
     /**
      * 根据学生ID和奖项ID查找申请

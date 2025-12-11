@@ -115,6 +115,12 @@ public class AwardServiceImpl implements AwardService {
         entityAward.setAwardLevel(award.getAwardLevel());
         entityAward.setDescription(award.getDescription());
         entityAward.setStatus(award.getStatus());
+        entityAward.setQuota(award.getQuota());
+        entityAward.setStartTime(award.getStartTime());
+        entityAward.setEndTime(award.getEndTime());
+        entityAward.setRequirement(award.getRequirement());
+        entityAward.setAwardType(award.getAwardType());
+        entityAward.setUpdateTime(new Date());
         return awardMapper.updateById(entityAward) > 0;
     }
 
@@ -227,5 +233,23 @@ public class AwardServiceImpl implements AwardService {
         entityAwards.forEach(this::updateAwardCurrentStatus);
         
         return entityAwards.stream().map(this::convertToModelAward).collect(Collectors.toList());
+    }
+    
+    @Override
+    public boolean publishAward(String awardId) {
+        // 根据ID查询奖项
+        com.example.studentselectionsystem.entity.Award entityAward = awardMapper.selectById(Integer.parseInt(awardId));
+        if (entityAward == null) {
+            return false;
+        }
+        
+        // 更新奖项状态为已发布
+        entityAward.setStatus("已发布");
+        
+        // 更新当前状态（会根据开始时间和结束时间自动计算）
+        updateAwardCurrentStatus(entityAward);
+        
+        // 保存更新
+        return awardMapper.updateById(entityAward) > 0;
     }
 }

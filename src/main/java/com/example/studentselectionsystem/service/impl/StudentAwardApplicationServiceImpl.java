@@ -4,12 +4,17 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.studentselectionsystem.entity.Student;
 import com.example.studentselectionsystem.entity.StudentAwardApplication;
+import com.example.studentselectionsystem.entity.Award;
 import com.example.studentselectionsystem.mapper.StudentAwardApplicationMapper;
+import com.example.studentselectionsystem.mapper.AwardMapper;
 import com.example.studentselectionsystem.service.StudentAwardApplicationService;
 import com.example.studentselectionsystem.service.StudentService;
+import com.example.studentselectionsystem.service.AwardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,9 +33,37 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     
     @Autowired
     private StudentService studentService;
+    
+    @Autowired
+    private AwardService awardService;
+    
+    @Autowired
+    private AwardMapper awardMapper;
 
     @Override
     public StudentAwardApplication createApplication(StudentAwardApplication application) {
+        // 检查奖项是否存在且处于可申请状态
+        Integer awardId = application.getAwardId();
+        if (awardId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "奖项ID不能为空");
+        }
+        
+        // 查询奖项信息
+        Award award = awardMapper.selectById(awardId);
+        if (award == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "奖项不存在");
+        }
+        
+        // 检查奖项状态是否为已发布
+        if (!"已发布".equals(award.getStatus())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "该奖项未发布，无法申请");
+        }
+        
+        // 检查奖项当前状态是否为进行中
+        if (!"进行中".equals(award.getCurrentStatus())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "该奖项当前不在申请时间范围内");
+        }
+        
         // 设置申请时间和创建时间
         application.setApplicationTime(new Date());
         application.setCreateTime(new Date());
@@ -76,6 +109,10 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     public StudentAwardApplication adminApproveApplication(Integer id, Integer status, String comments) {
         StudentAwardApplication application = studentAwardApplicationMapper.selectById(id);
         if (application != null) {
+            // 检查申请是否已通过教师审批，只有教师审批通过后才能进行管理员审批
+            if (application.getStatus() != 1) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "该申请尚未通过教师审批，无法进行管理员审批");
+            }
             application.setAdminApprovalStatus(status);
             application.setAdminApprovalTime(new Date());
             application.setAdminApprovalComments(comments);
@@ -95,7 +132,15 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
 
     @Override
     public void deleteApplication(Integer id) {
-        studentAwardApplicationMapper.deleteById(id);
+        StudentAwardApplication application = studentAwardApplicationMapper.selectById(id);
+        if (application != null) {
+            // 只有未被教师审批的申请才能被删除
+            if (application.getTeacherApprovalStatus() == null || application.getStatus() == 0) {
+                studentAwardApplicationMapper.deleteById(id);
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "申请已被审批，无法删除");
+            }
+        }
     }
 
     @Override
@@ -112,11 +157,18 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
                         .eq(StudentAwardApplication::getStudentId, studentId)
         );
         
-        // 加载学生信息
+        // 加载学生信息和奖项信息
         for (StudentAwardApplication application : applications) {
+            // 加载学生信息
             Optional<Student> studentOptional = studentService.findStudentById(application.getStudentId());
             if (studentOptional.isPresent()) {
                 application.setStudent(studentOptional.get());
+            }
+            
+            // 加载奖项信息
+            Award award = awardMapper.selectById(application.getAwardId());
+            if (award != null) {
+                application.setAward(award);
             }
         }
         
@@ -151,8 +203,8 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     }
 
     @Override
-    public IPage<StudentAwardApplication> findApplicationsByCondition(Page<StudentAwardApplication> page, Integer awardId, String studentName, Integer status) {
-        System.out.println("收到查询学生申请列表请求，参数：awardId=" + awardId + ", studentName=" + studentName + ", status=" + status + ", pageNum=" + page.getCurrent() + ", pageSize=" + page.getSize());
+    public IPage<StudentAwardApplication> findApplicationsByCondition(Page<StudentAwardApplication> page, Integer awardId, String studentName, Integer status, String studentNumber) {
+        System.out.println("收到查询学生申请列表请求，参数：awardId=" + awardId + ", studentName=" + studentName + ", studentNumber=" + studentNumber + ", status=" + status + ", pageNum=" + page.getCurrent() + ", pageSize=" + page.getSize());
         // 使用MyBatis-Plus的Lambda条件构造器构建查询条件
         com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication> wrapper = 
             new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<>();
@@ -165,6 +217,38 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
         // 添加审批状态条件
         if (status != null) {
             wrapper.eq(StudentAwardApplication::getStatus, status);
+        }
+
+        // 如果提供了学号，先通过学号查找学生ID，然后添加到查询条件中
+        if (studentNumber != null && !studentNumber.isEmpty()) {
+            Optional<Student> studentOptional = studentService.findStudentByStudentNumber(studentNumber);
+            if (studentOptional.isPresent()) {
+                wrapper.eq(StudentAwardApplication::getStudentId, studentOptional.get().getId());
+            } else {
+                // 如果学号不存在，直接返回空结果
+                return new Page<StudentAwardApplication>(page.getCurrent(), page.getSize()) {
+                    @Override
+                    public List<StudentAwardApplication> getRecords() {
+                        return new ArrayList<>();
+                    }
+                    @Override
+                    public long getTotal() {
+                        return 0;
+                    }
+                    @Override
+                    public long getPages() {
+                        return 0;
+                    }
+                    @Override
+                    public boolean hasPrevious() {
+                        return false;
+                    }
+                    @Override
+                    public boolean hasNext() {
+                        return false;
+                    }
+                };
+            }
         }
 
         // 按申请时间降序排序
@@ -187,6 +271,19 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
                     Student student = studentOptional.get();
                     // 将学生信息设置到申请对象中
                     application.setStudent(student);
+                    
+                    // 查询奖项信息
+                    Award award = awardMapper.selectById(application.getAwardId());
+                    if (award != null) {
+                        // 设置为null以避免循环引用
+                        award.setStudentAwardApplications(null);
+                        award.setSelectionCriteria(null);
+                        award.setSelectionProcesses(null);
+                        award.setSelectionResults(null);
+                        
+                        application.setAward(award);
+                    }
+                    
                     // 检查学生姓名是否包含搜索关键词
                     if (student.getName().contains(studentName)) {
                         filteredApplications.add(application);
@@ -204,6 +301,18 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
                 Optional<Student> studentOptional = studentService.findStudentById(application.getStudentId());
                 if (studentOptional.isPresent()) {
                     application.setStudent(studentOptional.get());
+                }
+                
+                // 查询奖项信息
+                Award award = awardMapper.selectById(application.getAwardId());
+                if (award != null) {
+                    // 设置为null以避免循环引用
+                    award.setStudentAwardApplications(null);
+                    award.setSelectionCriteria(null);
+                    award.setSelectionProcesses(null);
+                    award.setSelectionResults(null);
+                    
+                    application.setAward(award);
                 }
             }
         }
