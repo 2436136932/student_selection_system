@@ -94,9 +94,10 @@ public interface StudentAwardApplicationService {
      * @param studentName 学生姓名
      * @param status 审批状态
      * @param studentNumber 学生学号
+     * @param awardName 奖项名称
      * @return 申请列表
      */
-    IPage<StudentAwardApplication> findApplicationsByCondition(Page<StudentAwardApplication> page, Integer awardId, String studentName, Integer status, String studentNumber);
+    IPage<StudentAwardApplication> findApplicationsByCondition(Page<StudentAwardApplication> page, Integer awardId, String studentName, Integer status, String studentNumber, String awardName);
 
     /**
      * 根据学生ID和奖项ID查找申请

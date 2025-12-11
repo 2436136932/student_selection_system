@@ -272,7 +272,8 @@ public class StudentAwardApplicationController {
             @RequestParam(required = false) Integer awardId,
             @RequestParam(required = false) String studentName,
             @RequestParam(required = false) Integer status,
-            @RequestParam(required = false) String studentNumber, 
+            @RequestParam(required = false) String studentNumber,
+            @RequestParam(required = false) String awardName, 
             Principal principal) {
         Page<StudentAwardApplication> page = new Page<>(pageNum, pageSize);
         
@@ -297,7 +298,7 @@ public class StudentAwardApplicationController {
         }
         
         IPage<StudentAwardApplication> applicationPage = 
-            studentAwardApplicationService.findApplicationsByCondition(page, awardId, studentName, status, studentNumber);
+            studentAwardApplicationService.findApplicationsByCondition(page, awardId, studentName, status, studentNumber, awardName);
         return ResponseEntity.ok(applicationPage);
     }
 

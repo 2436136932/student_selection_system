@@ -73,6 +73,7 @@ com\example\studentselectionsystem\dao\AwardDAO.class
 com\example\studentselectionsystem\entity\Standard.class
 com\example\studentselectionsystem\entity\SelectionCriteria.class
 com\example\studentselectionsystem\entity\VolunteerActivity.class
+com\example\studentselectionsystem\scheduler\AwardStatusScheduler.class
 com\example\studentselectionsystem\service\impl\StudentAwardApplicationServiceImpl.class
 com\example\studentselectionsystem\repository\UserRepository.class
 com\example\studentselectionsystem\service\impl\AwardTypeServiceImpl.class

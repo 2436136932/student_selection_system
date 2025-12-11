@@ -537,7 +537,19 @@ const handleRejectApplication = (row) => {
 
 // 初始化数据
 onMounted(() => {
-  getApplications()
+  // 检查是否有从奖项管理页面传递过来的奖项ID
+  const currentAwardId = localStorage.getItem('currentAwardId')
+  const currentAwardName = localStorage.getItem('currentAwardName')
+  if (currentAwardId) {
+    // 如果有，自动填充奖项名称并执行搜索
+    searchForm.awardName = currentAwardName
+    handleSearch()
+    // 清除localStorage中的数据，避免下次页面加载时自动过滤
+    localStorage.removeItem('currentAwardId')
+    localStorage.removeItem('currentAwardName')
+  } else {
+    getApplications()
+  }
   if (isStudent.value) {
     getAwards()
   }

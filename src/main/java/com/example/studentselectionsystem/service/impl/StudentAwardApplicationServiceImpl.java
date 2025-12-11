@@ -203,8 +203,8 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     }
 
     @Override
-    public IPage<StudentAwardApplication> findApplicationsByCondition(Page<StudentAwardApplication> page, Integer awardId, String studentName, Integer status, String studentNumber) {
-        System.out.println("收到查询学生申请列表请求，参数：awardId=" + awardId + ", studentName=" + studentName + ", studentNumber=" + studentNumber + ", status=" + status + ", pageNum=" + page.getCurrent() + ", pageSize=" + page.getSize());
+    public IPage<StudentAwardApplication> findApplicationsByCondition(Page<StudentAwardApplication> page, Integer awardId, String studentName, Integer status, String studentNumber, String awardName) {
+        System.out.println("收到查询学生申请列表请求，参数：awardId=" + awardId + ", awardName=" + awardName + ", studentName=" + studentName + ", studentNumber=" + studentNumber + ", status=" + status + ", pageNum=" + page.getCurrent() + ", pageSize=" + page.getSize());
         // 使用MyBatis-Plus的Lambda条件构造器构建查询条件
         com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication> wrapper = 
             new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<>();
@@ -251,71 +251,65 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
             }
         }
 
+        // 如果提供了奖项名称，需要通过关联查询来实现
+        // 这里我们先不添加到wrapper中，而是在查询结果中进行过滤
+        // 因为StudentAwardApplication和Award是多对一关系，需要通过关联查询或事后过滤来实现
+
         // 按申请时间降序排序
         wrapper.orderByDesc(StudentAwardApplication::getApplicationTime);
 
         // 执行分页查询
         IPage<StudentAwardApplication> applicationPage = studentAwardApplicationMapper.selectPage(page, wrapper);
 
-        // 如果需要按学生姓名过滤，先获取所有申请，然后过滤出符合条件的申请
-        if (studentName != null && !studentName.isEmpty()) {
-            // 获取所有申请
-            List<StudentAwardApplication> applications = applicationPage.getRecords();
-            List<StudentAwardApplication> filteredApplications = new ArrayList<>();
+        // 获取所有申请
+        List<StudentAwardApplication> applications = applicationPage.getRecords();
+        List<StudentAwardApplication> filteredApplications = new ArrayList<>();
 
-            // 遍历申请，查询学生信息并过滤
-            for (StudentAwardApplication application : applications) {
-                // 查询学生信息
-                Optional<Student> studentOptional = studentService.findStudentById(application.getStudentId());
-                if (studentOptional.isPresent()) {
-                    Student student = studentOptional.get();
-                    // 将学生信息设置到申请对象中
-                    application.setStudent(student);
-                    
-                    // 查询奖项信息
-                    Award award = awardMapper.selectById(application.getAwardId());
-                    if (award != null) {
-                        // 设置为null以避免循环引用
-                        award.setStudentAwardApplications(null);
-                        award.setSelectionCriteria(null);
-                        award.setSelectionProcesses(null);
-                        award.setSelectionResults(null);
-                        
-                        application.setAward(award);
-                    }
-                    
-                    // 检查学生姓名是否包含搜索关键词
-                    if (student.getName().contains(studentName)) {
-                        filteredApplications.add(application);
-                    }
+        // 遍历申请，查询学生和奖项信息，并进行过滤
+        for (StudentAwardApplication application : applications) {
+            // 查询学生信息
+            Optional<Student> studentOptional = studentService.findStudentById(application.getStudentId());
+            if (studentOptional.isPresent()) {
+                application.setStudent(studentOptional.get());
+            }
+            
+            // 查询奖项信息
+            Award award = awardMapper.selectById(application.getAwardId());
+            if (award != null) {
+                // 设置为null以避免循环引用
+                award.setStudentAwardApplications(null);
+                award.setSelectionCriteria(null);
+                award.setSelectionProcesses(null);
+                award.setSelectionResults(null);
+                
+                application.setAward(award);
+            }
+            
+            // 检查过滤条件
+            boolean match = true;
+            
+            // 学生姓名过滤
+            if (studentName != null && !studentName.isEmpty()) {
+                if (!studentOptional.isPresent() || !studentOptional.get().getName().contains(studentName)) {
+                    match = false;
                 }
             }
-
-            // 更新分页结果
-            applicationPage.setRecords(filteredApplications);
-            applicationPage.setTotal(filteredApplications.size());
-        } else {
-            // 如果不需要按学生姓名过滤，仍然查询学生信息并设置到申请对象中
-            List<StudentAwardApplication> applications = applicationPage.getRecords();
-            for (StudentAwardApplication application : applications) {
-                Optional<Student> studentOptional = studentService.findStudentById(application.getStudentId());
-                if (studentOptional.isPresent()) {
-                    application.setStudent(studentOptional.get());
+            
+            // 奖项名称过滤
+            if (awardName != null && !awardName.isEmpty()) {
+                if (award == null || !award.getAwardName().contains(awardName)) {
+                    match = false;
                 }
-                
-                // 查询奖项信息
-                Award award = awardMapper.selectById(application.getAwardId());
-                if (award != null) {
-                    // 设置为null以避免循环引用
-                    award.setStudentAwardApplications(null);
-                    award.setSelectionCriteria(null);
-                    award.setSelectionProcesses(null);
-                    award.setSelectionResults(null);
-                    
-                    application.setAward(award);
-                }
+            }
+            
+            if (match) {
+                filteredApplications.add(application);
             }
         }
+
+        // 更新分页结果
+        applicationPage.setRecords(filteredApplications);
+        applicationPage.setTotal(filteredApplications.size());
 
         return applicationPage;
     }

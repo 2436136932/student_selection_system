@@ -68,12 +68,12 @@
                   发布奖项
                 </el-button>
                 <el-button 
-                  v-if="award.currentStatus === '进行中'" 
+                  v-if="award.currentStatus === '进行中' && hasRole('admin')" 
                   type="success" 
                   size="small" 
-                  @click="handleStartSelection(award)"
+                  @click="handleEndSelection(award)"
                 >
-                  开始评选
+                  结束评选
                 </el-button>
                 <el-button 
                   v-if="award.currentStatus === '已完成'" 
@@ -509,6 +509,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { hasRole, getUserInfo } from '../utils/role'
 import axios from 'axios'
+import router from '../router'
 
 export default {
   name: 'AwardView',
@@ -1026,17 +1027,26 @@ export default {
       }
     }
     
-    // 开始评选
-    const handleStartSelection = async (award) => {
+    // 结束评选
+    const handleEndSelection = async (award) => {
       try {
-        // 更新奖项当前状态为已完成（开始评选）
-        await axios.put(`/api/awards/${award.awardId}`, { ...award, currentStatus: '已完成' })
-        ElMessage.success('开始评选成功')
+        // 更新奖项状态为已结束，当前状态为已完成
+        await axios.put(`/api/awards/${award.awardId}`, { ...award, status: '已结束', currentStatus: '已完成' })
+        ElMessage.success('结束评选成功')
         getAwards()
       } catch (error) {
-        console.error('开始评选失败:', error)
+        console.error('结束评选失败:', error)
         ElMessage.error('操作失败，请重试')
       }
+    }
+
+    // 查看评选结果
+    const handleViewResults = (award) => {
+      // 保存当前奖项ID到localStorage，供结果页面使用
+      localStorage.setItem('currentAwardId', award.awardId)
+      localStorage.setItem('currentAwardName', award.awardName)
+      // 跳转到学生奖项申请页面查看结果
+      router.push('/student-award-applications')
     }
 
     // 页面加载时获取数据
@@ -1083,7 +1093,7 @@ export default {
       handleSizeChange,
       handleCurrentChange,
       handlePublish,
-      handleStartSelection,
+        handleEndSelection,
       
       // 评选流程管理方法
       getProgressColor,
@@ -1092,18 +1102,19 @@ export default {
       handleViewProcessDetails,
       
       // 学生申请管理
-      applicationDialogVisible,
-      applicationCurrentPage,
-      applicationPageSize,
-      applicationLoading,
-      applicationTotal,
-      studentApplications,
-      currentAward,
-      applicationSearchForm,
-      handleApplicationSearch,
-      resetApplicationForm,
-      handleApplicationSizeChange,
-      handleApplicationCurrentChange
+  applicationDialogVisible,
+  applicationCurrentPage,
+  applicationPageSize,
+  applicationLoading,
+  applicationTotal,
+  studentApplications,
+  currentAward,
+  applicationSearchForm,
+  handleApplicationSearch,
+  resetApplicationForm,
+  handleApplicationSizeChange,
+  handleApplicationCurrentChange,
+  handleViewResults
 
     }
   }

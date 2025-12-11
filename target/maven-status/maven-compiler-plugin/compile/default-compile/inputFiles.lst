@@ -64,6 +64,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\repository\StandardRepository.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\repository\StudentRepository.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\repository\UserRepository.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\scheduler\AwardStatusScheduler.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\AwardService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\AwardTypeService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\CourseService.java
