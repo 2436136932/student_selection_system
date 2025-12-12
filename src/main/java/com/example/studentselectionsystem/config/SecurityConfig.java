@@ -96,9 +96,17 @@ public class SecurityConfig {
             // 基本认证配置
             .authorizeHttpRequests(auth -> auth
                 // 允许公开访问的接口
-                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/public/**", "/api/test/**", "/api/events/recent", "/api/notices/recent").permitAll()
+                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/public/**", "/api/test/**", "/api/events/recent", "/api/notices/recent", "/api/awards/recent").permitAll()
                 // 统计类接口允许公开访问
-                .requestMatchers("/api/students/count", "/api/awards/count", "/api/student-award-applications/count").permitAll()
+                .requestMatchers(
+                    "/api/students/count", 
+                    "/api/awards/count", 
+                    "/api/student-award-applications/count",
+                    "/api/student-award-applications/award/*/count",
+                    "/api/student-award-applications/award/*/approved-count",
+                    "/api/student-award-applications/award/*/teacher-approved-count",
+                    "/api/student-award-applications/award/*/admin-approved-count"
+                ).permitAll()
                 // 管理员接口需要ADMIN角色
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // 其他接口需要认证，具体权限由控制器上的@PreAuthorize注解控制

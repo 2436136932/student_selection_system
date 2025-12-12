@@ -341,4 +341,60 @@ public class StudentAwardApplicationController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    /**
+     * 根据奖项ID获取申请总数
+     */
+    @GetMapping("/award/{awardId}/count")
+    public ResponseEntity<Long> getApplicationCountByAwardId(@PathVariable Integer awardId) {
+        try {
+            long count = studentAwardApplicationService.countApplicationsByAwardId(awardId);
+            return new ResponseEntity<>(count, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    /**
+     * 根据奖项ID获取最终获奖数
+     */
+    @GetMapping("/award/{awardId}/approved-count")
+    public ResponseEntity<Long> getApprovedCountByAwardId(@PathVariable Integer awardId) {
+        try {
+            long count = studentAwardApplicationService.countApprovedApplicationsByAwardId(awardId);
+            return new ResponseEntity<>(count, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    /**
+     * 根据奖项ID获取教师审核通过数
+     */
+    @GetMapping("/award/{awardId}/teacher-approved-count")
+    public ResponseEntity<Long> getTeacherApprovedCountByAwardId(@PathVariable Integer awardId) {
+        try {
+            long count = studentAwardApplicationService.countTeacherApprovedApplicationsByAwardId(awardId);
+            return new ResponseEntity<>(count, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    /**
+     * 根据奖项ID获取管理员审核通过数
+     */
+    @GetMapping("/award/{awardId}/admin-approved-count")
+    public ResponseEntity<Long> getAdminApprovedCountByAwardId(@PathVariable Integer awardId) {
+        try {
+            long count = studentAwardApplicationService.countAdminApprovedApplicationsByAwardId(awardId);
+            return new ResponseEntity<>(count, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -126,8 +126,36 @@ public interface StudentAwardApplicationService {
     long countApplications();
 
     /**
+     * 根据奖项ID获取申请总数
+     * @param awardId 奖项ID
+     * @return 申请总数
+     */
+    long countApplicationsByAwardId(Integer awardId);
+
+    /**
      * 获取已批准的申请总数
      * @return 已批准申请总数
      */
     long countApprovedApplications();
+    
+    /**
+     * 根据奖项ID获取已批准的申请总数
+     * @param awardId 奖项ID
+     * @return 已批准申请总数
+     */
+    long countApprovedApplicationsByAwardId(Integer awardId);
+    
+    /**
+     * 根据奖项ID获取教师审核通过的申请数
+     * @param awardId 奖项ID
+     * @return 教师审核通过的申请数
+     */
+    long countTeacherApprovedApplicationsByAwardId(Integer awardId);
+    
+    /**
+     * 根据奖项ID获取管理员审核通过的申请数
+     * @param awardId 奖项ID
+     * @return 管理员审核通过的申请数
+     */
+    long countAdminApprovedApplicationsByAwardId(Integer awardId);
 }

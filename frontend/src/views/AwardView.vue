@@ -60,7 +60,7 @@
                   查看申请
                 </el-button>
                 <el-button 
-                  v-if="hasRole('admin') && award.status !== '已发布'" 
+                  v-if="hasRole('admin') && award.status !== '已发布' && award.currentStatus !== '已关闭' && award.currentStatus !== '已完成'" 
                   type="success" 
                   size="small" 
                   @click="handlePublish(award)"
@@ -76,7 +76,7 @@
                   结束评选
                 </el-button>
                 <el-button 
-                  v-if="award.currentStatus === '已完成'" 
+                  v-if="award.currentStatus === '已完成' || award.currentStatus === '已关闭'" 
                   type="success" 
                   size="small" 
                   @click="handleViewResults(award)"
@@ -115,7 +115,7 @@
       <h2 class="page-title">评选流程管理</h2>
       <div class="process-table-container">
         <el-table
-          :data="awards"
+          :data="processTableData"
           style="width: 100%"
           border
           stripe
@@ -176,6 +176,19 @@
             </template>
           </el-table-column>
         </el-table>
+        
+        <!-- 评选流程分页 -->
+        <div class="pagination">
+          <el-pagination
+            @size-change="handleProcessSizeChange"
+            @current-change="handleProcessCurrentChange"
+            :current-page="currentProcessPage"
+            :page-sizes="[10, 20, 50, 100]"
+            :page-size="processPageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="processTotal"
+          ></el-pagination>
+        </div>
       </div>
     </div>
 
@@ -385,6 +398,185 @@
         </span>
       </template>
     </el-dialog>
+    
+    <!-- 评选流程详情对话框 -->
+    <el-dialog
+      v-model="processDetailDialogVisible"
+      :title="`${currentProcessDetail?.awardName} - 评选流程详情`"
+      width="800px"
+    >
+      <div v-if="currentProcessDetail" class="process-detail-container">
+        <!-- 奖项基本信息 -->
+        <div class="process-basic-info">
+          <h3>{{ currentProcessDetail.awardName }}</h3>
+          <div class="process-status">
+            <el-tag
+              :type="{
+                '未发布': 'info',
+                '已发布': 'success',
+                '已结束': 'warning'
+              }[currentProcessDetail.status || '未发布']"
+            >
+              {{ currentProcessDetail.status }}
+            </el-tag>
+            <el-tag
+              :type="{
+                '待开始': 'info',
+                '进行中': 'warning',
+                '已完成': 'success',
+                '已关闭': 'danger'
+              }[currentProcessDetail.currentStatus || '待开始']"
+            >
+              {{ currentProcessDetail.currentStatus }}
+            </el-tag>
+          </div>
+        </div>
+        
+        <!-- 整体进度 -->
+        <div class="process-overall-progress">
+          <h4>整体进度</h4>
+          <div class="progress-container">
+            <el-progress 
+              :percentage="calculateProgress(currentProcessDetail)" 
+              :color="getProgressColor(calculateProgress(currentProcessDetail))"
+            ></el-progress>
+            <span class="progress-text">{{ calculateProgress(currentProcessDetail) }}% 完成</span>
+          </div>
+        </div>
+        
+        <!-- 流程阶段详情 -->
+        <div class="process-stages">
+          <h4>流程阶段详情</h4>
+          <el-timeline>
+            <!-- 学生申请阶段 -->
+            <el-timeline-item 
+              :timestamp="formatStageTime(currentProcessDetail.startTime, currentProcessDetail.endTime)"
+              :status="getStageStatus(currentProcessDetail, '学生申请')"
+            >
+              <div class="stage-content">
+                <h5>学生申请</h5>
+                <p>学生提交奖项申请的阶段</p>
+                <div class="stage-status">
+                  <el-progress 
+                    :percentage="getStageProgress(currentProcessDetail, '学生申请')" 
+                    :color="getProgressColor(getStageProgress(currentProcessDetail, '学生申请'))"
+                    size="small"
+                  ></el-progress>
+                  <span>{{ getStageProgress(currentProcessDetail, '学生申请') }}%</span>
+                </div>
+              </div>
+            </el-timeline-item>
+            
+            <!-- 教师审批阶段 -->
+            <el-timeline-item 
+              :timestamp="formatStageTime(currentProcessDetail.startTime, currentProcessDetail.endTime)"
+              :status="getStageStatus(currentProcessDetail, '教师审批')"
+            >
+              <div class="stage-content">
+                <h5>教师审批</h5>
+                <p>教师审核学生申请的阶段</p>
+                <div class="stage-status">
+                  <el-progress 
+                    :percentage="getStageProgress(currentProcessDetail, '教师审批')" 
+                    :color="getProgressColor(getStageProgress(currentProcessDetail, '教师审批'))"
+                    size="small"
+                  ></el-progress>
+                  <span>{{ getStageProgress(currentProcessDetail, '教师审批') }}%</span>
+                </div>
+              </div>
+            </el-timeline-item>
+            
+            <!-- 管理员审批阶段 -->
+            <el-timeline-item 
+              :timestamp="formatStageTime(currentProcessDetail.startTime, currentProcessDetail.endTime)"
+              :status="getStageStatus(currentProcessDetail, '管理员审批')"
+            >
+              <div class="stage-content">
+                <h5>管理员审批</h5>
+                <p>管理员最终审批的阶段</p>
+                <div class="stage-status">
+                  <el-progress 
+                    :percentage="getStageProgress(currentProcessDetail, '管理员审批')" 
+                    :color="getProgressColor(getStageProgress(currentProcessDetail, '管理员审批'))"
+                    size="small"
+                  ></el-progress>
+                  <span>{{ getStageProgress(currentProcessDetail, '管理员审批') }}%</span>
+                </div>
+              </div>
+            </el-timeline-item>
+            
+            <!-- 结果公示阶段 -->
+            <el-timeline-item 
+              :timestamp="formatStageTime(currentProcessDetail.startTime, currentProcessDetail.endTime)"
+              :status="getStageStatus(currentProcessDetail, '结果公示')"
+            >
+              <div class="stage-content">
+                <h5>结果公示</h5>
+                <p>公示最终评选结果的阶段</p>
+                <div class="stage-status">
+                  <el-progress 
+                    :percentage="getStageProgress(currentProcessDetail, '结果公示')" 
+                    :color="getProgressColor(getStageProgress(currentProcessDetail, '结果公示'))"
+                    size="small"
+                  ></el-progress>
+                  <span>{{ getStageProgress(currentProcessDetail, '结果公示') }}%</span>
+                </div>
+              </div>
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+        
+        <!-- 流程统计信息 -->
+        <div class="process-statistics">
+          <h4>流程统计</h4>
+          <div class="statistics-grid">
+            <el-card shadow="hover" size="small">
+              <template #header>
+                <div class="card-header">
+                  <span>总申请数</span>
+                </div>
+              </template>
+              <div class="statistic-value">{{ getApplicationCount(currentProcessDetail) }}</div>
+            </el-card>
+            
+            <el-card shadow="hover" size="small">
+              <template #header>
+                <div class="card-header">
+                  <span>教师审核通过</span>
+                </div>
+              </template>
+              <div class="statistic-value">{{ getTeacherApprovedCount(currentProcessDetail) }}</div>
+            </el-card>
+            
+            <el-card shadow="hover" size="small">
+              <template #header>
+                <div class="card-header">
+                  <span>管理员审核通过</span>
+                </div>
+              </template>
+              <div class="statistic-value">{{ getAdminApprovedCount(currentProcessDetail) }}</div>
+            </el-card>
+            
+            <el-card shadow="hover" size="small">
+              <template #header>
+                <div class="card-header">
+                  <span>最终获奖数</span>
+                </div>
+              </template>
+              <div class="statistic-value">{{ getFinalApprovedCount(currentProcessDetail) }}</div>
+            </el-card>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="processDetailDialogVisible = false">关闭</el-button>
+          <el-button type="primary" @click="handleViewApplications(currentProcessDetail)">
+            查看申请列表
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
 
     <!-- 学生申请列表对话框 -->
     <el-dialog
@@ -542,6 +734,14 @@ export default {
       awardName: '',
       awardType: ''
     })
+    
+    // 评选流程分页变量
+    const currentProcessPage = ref(1)
+    const processPageSize = ref(10)
+    const processTotal = ref(0)
+    
+    // 评选流程表格显示数据
+    const processTableData = ref([])
 
 
 
@@ -561,6 +761,10 @@ export default {
     // 奖项详情对话框
     const detailDialogVisible = ref(false)
     const currentDetailAward = ref(null)
+    
+    // 评选流程详情对话框
+    const processDetailDialogVisible = ref(false)
+    const currentProcessDetail = ref(null)
 
 
 
@@ -941,22 +1145,26 @@ export default {
       awards.value.forEach(award => {
         // 根据奖项状态和时间计算当前阶段
         let currentStage = '未开始'
-        let currentStatus = '未开始'
+        let currentStatus = '待开始'
         const now = new Date()
-        const startTime = award.startTime ? new Date(award.startTime) : null
         const endTime = award.endTime ? new Date(award.endTime) : null
         
-        if (award.status === '已发布') {
-          if (!startTime || now < startTime) {
-            currentStage = '未开始'
-            currentStatus = '未开始'
-          } else if (endTime && now > endTime) {
+        // 检查结束时间是否已到
+        const isEndTimeReached = endTime != null && now > endTime
+        
+        // 根据奖项状态和结束时间设置当前状态
+        if (award.status === '未发布') {
+          currentStatus = '待开始'
+          currentStage = '未开始'
+        } else if (award.status === '已发布') {
+          if (isEndTimeReached) {
+            currentStatus = '已关闭'
             currentStage = '已结束'
-            currentStatus = '已完成'
           } else {
             currentStatus = '进行中'
             // 这里可以根据实际的申请和审批情况计算更准确的阶段
             // 暂时根据时间估算阶段
+            const startTime = award.startTime ? new Date(award.startTime) : null
             if (startTime && endTime) {
               const totalDuration = endTime.getTime() - startTime.getTime()
               const elapsedDuration = now.getTime() - startTime.getTime()
@@ -974,8 +1182,8 @@ export default {
             }
           }
         } else if (award.status === '已结束') {
+          currentStatus = isEndTimeReached ? '已关闭' : '已完成'
           currentStage = '结果公示'
-          currentStatus = '已完成'
         }
         
         // 将当前阶段和状态保存到奖项对象中
@@ -984,12 +1192,32 @@ export default {
       })
       
       // 更新评选流程列表
-      selectionProcessList.value = awards.value.map(award => ({
-        id: award.awardId,
-        awardName: award.awardName,
-        currentStage: award.currentStage,
-        progress: calculateProgress(award)
-      }))
+      selectionProcessList.value = awards.value
+      
+      // 更新总条数
+      processTotal.value = selectionProcessList.value.length
+      
+      // 分页处理
+      updateProcessTableData()
+    }
+    
+    // 更新评选流程表格数据
+    const updateProcessTableData = () => {
+      const start = (currentProcessPage.value - 1) * processPageSize.value
+      const end = start + processPageSize.value
+      processTableData.value = selectionProcessList.value.slice(start, end)
+    }
+    
+    // 评选流程分页方法
+    const handleProcessSizeChange = (size) => {
+      processPageSize.value = size
+      currentProcessPage.value = 1
+      updateProcessTableData()
+    }
+    
+    const handleProcessCurrentChange = (current) => {
+      currentProcessPage.value = current
+      updateProcessTableData()
     }
 
     // 查看奖项详情
@@ -1005,13 +1233,137 @@ export default {
       console.log('调用后detailDialogVisible:', detailDialogVisible.value)
     }
 
-    // 查看流程详情
-
-    // 查看流程详情
-    const handleViewProcessDetails = (process) => {
-      console.log('查看流程详情:', process)
-      // 这里可以打开流程详情对话框
-      ElMessage.info('查看流程详情功能待实现')
+    // 用于存储异步获取的统计数据
+    const applicationCount = ref(0)
+    const finalApprovedCount = ref(0)
+    const teacherApprovedCount = ref(0)
+    const adminApprovedCount = ref(0)
+    
+    // 加载统计数据
+      const loadStatisticsData = async (process) => {
+        try {
+          console.log('开始加载统计数据，process:', process);
+          console.log('awardId:', process.awardId);
+          // 并行获取四个统计数据
+          const [applicationCountData, finalApprovedCountData, teacherApprovedCountData, adminApprovedCountData] = await Promise.all([
+            axios.get(`/api/student-award-applications/award/${process.awardId}/count`).then(res => { console.log('总申请数接口返回:', res); return res; }),
+            axios.get(`/api/student-award-applications/award/${process.awardId}/approved-count`).then(res => { console.log('最终获奖数接口返回:', res); return res; }),
+            axios.get(`/api/student-award-applications/award/${process.awardId}/teacher-approved-count`).then(res => { console.log('教师审核通过数接口返回:', res); return res; }),
+            axios.get(`/api/student-award-applications/award/${process.awardId}/admin-approved-count`).then(res => { console.log('管理员审核通过数接口返回:', res); return res; })
+          ]);
+          applicationCount.value = applicationCountData.data;
+          finalApprovedCount.value = finalApprovedCountData.data;
+          teacherApprovedCount.value = teacherApprovedCountData.data;
+          adminApprovedCount.value = adminApprovedCountData.data;
+        } catch (error) {
+          console.error('加载统计数据失败:', error);
+          console.error('错误详情:', error.response ? error.response.data : error.message);
+          applicationCount.value = 0;
+          finalApprovedCount.value = 0;
+          teacherApprovedCount.value = 0;
+          adminApprovedCount.value = 0;
+        }
+      }
+      
+      // 查看流程详情
+    const handleViewProcessDetails = async (process) => {
+      currentProcessDetail.value = process
+      processDetailDialogVisible.value = true
+      // 加载统计数据
+      await loadStatisticsData(process)
+    }
+    
+    // 格式化阶段时间
+    const formatStageTime = (startTime, endTime) => {
+      if (!startTime && !endTime) {
+        return '时间未设置'
+      }
+      if (!startTime) {
+        return `至 ${new Date(endTime).toLocaleDateString()}`
+      }
+      if (!endTime) {
+        return `${new Date(startTime).toLocaleDateString()} 开始`
+      }
+      return `${new Date(startTime).toLocaleDateString()} 至 ${new Date(endTime).toLocaleDateString()}`
+    }
+    
+    // 获取状态标签类型
+    const getStatusTagType = (status) => {
+      const typeMap = {
+        '未发布': 'info',
+        '已发布': 'success',
+        '已结束': 'warning'
+      }
+      return typeMap[status] || 'info'
+    }
+    
+    // 获取当前状态标签类型
+    const getCurrentStatusTagType = (currentStatus) => {
+      const typeMap = {
+        '待开始': 'info',
+        '进行中': 'warning',
+        '已完成': 'success',
+        '已关闭': 'danger'
+      }
+      return typeMap[currentStatus] || 'info'
+    }
+    
+    // 获取阶段状态
+    const getStageStatus = (process, stageName) => {
+      const overallProgress = calculateProgress(process)
+      if (overallProgress === 0) return 'wait'
+      if (overallProgress === 100) return 'success'
+      
+      const stageMap = {
+        '学生申请': 25,
+        '教师审批': 50,
+        '管理员审批': 75,
+        '结果公示': 100
+      }
+      
+      const stageProgress = stageMap[stageName] || 0
+      if (overallProgress >= stageProgress) return 'success'
+      if (overallProgress >= stageProgress - 25) return 'process'
+      return 'wait'
+    }
+    
+    // 获取阶段进度
+    const getStageProgress = (process, stageName) => {
+      const overallProgress = calculateProgress(process)
+      if (overallProgress === 0) return 0
+      if (overallProgress === 100) return 100
+      
+      const stageMap = {
+        '学生申请': 25,
+        '教师审批': 50,
+        '管理员审批': 75,
+        '结果公示': 100
+      }
+      
+      const stageProgress = stageMap[stageName] || 0
+      if (overallProgress >= stageProgress) return 100
+      if (overallProgress >= stageProgress - 25) return 50
+      return 0
+    }
+    
+    // 获取总申请数
+    const getApplicationCount = (process) => {
+      return applicationCount.value;
+    }
+    
+    // 获取教师审核通过数
+    const getTeacherApprovedCount = (process) => {
+      return teacherApprovedCount.value
+    }
+    
+    // 获取管理员审核通过数
+    const getAdminApprovedCount = (process) => {
+      return adminApprovedCount.value
+    }
+    
+    // 获取最终获奖数
+    const getFinalApprovedCount = (process) => {
+      return finalApprovedCount.value;
     }
 
     // 发布奖项
@@ -1072,7 +1424,12 @@ export default {
       
       // 评选流程管理
       selectionProcessList,
+      // 异步统计数据
+      applicationCount,
+      finalApprovedCount,
       calculateProgress,
+      processDetailDialogVisible,
+      currentProcessDetail,
       
       // 奖项详情
       detailDialogVisible,
@@ -1100,6 +1457,23 @@ export default {
       handleViewDetails,
       handleViewApplications,
       handleViewProcessDetails,
+      formatStageTime,
+      getStatusTagType,
+      getCurrentStatusTagType,
+      getStageStatus,
+      getStageProgress,
+      getApplicationCount,
+      getTeacherApprovedCount,
+      getAdminApprovedCount,
+      getFinalApprovedCount,
+      
+      // 评选流程分页变量和方法
+      currentProcessPage,
+      processPageSize,
+      processTotal,
+      processTableData,
+      handleProcessSizeChange,
+      handleProcessCurrentChange,
       
       // 学生申请管理
   applicationDialogVisible,

@@ -131,6 +131,7 @@ const getStatistics = async () => {
 const getRecentEvents = async () => {
   try {
     const res = await axios.get('/api/awards/recent')
+    console.log('API返回的最近评选活动数据:', res.data)
     recentEvents.value = res.data
   } catch (error) {
     console.error('获取最近评选活动失败:', error)
@@ -156,6 +157,8 @@ const getStatusType = (status) => {
       return 'success'
     case '待开始':
       return 'info'
+    case '已关闭':
+      return 'danger'
     case '已逾期':
       return 'danger'
     default:

@@ -352,6 +352,41 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     }
 
     @Override
+    public long countApplicationsByAwardId(Integer awardId) {
+        return studentAwardApplicationMapper.selectCount(
+                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
+                        .eq(StudentAwardApplication::getAwardId, awardId)
+        );
+    }
+
+    @Override
+    public long countApprovedApplicationsByAwardId(Integer awardId) {
+        return studentAwardApplicationMapper.selectCount(
+                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
+                        .eq(StudentAwardApplication::getAwardId, awardId)
+                        .eq(StudentAwardApplication::getStatus, 3) // 3表示管理员审批通过，即最终获奖
+        );
+    }
+
+    @Override
+    public long countTeacherApprovedApplicationsByAwardId(Integer awardId) {
+        return studentAwardApplicationMapper.selectCount(
+                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
+                        .eq(StudentAwardApplication::getAwardId, awardId)
+                        .eq(StudentAwardApplication::getStatus, 1) // 1表示教师审核通过
+        );
+    }
+
+    @Override
+    public long countAdminApprovedApplicationsByAwardId(Integer awardId) {
+        return studentAwardApplicationMapper.selectCount(
+                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
+                        .eq(StudentAwardApplication::getAwardId, awardId)
+                        .eq(StudentAwardApplication::getStatus, 3) // 3表示管理员审核通过
+        );
+    }
+
+    @Override
     public long countApplications() {
         return studentAwardApplicationMapper.selectCount(null);
     }

@@ -29,39 +29,30 @@ public class AwardServiceImpl implements AwardService {
         }
         
         Date now = new Date();
-        Date startTime = entityAward.getStartTime();
         Date endTime = entityAward.getEndTime();
         String status = entityAward.getStatus();
         String currentStatus = entityAward.getCurrentStatus();
+        String newCurrentStatus = currentStatus;
         
-        // 只有已发布的奖项才需要更新当前状态
-        if ("已发布".equals(status)) {
-            // 如果还没到开始时间
-            if (startTime != null && now.before(startTime)) {
-                if (!"未开始".equals(currentStatus)) {
-                    entityAward.setCurrentStatus("未开始");
-                    awardMapper.updateById(entityAward);
-                }
-            } 
-            // 如果已经过了结束时间
-            else if (endTime != null && now.after(endTime)) {
-                if (!"已完成".equals(currentStatus)) {
-                    entityAward.setCurrentStatus("已完成");
-                    // 如果奖项状态还是已发布，更新为已结束
-                    if ("已发布".equals(status)) {
-                        entityAward.setStatus("已结束");
-                    }
-                    awardMapper.updateById(entityAward);
-                }
-            } 
-            // 在开始时间和结束时间之间
-            else {
-                if (!"进行中".equals(currentStatus)) {
-                    entityAward.setCurrentStatus("进行中");
-                    awardMapper.updateById(entityAward);
-                }
+        // 检查结束时间是否已到
+        boolean isEndTimeReached = endTime != null && now.after(endTime);
+        
+        // 根据奖项状态设置当前状态，同时考虑结束时间
+        if ("未发布".equals(status)) {
+            newCurrentStatus = "待开始";
+        } else if ("已发布".equals(status)) {
+            newCurrentStatus = isEndTimeReached ? "已关闭" : "进行中";
+            // 如果已到结束时间，更新奖项状态为已结束
+            if (isEndTimeReached && "已发布".equals(status)) {
+                entityAward.setStatus("已结束");
             }
+        } else if ("已结束".equals(status)) {
+            newCurrentStatus = isEndTimeReached ? "已关闭" : "已完成";
         }
+        
+        // 无论当前状态是否变化，都强制更新当前状态
+        entityAward.setCurrentStatus(newCurrentStatus);
+        awardMapper.updateById(entityAward);
     }
 
     // 将实体类转换为模型类
