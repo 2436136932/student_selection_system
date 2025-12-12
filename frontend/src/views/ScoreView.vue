@@ -217,7 +217,7 @@ const getCourseInfoByCode = (courseCode) => {
 // 根据学号获取学生姓名
 const getStudentNameByNumber = () => {
   if (form.studentNumber) {
-    axios.get(`/api/students/student-id/${form.studentNumber}`)
+    axios.get(`/api/students/id/${form.studentNumber}`)
       .then(response => {
         if (response.data) {
           form.studentName = response.data.name

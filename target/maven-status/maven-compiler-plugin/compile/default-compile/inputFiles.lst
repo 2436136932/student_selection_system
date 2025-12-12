@@ -15,6 +15,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\StandardController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\StudentAwardApplicationController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\StudentController.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\TeacherController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\TestController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\UserController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\dao\AwardDAO.java
@@ -36,6 +37,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\entity\Student.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\entity\StudentAwardApplication.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\entity\StudentCompetition.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\entity\Teacher.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\entity\User.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\entity\VolunteerActivity.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\AwardMapper.java
@@ -53,6 +55,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\StudentAwardApplicationMapper.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\StudentCompetitionMapper.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\StudentMapper.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\TeacherMapper.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\UserMapper.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\VolunteerActivityMapper.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\model\Award.java
@@ -63,6 +66,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\repository\ScoreRepository.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\repository\StandardRepository.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\repository\StudentRepository.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\repository\TeacherRepository.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\repository\UserRepository.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\scheduler\AwardStatusScheduler.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\AwardService.java
@@ -80,6 +84,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\StandardServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\StudentAwardApplicationServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\StudentServiceImpl.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\TeacherServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\UserServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\MajorService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\NoticeService.java
@@ -90,6 +95,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\StandardService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\StudentAwardApplicationService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\StudentService.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\TeacherService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\UserService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\StudentAwardSelectionSystemApplication.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\util\DatabaseChecker.java

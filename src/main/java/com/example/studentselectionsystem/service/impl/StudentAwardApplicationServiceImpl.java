@@ -373,7 +373,7 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
         return studentAwardApplicationMapper.selectCount(
                 new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
                         .eq(StudentAwardApplication::getAwardId, awardId)
-                        .eq(StudentAwardApplication::getTeacherApprovalStatus, 1) // 1表示教师审核通过
+                        .eq(StudentAwardApplication::getStatus, 1) // 1表示教师审核通过
         );
     }
 

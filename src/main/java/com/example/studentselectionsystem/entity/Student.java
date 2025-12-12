@@ -28,7 +28,6 @@ public class Student implements Serializable {
      * 学号
      */
     @TableField("student_number")
-    @JsonProperty("student_number")
     private String studentNumber;
 
     /**

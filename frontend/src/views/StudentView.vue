@@ -184,8 +184,9 @@ const getStudents = () => {
       className: searchForm.className
     }
   }).then(response => {
-    students.value = response.data.records
-    total.value = response.data.total
+    console.log('学生列表响应数据:', response.data)
+    students.value = response.data.records || []
+    total.value = response.data.total || 0
   }).catch(error => {
     ElMessage.error('获取学生列表失败')
     console.error('Error fetching students:', error)

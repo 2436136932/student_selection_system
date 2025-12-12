@@ -166,7 +166,17 @@ public class StudentServiceImpl implements StudentService {
         }
         
         // 执行查询
-        return studentRepository.selectPage(pageObj, queryWrapper);
+        com.baomidou.mybatisplus.core.metadata.IPage<Student> result = studentRepository.selectPage(pageObj, queryWrapper);
+        
+        // 打印日志
+        System.out.println("学生分页查询结果:");
+        System.out.println("总记录数: " + result.getTotal());
+        System.out.println("当前页: " + result.getCurrent());
+        System.out.println("每页大小: " + result.getSize());
+        System.out.println("总页数: " + result.getPages());
+        System.out.println("记录列表: " + result.getRecords());
+        
+        return result;
     }
 
     @Override

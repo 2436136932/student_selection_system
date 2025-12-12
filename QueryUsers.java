@@ -1,41 +1,39 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 
 public class QueryUsers {
     public static void main(String[] args) {
-        String url = "jdbc:oracle:thin:@localhost:1521:orcl";
-        String username = "system";
-        String password = "123456";
-        
         try {
-            // 加载驱动
-            Class.forName("oracle.jdbc.OracleDriver");
+            // 加载数据库驱动
+            Class.forName("com.mysql.cj.jdbc.Driver");
             
-            // 建立连接
+            // 连接数据库
+            String url = "jdbc:mysql://localhost:3306/student_selection_system?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true";
+            String username = "root";
+            String password = "123456";
             Connection conn = DriverManager.getConnection(url, username, password);
-            Statement stmt = conn.createStatement();
             
-            // 查询用户表
-            String sql = "SELECT id, username, password, role, status FROM users";
-            ResultSet rs = stmt.executeQuery(sql);
+            // 创建查询语句
+            String sql = "SELECT * FROM users WHERE real_name = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, "张三");
             
-            // 打印结果
-            System.out.println("ID | Username | Password | Role | Status");
-            System.out.println("------------------------------------------");
+            // 执行查询
+            ResultSet rs = pstmt.executeQuery();
+            
+            // 输出结果
             while (rs.next()) {
-                int id = rs.getInt("id");
-                String user = rs.getString("username");
-                String pass = rs.getString("password");
-                String role = rs.getString("role");
-                int status = rs.getInt("status");
-                System.out.printf("%d | %s | %s | %s | %d\n", id, user, pass, role, status);
+                System.out.println("ID: " + rs.getInt("id"));
+                System.out.println("用户名: " + rs.getString("username"));
+                System.out.println("真实姓名: " + rs.getString("real_name"));
+                System.out.println("邮箱: " + rs.getString("email"));
+                System.out.println("电话: " + rs.getString("phone"));
+                System.out.println("角色: " + rs.getString("role"));
+                System.out.println("=========================");
             }
             
             // 关闭连接
             rs.close();
-            stmt.close();
+            pstmt.close();
             conn.close();
             
         } catch (Exception e) {

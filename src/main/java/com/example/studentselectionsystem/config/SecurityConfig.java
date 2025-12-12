@@ -97,9 +97,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // 允许公开访问的接口
                 .requestMatchers("/api/auth/login", "/api/auth/register", "/api/public/**", "/api/test/**", "/api/events/recent", "/api/notices/recent", "/api/awards/recent").permitAll()
-                // 统计类接口允许公开访问
+                // 统计类接口和学生列表允许公开访问
                 .requestMatchers(
-                    "/api/students/count", 
+                    "/api/students",
+                    "/api/students/count",
+                    "/api/students/with-major",
                     "/api/awards/count", 
                     "/api/student-award-applications/count",
                     "/api/student-award-applications/award/*/count",

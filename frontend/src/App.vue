@@ -95,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { 
@@ -130,6 +130,7 @@ const activeIndex = computed(() => route.path)
 const menuItems = [
   { index: '/home', icon: House, text: '首页', roles: ['admin', 'teacher', 'student'] },
   { index: '/students', icon: User, text: '学生管理', roles: ['admin'] },
+  { index: '/teachers', icon: User, text: '教师管理', roles: ['admin'] },
   { index: '/standards', icon: Document, text: '评奖标准管理', roles: ['admin', 'teacher', 'student'] },
   { index: '/scores', icon: DataLine, text: '成绩管理', roles: ['admin', 'teacher', 'student'] },
   { index: '/awards', icon: Medal, text: '评奖评优', roles: ['admin', 'teacher', 'student'] },
@@ -142,6 +143,7 @@ const menuItems = [
 const menuMap = {
   '/home': '首页',
   '/students': '学生管理',
+  '/teachers': '教师管理',
   '/standards': '评奖标准管理',
   '/scores': '成绩管理',
   '/awards': '评奖评优',
@@ -165,6 +167,22 @@ const checkLoginStatus = () => {
 // 组件挂载时检查登录状态
 onMounted(() => {
   checkLoginStatus()
+})
+
+// 监听userInfo变化
+watch(userInfo, (newVal) => {
+  if (newVal && newVal.username) {
+    isLoggedIn.value = true
+  } else {
+    isLoggedIn.value = false
+  }
+}, { deep: true })
+
+// 监听localStorage变化
+window.addEventListener('storage', (event) => {
+  if (event.key === 'userInfo') {
+    checkLoginStatus()
+  }
 })
 
 // 切换侧边栏折叠状态
