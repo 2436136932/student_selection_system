@@ -7,7 +7,7 @@ public class QueryAwards {
     public static void main(String[] args) {
         String url = "jdbc:mysql://localhost:3306/student_selection_system?useSSL=false&serverTimezone=UTC";
         String username = "root";
-        String password = "password";
+        String password = "123456";
 
         try {
             // 加载驱动
@@ -17,15 +17,16 @@ public class QueryAwards {
             // 创建Statement
             Statement stmt = conn.createStatement();
             // 执行查询
-            String sql = "SELECT id, award_name, status, current_status, end_time FROM awards LIMIT 10";
+            String sql = "SELECT * FROM student_award_applications";
             ResultSet rs = stmt.executeQuery(sql);
             // 处理结果
             while (rs.next()) {
                 System.out.println("ID: " + rs.getInt("id"));
-                System.out.println("Award Name: " + rs.getString("award_name"));
-                System.out.println("Status: " + rs.getString("status"));
-                System.out.println("Current Status: " + rs.getString("current_status"));
-                System.out.println("End Time: " + rs.getTimestamp("end_time"));
+                System.out.println("Student ID: " + rs.getLong("student_id"));
+                System.out.println("Award ID: " + rs.getInt("award_id"));
+                System.out.println("Status: " + rs.getInt("status"));
+                System.out.println("Teacher Approval Status: " + rs.getInt("teacher_approval_status"));
+                System.out.println("Admin Approval Status: " + rs.getInt("admin_approval_status"));
                 System.out.println("------------------------");
             }
             // 关闭资源
