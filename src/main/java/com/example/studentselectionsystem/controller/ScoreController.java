@@ -70,14 +70,14 @@ public class ScoreController {
             if (score.getCourseCode() != null && !score.getCourseCode().isEmpty()) {
                 String courseCode = score.getCourseCode();
                 System.out.println("正在根据课程代码查询课程: " + courseCode);
-                Course course = courseService.findCourseByCode(courseCode).orElseThrow(() -> new RuntimeException("Course not found"));
-                System.out.println("查询到的课程: ID=" + course.getId() + ", 名称=" + course.getName());
+                Course course = courseService.findCourseByCourseCode(courseCode).orElseThrow(() -> new RuntimeException("Course not found"));
+                System.out.println("查询到的课程: ID=" + course.getId() + ", 名称=" + course.getCourseName());
                 score.setCourseId(course.getId());
             } else if (score.getCourseId() != null) {
                 // 如果直接提供了courseId，验证课程是否存在
                 System.out.println("正在验证课程ID: " + score.getCourseId());
                 Course course = courseService.findCourseById(score.getCourseId()).orElseThrow(() -> new RuntimeException("Course not found"));
-                System.out.println("验证通过的课程: ID=" + course.getId() + ", 名称=" + course.getName());
+                System.out.println("验证通过的课程: ID=" + course.getId() + ", 名称=" + course.getCourseName());
             }
             
             // 准备创建成绩记录...
@@ -105,7 +105,7 @@ public class ScoreController {
             // 如果前端传递了courseCode，转换为courseId
             if (score.getCourseCode() != null && !score.getCourseCode().isEmpty()) {
                 String courseCode = score.getCourseCode();
-                Course course = courseService.findCourseByCode(courseCode).orElseThrow(() -> new RuntimeException("Course not found"));
+                Course course = courseService.findCourseByCourseCode(courseCode).orElseThrow(() -> new RuntimeException("Course not found"));
                 score.setCourseId(course.getId());
             }
             Score updatedScore = scoreService.updateScore(id, score);

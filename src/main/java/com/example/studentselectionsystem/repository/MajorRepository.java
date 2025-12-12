@@ -20,7 +20,7 @@ public interface MajorRepository extends BaseMapper<Major> {
      * @param name 专业名称
      * @return 专业信息
      */
-    @Select("SELECT * FROM major WHERE name = #{name}")
+    @Select("SELECT * FROM majors WHERE name = #{name}")
     Optional<Major> selectByName(@Param("name") String name);
 
     /**
@@ -28,7 +28,7 @@ public interface MajorRepository extends BaseMapper<Major> {
      * @param department 学院
      * @return 专业列表
      */
-    @Select("SELECT * FROM major WHERE department = #{department}")
+    @Select("SELECT * FROM majors WHERE department = #{department}")
     List<Major> selectByDepartment(@Param("department") String department);
 
     /**
@@ -36,6 +36,6 @@ public interface MajorRepository extends BaseMapper<Major> {
      * @param name 专业名称
      * @return 是否存在
      */
-    @Select("SELECT COUNT(*) > 0 FROM major WHERE name = #{name}")
+    @Select("SELECT COUNT(*) > 0 FROM majors WHERE name = #{name}")
     boolean existsByName(@Param("name") String name);
 }

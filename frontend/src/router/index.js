@@ -30,7 +30,8 @@ const router = createRouter({
     },
     {
       path: '/courses',
-      redirect: '/standards',
+      name: 'Courses',
+      component: () => import('../views/CourseView.vue'),
       meta: { requiresAuth: true }
     },
     {

@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.studentselectionsystem.entity.Award;
 import com.example.studentselectionsystem.mapper.AwardMapper;
 import com.example.studentselectionsystem.service.AwardService;
+import com.example.studentselectionsystem.service.StudentAwardApplicationService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Date;
@@ -21,6 +23,9 @@ public class AwardServiceImpl implements AwardService {
     
     @Autowired
     private AwardMapper awardMapper;
+
+    @Autowired
+    private StudentAwardApplicationService studentAwardApplicationService;
 
     // 更新奖项的当前状态
     private void updateAwardCurrentStatus(com.example.studentselectionsystem.entity.Award entityAward) {
@@ -50,8 +55,62 @@ public class AwardServiceImpl implements AwardService {
             newCurrentStatus = isEndTimeReached ? "已关闭" : "已完成";
         }
         
-        // 无论当前状态是否变化，都强制更新当前状态
+        // 设置当前状态
         entityAward.setCurrentStatus(newCurrentStatus);
+        
+        // 设置当前阶段
+        if ("待开始".equals(newCurrentStatus) || "已完成".equals(newCurrentStatus) || "已关闭".equals(newCurrentStatus)) {
+            // 如果状态不是进行中，保持原始阶段或设置为默认值
+            if (entityAward.getCurrentStage() == null || entityAward.getCurrentStage().isEmpty()) {
+                entityAward.setCurrentStage("未开始");
+            }
+        } else {
+            // 如果状态是进行中，根据业务逻辑设置阶段
+            Integer awardId = entityAward.getId();
+            // 获取该奖项的所有申请
+            List<com.example.studentselectionsystem.entity.StudentAwardApplication> applications = 
+                studentAwardApplicationService.findApplicationsByAwardId(awardId);
+            
+            if (applications.isEmpty()) {
+                // 没有学生申请，处于学生申请阶段
+                entityAward.setCurrentStage("学生申请");
+            } else {
+                // 有学生申请
+                boolean hasTeacherApproval = false;
+                boolean hasPendingAdminApproval = false;
+                boolean hasAllAdminApproved = true;
+                
+                for (com.example.studentselectionsystem.entity.StudentAwardApplication application : applications) {
+                    // 检查是否有教师审批通过的申请
+                    if (application.getTeacherApprovalStatus() != null && application.getTeacherApprovalStatus() == 1) {
+                        hasTeacherApproval = true;
+                    }
+                    
+                    // 检查管理员审批状态
+                    if (application.getAdminApprovalStatus() == null || application.getAdminApprovalStatus() == 0) {
+                        // 有管理员待审批的申请
+                        hasPendingAdminApproval = true;
+                        hasAllAdminApproved = false;
+                    } else if (application.getAdminApprovalStatus() != 1) {
+                        // 有管理员未通过的申请
+                        hasAllAdminApproved = false;
+                    }
+                }
+                
+                if (hasTeacherApproval && hasPendingAdminApproval) {
+                    // 有学生申请且有教师审批但有管理员待审批，处于管理员审批阶段
+                    entityAward.setCurrentStage("管理员审批");
+                } else if (hasAllAdminApproved) {
+                    // 所有申请都已通过管理员审批，处于结果公示阶段
+                    entityAward.setCurrentStage("结果公示");
+                } else {
+                    // 其他情况，处于教师审批阶段
+                    entityAward.setCurrentStage("教师审批");
+                }
+            }
+        }
+        
+        // 更新奖项信息
         awardMapper.updateById(entityAward);
     }
 
@@ -69,8 +128,9 @@ public class AwardServiceImpl implements AwardService {
         if (entityAward.getCreateTime() != null) {
             modelAward.setYear(String.valueOf(entityAward.getCreateTime().getYear() + 1900));
         }
-        // 设置当前状态和截止时间
+        // 设置当前状态、当前阶段和截止时间
         modelAward.setCurrentStatus(entityAward.getCurrentStatus());
+        modelAward.setCurrentStage(entityAward.getCurrentStage());
         modelAward.setEndTime(entityAward.getEndTime());
         // 添加缺失的字段转换
         modelAward.setAwardType(entityAward.getAwardType());
@@ -106,6 +166,8 @@ public class AwardServiceImpl implements AwardService {
         entityAward.setAwardLevel(award.getAwardLevel());
         entityAward.setDescription(award.getDescription());
         entityAward.setStatus(award.getStatus());
+        entityAward.setCurrentStatus(award.getCurrentStatus());
+        entityAward.setCurrentStage(award.getCurrentStage());
         entityAward.setQuota(award.getQuota());
         entityAward.setStartTime(award.getStartTime());
         entityAward.setEndTime(award.getEndTime());

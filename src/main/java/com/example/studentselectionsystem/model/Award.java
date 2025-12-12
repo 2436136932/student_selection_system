@@ -66,6 +66,11 @@ public class Award {
     private String currentStatus;
     
     /**
+     * 当前阶段：学生申请/教师审批/管理员审批/结果公示
+     */
+    private String currentStage;
+    
+    /**
      * 奖项状态：未发布/已发布/已结束
      */
     private String status;
@@ -85,8 +90,8 @@ public class Award {
         this.description = description;
     }
     
-    // Constructor with all fields including currentStatus and endTime
-    public Award(String awardId, String studentId, String awardName, String awardLevel, String year, String description, String currentStatus, Date endTime) {
+    // Constructor with all fields including currentStatus, currentStage and endTime
+    public Award(String awardId, String studentId, String awardName, String awardLevel, String year, String description, String currentStatus, String currentStage, Date endTime) {
         this.awardId = awardId;
         this.studentId = studentId;
         this.awardName = awardName;
@@ -94,6 +99,7 @@ public class Award {
         this.year = year;
         this.description = description;
         this.currentStatus = currentStatus;
+        this.currentStage = currentStage;
         this.endTime = endTime;
     }
     
@@ -196,6 +202,14 @@ public class Award {
     
     public void setStartTime(Date startTime) {
         this.startTime = startTime;
+    }
+    
+    public String getCurrentStage() {
+        return currentStage;
+    }
+    
+    public void setCurrentStage(String currentStage) {
+        this.currentStage = currentStage;
     }
     
     public String getStatus() {

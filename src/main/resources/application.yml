@@ -4,6 +4,10 @@ spring:
   application:
     name: student-selection-system
   
+  # Allow circular references
+  main:
+    allow-circular-references: true
+  
   # Database Configuration - MySQL
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

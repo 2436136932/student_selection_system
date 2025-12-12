@@ -27,7 +27,7 @@ public class DatabaseChecker implements CommandLineRunner {
         // 检查课程ID为1的课程
         Course course = courseRepository.selectById(1L);
         if (course != null) {
-            System.out.println("课程ID为1的课程存在: " + course.getName() + " (" + course.getCode() + ")");
+            System.out.println("课程ID为1的课程存在: " + course.getCourseName() + " (" + course.getCourseCode() + ")");
         } else {
             System.out.println("课程ID为1的课程不存在！");
         }
@@ -43,7 +43,7 @@ public class DatabaseChecker implements CommandLineRunner {
         // 检查所有课程
         System.out.println("\n=== 所有课程 ===");
         courseRepository.selectList(null).forEach(c -> {
-            System.out.println("ID: " + c.getId() + ", 名称: " + c.getName() + ", 代码: " + c.getCode());
+            System.out.println("ID: " + c.getId() + ", 名称: " + c.getCourseName() + ", 代码: " + c.getCourseCode());
         });
 
         // 检查所有学生

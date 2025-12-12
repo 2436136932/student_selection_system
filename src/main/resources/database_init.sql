@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS courses (
     credits DECIMAL(3,1) NOT NULL COMMENT '学分',
     hours INT NOT NULL COMMENT '学时',
     department VARCHAR(100) NOT NULL COMMENT '开课部门',
-    teacher_id BIGINT NOT NULL COMMENT '授课教师ID',
+    teacher_id BIGINT COMMENT '授课教师ID',
     semester VARCHAR(20) NOT NULL COMMENT '学期（如：2024-2025-1）',
     year YEAR NOT NULL COMMENT '学年',
     max_students INT DEFAULT 100 COMMENT '最大选课人数',
@@ -117,6 +117,7 @@ CREATE TABLE IF NOT EXISTS awards (
     end_time DATETIME COMMENT '结束时间',
     status VARCHAR(20) DEFAULT '未发布' COMMENT '奖项状态：未发布/已发布/已结束',
     current_status VARCHAR(20) DEFAULT '待开始' COMMENT '当前状态：待开始/进行中/已完成/已关闭',
+    current_stage VARCHAR(20) DEFAULT '未开始' COMMENT '当前阶段：学生申请/教师审批/管理员审批/结果公示',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='奖项表';

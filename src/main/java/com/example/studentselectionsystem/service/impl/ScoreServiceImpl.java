@@ -51,8 +51,8 @@ public class ScoreServiceImpl implements ScoreService {
                 Course course = courseRepository.selectById(score.getCourseId());
                 if (course != null) {
                     score.setSemester(course.getSemester());
-                    score.setCourseName(course.getName()); // 从课程表中获取课程名称
-                    score.setCourseCode(course.getCode()); // 从课程表中获取课程代码
+                    score.setCourseName(course.getCourseName()); // 从课程表中获取课程名称
+                    score.setCourseCode(course.getCourseCode()); // 从课程表中获取课程代码
                 }
             }
             

@@ -784,7 +784,7 @@ export default {
         awards.value = response.data.records
         total.value = response.data.total
         // 更新评选流程列表
-        updateSelectionProcessList()
+        await updateSelectionProcessList()
       } catch (error) {
         ElMessage.error('获取奖项列表失败')
         console.error('获取奖项列表失败:', error)
@@ -1139,10 +1139,38 @@ export default {
       }
     }
 
+    // 获取单个奖项的统计数据
+    const getAwardStatistics = async (awardId) => {
+      try {
+        // 并行获取四个统计数据
+        const [applicationCountData, finalApprovedCountData, teacherApprovedCountData, adminApprovedCountData] = await Promise.all([
+          axios.get(`/api/student-award-applications/award/${awardId}/count`),
+          axios.get(`/api/student-award-applications/award/${awardId}/approved-count`),
+          axios.get(`/api/student-award-applications/award/${awardId}/teacher-approved-count`),
+          axios.get(`/api/student-award-applications/award/${awardId}/admin-approved-count`)
+        ]);
+        
+        return {
+          applicationCount: applicationCountData.data,
+          finalApprovedCount: finalApprovedCountData.data,
+          teacherApprovedCount: teacherApprovedCountData.data,
+          adminApprovedCount: adminApprovedCountData.data
+        };
+      } catch (error) {
+        console.error('获取奖项统计数据失败:', error);
+        return {
+          applicationCount: 0,
+          finalApprovedCount: 0,
+          teacherApprovedCount: 0,
+          adminApprovedCount: 0
+        };
+      }
+    }
+
     // 更新评选流程列表
-    const updateSelectionProcessList = () => {
+    const updateSelectionProcessList = async () => {
       // 计算每个奖项的当前阶段和进度
-      awards.value.forEach(award => {
+      const updatedAwards = await Promise.all(awards.value.map(async (award) => {
         // 根据奖项状态和时间计算当前阶段
         let currentStage = '未开始'
         let currentStatus = '待开始'
@@ -1159,26 +1187,26 @@ export default {
         } else if (award.status === '已发布') {
           if (isEndTimeReached) {
             currentStatus = '已关闭'
-            currentStage = '已结束'
+            currentStage = '结果公示'
           } else {
             currentStatus = '进行中'
-            // 这里可以根据实际的申请和审批情况计算更准确的阶段
-            // 暂时根据时间估算阶段
-            const startTime = award.startTime ? new Date(award.startTime) : null
-            if (startTime && endTime) {
-              const totalDuration = endTime.getTime() - startTime.getTime()
-              const elapsedDuration = now.getTime() - startTime.getTime()
-              const progress = Math.min(Math.round((elapsedDuration / totalDuration) * 100), 100)
-              
-              if (progress < 33) {
-                currentStage = '学生申请'
-              } else if (progress < 66) {
-                currentStage = '教师审批'
-              } else {
-                currentStage = '管理员审批'
-              }
-            } else {
+            
+            // 获取实际的申请和审批数据
+            const stats = await getAwardStatistics(award.awardId);
+            
+            // 根据实际数据确定当前阶段
+            if (stats.applicationCount === 0) {
+              // 没有学生申请，处于学生申请阶段
               currentStage = '学生申请'
+            } else if (stats.teacherApprovedCount < stats.applicationCount) {
+              // 有学生申请，但教师还没审批完，处于教师审批阶段
+              currentStage = '教师审批'
+            } else if (stats.adminApprovedCount < stats.teacherApprovedCount) {
+              // 教师审批完，但管理员还没审批完，处于管理员审批阶段
+              currentStage = '管理员审批'
+            } else {
+              // 管理员审批完，处于结果公示阶段
+              currentStage = '结果公示'
             }
           }
         } else if (award.status === '已结束') {
@@ -1189,10 +1217,12 @@ export default {
         // 将当前阶段和状态保存到奖项对象中
         award.currentStage = currentStage
         award.currentStatus = currentStatus
-      })
+        
+        return award;
+      }));
       
       // 更新评选流程列表
-      selectionProcessList.value = awards.value
+      selectionProcessList.value = updatedAwards
       
       // 更新总条数
       processTotal.value = selectionProcessList.value.length
@@ -1369,8 +1399,13 @@ export default {
     // 发布奖项
     const handlePublish = async (award) => {
       try {
-        // 更新奖项状态为已发布
-        await axios.put(`/api/awards/${award.awardId}`, { ...award, status: '已发布' })
+        // 更新奖项状态为已发布，并设置当前阶段为学生申请
+        await axios.put(`/api/awards/${award.awardId}`, { 
+          ...award, 
+          status: '已发布',
+          currentStage: '学生申请',
+          currentStatus: '进行中'
+        })
         ElMessage.success('奖项发布成功')
         getAwards()
       } catch (error) {

@@ -1,9 +1,7 @@
 package com.example.studentselectionsystem.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,8 +12,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 课程实体类（兼容旧代码）
+ * 课程实体类
  */
+@Data
 @TableName("courses")
 public class Course implements Serializable {
 
@@ -28,22 +27,40 @@ public class Course implements Serializable {
     private Long id;
 
     /**
-     * 课程名称
-     */
-    @TableField("course_name")
-    private String name;
-
-    /**
      * 课程代码
      */
     @TableField("course_code")
-    private String code;
+    private String courseCode;
+
+    /**
+     * 课程名称
+     */
+    @TableField("course_name")
+    private String courseName;
 
     /**
      * 学分
      */
     @TableField("credits")
-    private BigDecimal credit;
+    private BigDecimal credits;
+
+    /**
+     * 学时
+     */
+    @TableField("hours")
+    private Integer hours;
+
+    /**
+     * 授课教师ID
+     */
+    @TableField("teacher_id")
+    private Long teacherId;
+
+    /**
+     * 授课教师姓名（不映射到数据库）
+     */
+    @TableField(exist = false)
+    private String teacherName;
 
     /**
      * 学期
@@ -52,11 +69,50 @@ public class Course implements Serializable {
     private String semester;
 
     /**
-     * 创建时间（不映射到数据库）
+     * 学年
      */
-    @TableField(exist = false)
+    @TableField("year")
+    private Integer year;
+
+    /**
+     * 最大选课人数
+     */
+    @TableField("max_students")
+    private Integer maxStudents;
+
+    /**
+     * 当前选课人数
+     */
+    @TableField("current_students")
+    private Integer currentStudents;
+
+    /**
+     * 状态：1-开设，0-关闭
+     */
+    @TableField("status")
+    private Integer status;
+
+    /**
+     * 课程描述
+     */
+    @TableField("description")
+    private String description;
+
+    /**
+     * 创建时间
+     */
+    @TableField(value = "created_at", updateStrategy = FieldStrategy.NEVER)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createdAt;
+
+    /**
+     * 更新时间
+     */
+    @TableField("updated_at")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updatedAt;
 
     /**
      * 课程成绩关联（不映射到数据库）
@@ -74,28 +130,52 @@ public class Course implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getCourseCode() {
+        return courseCode;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCourseCode(String courseCode) {
+        this.courseCode = courseCode;
     }
 
-    public String getCode() {
-        return code;
+    public String getCourseName() {
+        return courseName;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
     }
 
-    public BigDecimal getCredit() {
-        return credit;
+    public BigDecimal getCredits() {
+        return credits;
     }
 
-    public void setCredit(BigDecimal credit) {
-        this.credit = credit;
+    public void setCredits(BigDecimal credits) {
+        this.credits = credits;
+    }
+
+    public Integer getHours() {
+        return hours;
+    }
+
+    public void setHours(Integer hours) {
+        this.hours = hours;
+    }
+
+    public Long getTeacherId() {
+        return teacherId;
+    }
+
+    public void setTeacherId(Long teacherId) {
+        this.teacherId = teacherId;
+    }
+
+    public String getTeacherName() {
+        return teacherName;
+    }
+
+    public void setTeacherName(String teacherName) {
+        this.teacherName = teacherName;
     }
 
     public String getSemester() {
@@ -106,12 +186,60 @@ public class Course implements Serializable {
         this.semester = semester;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public Integer getYear() {
+        return year;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    public Integer getMaxStudents() {
+        return maxStudents;
+    }
+
+    public void setMaxStudents(Integer maxStudents) {
+        this.maxStudents = maxStudents;
+    }
+
+    public Integer getCurrentStudents() {
+        return currentStudents;
+    }
+
+    public void setCurrentStudents(Integer currentStudents) {
+        this.currentStudents = currentStudents;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public List<Score> getScores() {

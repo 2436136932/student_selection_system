@@ -103,6 +103,12 @@ public class Award implements Serializable {
     private String currentStatus;
 
     /**
+     * 当前阶段：学生申请/教师审批/管理员审批/结果公示
+     */
+    @TableField("current_stage")
+    private String currentStage;
+
+    /**
      * 奖项评选标准关联（不映射到数据库）
      */
     @TableField(exist = false)
@@ -261,5 +267,13 @@ public class Award implements Serializable {
 
     public void setCurrentStatus(String currentStatus) {
         this.currentStatus = currentStatus;
+    }
+
+    public String getCurrentStage() {
+        return currentStage;
+    }
+
+    public void setCurrentStage(String currentStage) {
+        this.currentStage = currentStage;
     }
 }
