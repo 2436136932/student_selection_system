@@ -73,6 +73,14 @@ public interface MajorService {
      * @return 专业分页列表
      */
     IPage<Major> findMajorsByPage(Integer current, Integer size);
+    
+    /**
+     * 按院系筛选并分页获取专业
+     * @param page 分页参数
+     * @param department 院系名称
+     * @return 专业分页列表
+     */
+    IPage<Major> findMajorsByDepartmentAndPage(IPage<Major> page, String department);
 
     /**
      * 判断专业名称是否存在

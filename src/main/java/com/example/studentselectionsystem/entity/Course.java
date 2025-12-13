@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -29,26 +32,37 @@ public class Course implements Serializable {
     /**
      * 课程代码
      */
+    @NotEmpty(message = "课程代码不能为空")
     @TableField("course_code")
     private String courseCode;
 
     /**
      * 课程名称
      */
+    @NotEmpty(message = "课程名称不能为空")
     @TableField("course_name")
     private String courseName;
 
     /**
      * 学分
      */
+    @NotNull(message = "学分不能为空")
     @TableField("credits")
     private BigDecimal credits;
 
     /**
      * 学时
      */
+    @NotNull(message = "学时不能为空")
     @TableField("hours")
     private Integer hours;
+
+    /**
+     * 所属院系
+     */
+    @NotEmpty(message = "所属院系不能为空")
+    @TableField("department")
+    private String department;
 
     /**
      * 授课教师ID
@@ -65,12 +79,14 @@ public class Course implements Serializable {
     /**
      * 学期
      */
+    @NotEmpty(message = "学期不能为空")
     @TableField("semester")
     private String semester;
 
     /**
      * 学年
      */
+    @NotNull(message = "学年不能为空")
     @TableField("year")
     private Integer year;
 
@@ -160,6 +176,14 @@ public class Course implements Serializable {
 
     public void setHours(Integer hours) {
         this.hours = hours;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 
     public Long getTeacherId() {

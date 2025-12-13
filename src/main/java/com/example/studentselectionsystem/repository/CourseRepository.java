@@ -1,10 +1,14 @@
 package com.example.studentselectionsystem.repository;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.studentselectionsystem.entity.Course;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,5 +57,22 @@ public interface CourseRepository extends BaseMapper<Course> {
      */
     @Select("SELECT COUNT(*) > 0 FROM courses WHERE course_code = #{courseCode}")
     boolean existsByCourseCode(@Param("courseCode") String courseCode);
+
+    /**
+     * 根据ID查询课程，包含教师信息
+     * @param id 课程ID
+     * @return 课程信息
+     */
+    @Select("SELECT c.*, t.name as teacher_name FROM courses c LEFT JOIN teachers t ON c.teacher_id = t.id WHERE c.id = #{id}")
+    Course selectByIdWithTeacher(@Param("id") Long id);
+
+    /**
+     * 分页获取课程，包含教师信息
+     * @param page 分页参数
+     * @param queryWrapper 查询条件
+     * @return 课程分页列表
+     */
+    @Select("SELECT c.*, t.name as teacher_name FROM courses c LEFT JOIN teachers t ON c.teacher_id = t.id ${ew.customSqlSegment}")
+    IPage<Course> selectPageWithTeacher(IPage<Course> page, @Param("ew") QueryWrapper<Course> queryWrapper);
 
 }

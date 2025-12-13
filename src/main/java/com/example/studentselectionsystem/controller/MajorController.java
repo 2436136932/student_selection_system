@@ -34,7 +34,7 @@ public class MajorController {
     /**
      * 更新专业信息
      */
-    @PutMapping("/{id}")
+    @PutMapping("/id/{id}")
     public ResponseEntity<Major> updateMajor(@PathVariable Integer id, @RequestBody Major major) {
         Major updatedMajor = majorService.updateMajor(id, major);
         if (updatedMajor != null) {
@@ -46,20 +46,40 @@ public class MajorController {
     /**
      * 删除专业
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/id/{id}")
     public ResponseEntity<Void> deleteMajor(@PathVariable Integer id) {
         majorService.deleteMajor(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**
-     * 根据ID查找专业
+     * 获取所有专业（支持分页和筛选）
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<Major> findMajorById(@PathVariable Integer id) {
-        Optional<Major> optionalMajor = majorService.findMajorById(id);
-        return optionalMajor.map(major -> new ResponseEntity<>(major, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @GetMapping("/search")
+    public ResponseEntity<IPage<Major>> findAllMajors(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(required = false) String department) {
+        
+        // 创建分页对象
+        IPage<Major> majorPage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(page, size);
+        
+        // 如果有院系筛选条件，调用对应的服务方法
+        if (department != null && !department.isEmpty()) {
+            return new ResponseEntity<>(majorService.findMajorsByDepartmentAndPage(majorPage, department), HttpStatus.OK);
+        }
+        
+        // 否则调用普通分页方法
+        return new ResponseEntity<>(majorService.findMajorsByPage(majorPage), HttpStatus.OK);
+    }
+
+    /**
+     * 获取所有专业列表
+     */
+    @GetMapping
+    public ResponseEntity<List<Major>> getAllMajors() {
+        List<Major> majors = majorService.findAllMajors();
+        return new ResponseEntity<>(majors, HttpStatus.OK);
     }
 
     /**
@@ -82,15 +102,6 @@ public class MajorController {
     }
 
     /**
-     * 获取所有专业
-     */
-    @GetMapping("")
-    public ResponseEntity<List<Major>> findAllMajors() {
-        List<Major> majors = majorService.findAllMajors();
-        return ResponseEntity.ok(majors);
-    }
-
-    /**
      * 分页获取专业
      * @param current 页码（从1开始）
      * @param size 每页大小
@@ -110,6 +121,16 @@ public class MajorController {
     public ResponseEntity<Boolean> checkNameExists(@PathVariable String name) {
         boolean exists = majorService.existsByName(name);
         return new ResponseEntity<>(exists, HttpStatus.OK);
+    }
+
+    /**
+     * 根据ID查找专业
+     */
+    @GetMapping("/id/{id}")
+    public ResponseEntity<Major> findMajorById(@PathVariable Integer id) {
+        Optional<Major> optionalMajor = majorService.findMajorById(id);
+        return optionalMajor.map(major -> new ResponseEntity<>(major, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
 }

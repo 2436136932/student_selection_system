@@ -13,11 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +35,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/courses")
 public class CourseController {
+
+    private static final Logger logger = LoggerFactory.getLogger(CourseController.class);
 
     @Autowired
     private CourseService courseService;
@@ -49,11 +57,21 @@ public class CourseController {
      */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    public ResponseEntity<Course> createCourse(@RequestBody Course course) {
+    public ResponseEntity<?> createCourse(@Valid @RequestBody Course course, BindingResult bindingResult) {
         try {
+            if (bindingResult.hasErrors()) {
+                Map<String, String> errors = new HashMap<>();
+                bindingResult.getFieldErrors().forEach(error -> {
+                    errors.put(error.getField(), error.getDefaultMessage());
+                });
+                logger.warn("课程数据验证失败: {}", errors);
+                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+            }
+            logger.info("创建课程: {}", course);
             Course createdCourse = courseService.createCourse(course);
             return new ResponseEntity<>(createdCourse, HttpStatus.CREATED);
         } catch (Exception e) {
+            logger.error("创建课程失败: {}", e.getMessage(), e);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -66,8 +84,16 @@ public class CourseController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    public ResponseEntity<Course> updateCourse(@PathVariable("id") Long id, @RequestBody Course course) {
+    public ResponseEntity<?> updateCourse(@PathVariable("id") Long id, @Valid @RequestBody Course course, BindingResult bindingResult) {
         try {
+            if (bindingResult.hasErrors()) {
+                Map<String, String> errors = new HashMap<>();
+                bindingResult.getFieldErrors().forEach(error -> {
+                    errors.put(error.getField(), error.getDefaultMessage());
+                });
+                logger.warn("课程数据验证失败: {}", errors);
+                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+            }
             Course updatedCourse = courseService.updateCourse(id, course);
             if (updatedCourse != null) {
                 return new ResponseEntity<>(updatedCourse, HttpStatus.OK);
@@ -75,6 +101,7 @@ public class CourseController {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
+            logger.error("更新课程失败: {}", e.getMessage(), e);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -237,44 +264,70 @@ public class CourseController {
     @GetMapping("/{id}/students")
     public ResponseEntity<List<Map<String, Object>>> getCourseStudents(@PathVariable("id") Long id) {
         try {
+            System.out.println("getCourseStudents方法被调用，id: " + id);
             Optional<Course> course = courseService.findCourseById(id);
             if (!course.isPresent()) {
+                System.out.println("课程不存在，id: " + id);
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             
             // 获取课程的所有成绩记录
+            System.out.println("调用scoreService.findScoresByCourseId方法，id: " + id);
             List<Score> scores = scoreService.findScoresByCourseId(id);
+            System.out.println("找到成绩记录数量: " + scores.size());
             List<Map<String, Object>> students = new ArrayList<>();
             
             // 提取学生信息
             for (Score score : scores) {
-                Optional<Student> student = studentService.findStudentById(score.getStudentId());
-                if (student.isPresent()) {
-                    Map<String, Object> studentInfo = new HashMap<>();
-                    studentInfo.put("id", student.get().getId());
-                    studentInfo.put("studentNumber", student.get().getStudentNumber());
-                    studentInfo.put("name", student.get().getName());
-                    studentInfo.put("gender", student.get().getGender());
-                    studentInfo.put("className", student.get().getClassName());
-                    studentInfo.put("major", student.get().getMajor());
-                    // 从专业表中获取正确的院系信息
-                    String department = "";
-                    if (student.get().getMajor() != null) {
-                        Optional<Major> major = majorService.findMajorByName(student.get().getMajor());
-                        if (major.isPresent()) {
-                            department = major.get().getDepartment();
-                        } else {
-                            // 如果找不到对应的专业记录，使用专业名称作为院系信息
-                            department = student.get().getMajor();
+                System.out.println("处理成绩记录: " + score.getId() + ", studentId: " + score.getStudentId());
+                if (score.getStudentId() != null) {
+                    System.out.println("调用studentService.findStudentById方法，studentId: " + score.getStudentId());
+                    Optional<Student> student = studentService.findStudentById(score.getStudentId());
+                    if (student.isPresent()) {
+                        System.out.println("找到学生信息: " + student.get().getId() + ", 姓名: " + student.get().getName());
+                        Map<String, Object> studentInfo = new HashMap<>();
+                        studentInfo.put("id", student.get().getId());
+                        studentInfo.put("studentNumber", student.get().getStudentNumber());
+                        studentInfo.put("name", student.get().getName());
+                        studentInfo.put("gender", student.get().getGender());
+                        studentInfo.put("className", student.get().getClassName());
+                        studentInfo.put("major", student.get().getMajor());
+                        // 从专业表中获取正确的院系信息
+                        String department = "";
+                        if (student.get().getMajor() != null) {
+                            System.out.println("调用majorService.findMajorByName方法，专业名称: " + student.get().getMajor());
+                            Optional<Major> major = majorService.findMajorByName(student.get().getMajor());
+                            if (major.isPresent()) {
+                                department = major.get().getDepartment();
+                                System.out.println("找到专业信息，院系: " + department);
+                            } else {
+                                // 如果找不到对应的专业记录，使用专业名称作为院系信息
+                                department = student.get().getMajor();
+                                System.out.println("找不到专业信息，使用专业名称作为院系: " + department);
+                            }
                         }
+                        studentInfo.put("department", department);
+                        students.add(studentInfo);
+                        System.out.println("添加学生信息到列表: " + student.get().getName());
+                    } else {
+                        System.out.println("找不到学生信息，studentId: " + score.getStudentId());
                     }
-                    studentInfo.put("department", department);
-                    students.add(studentInfo);
                 }
             }
             
+            System.out.println("学生列表生成完成，数量: " + students.size());
             return new ResponseEntity<>(students, HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println("getCourseStudents方法发生异常: " + e.getMessage());
+            e.printStackTrace();
+            // 记录完整的异常堆栈信息到文件
+            try (PrintWriter writer = new PrintWriter(new FileWriter("logs/exception.log", true))) {
+                writer.println("\n" + new Date() + " - getCourseStudents方法异常:");
+                e.printStackTrace(writer);
+            } catch (IOException ex) {
+                System.out.println("记录异常信息到文件失败: " + ex.getMessage());
+                ex.printStackTrace();
+            }
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -288,8 +341,8 @@ public class CourseController {
     @PutMapping("/{id}/students")
     public ResponseEntity<Map<String, Object>> updateCourseStudents(@PathVariable("id") Long id, @RequestBody Map<String, List<Long>> request) {
         try {
-            Optional<Course> course = courseService.findCourseById(id);
-            if (!course.isPresent()) {
+            Optional<Course> courseOptional = courseService.findCourseById(id);
+            if (!courseOptional.isPresent()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             
@@ -320,6 +373,11 @@ public class CourseController {
                 }
             }
             
+            // 更新课程的currentStudents字段
+            Course existingCourse = courseOptional.get();
+            existingCourse.setCurrentStudents(newScores.size());
+            courseService.updateCourse(id, existingCourse);
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "课程学生更新成功");
@@ -329,6 +387,7 @@ public class CourseController {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "课程学生更新失败: " + e.getMessage());
+            e.printStackTrace();
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -1,5 +1,6 @@
 package com.example.studentselectionsystem.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.studentselectionsystem.entity.Major;
 import com.example.studentselectionsystem.repository.MajorRepository;
@@ -26,8 +27,21 @@ public class MajorServiceImpl implements MajorService {
     public Major createMajor(Major major) {
         // 设置创建时间
         major.setCreateTime(new Date());
-        majorRepository.insert(major);
-        return major;
+        System.out.println("MajorServiceImpl - 创建专业: " + major);
+        System.out.println("MajorServiceImpl - 专业名称: " + major.getName());
+        System.out.println("MajorServiceImpl - 专业所属学院: " + major.getDepartment());
+        System.out.println("MajorServiceImpl - 专业ID: " + major.getId());
+        
+        try {
+            int result = majorRepository.insert(major);
+            System.out.println("MajorServiceImpl - 插入结果: " + result);
+            System.out.println("MajorServiceImpl - 插入后专业ID: " + major.getId());
+            return major;
+        } catch (Exception e) {
+            System.out.println("MajorServiceImpl - 插入失败: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @Override
@@ -72,6 +86,14 @@ public class MajorServiceImpl implements MajorService {
     @Override
     public IPage<Major> findMajorsByPage(IPage<Major> page) {
         return majorRepository.selectPage(page, null);
+    }
+    
+    @Override
+    public IPage<Major> findMajorsByDepartmentAndPage(IPage<Major> page, String department) {
+        // 创建查询条件
+        QueryWrapper<Major> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("department", department);
+        return majorRepository.selectPage(page, queryWrapper);
     }
 
     @Override

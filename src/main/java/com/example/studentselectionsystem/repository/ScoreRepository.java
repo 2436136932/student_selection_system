@@ -20,6 +20,7 @@ public interface ScoreRepository extends BaseMapper<Score> {
      * @param studentId 学生ID
      * @return 成绩列表
      */
+    @Select("SELECT * FROM scores WHERE student_id = #{studentId}")
     List<Score> selectByStudentId(@Param("studentId") Long studentId);
 
     /**
@@ -27,6 +28,7 @@ public interface ScoreRepository extends BaseMapper<Score> {
      * @param courseId 课程ID
      * @return 成绩列表
      */
+    @Select("SELECT * FROM scores WHERE course_id = #{courseId}")
     List<Score> selectByCourseId(@Param("courseId") Long courseId);
 
     /**
@@ -35,6 +37,7 @@ public interface ScoreRepository extends BaseMapper<Score> {
      * @param courseId 课程ID
      * @return 成绩信息
      */
+    @Select("SELECT * FROM scores WHERE student_id = #{studentId} AND course_id = #{courseId}")
     Optional<Score> selectByStudentIdAndCourseId(@Param("studentId") Long studentId, @Param("courseId") Long courseId);
 
     /**
@@ -43,6 +46,7 @@ public interface ScoreRepository extends BaseMapper<Score> {
      * @param semester 学期
      * @return 成绩列表
      */
+    @Select("SELECT * FROM scores WHERE student_id = #{studentId} AND semester = #{semester}")
     List<Score> selectByStudentIdAndSemester(@Param("studentId") Long studentId, @Param("semester") String semester);
 
     /**
@@ -51,6 +55,7 @@ public interface ScoreRepository extends BaseMapper<Score> {
      * @param semester 学期
      * @return 成绩列表
      */
+    @Select("SELECT * FROM scores WHERE course_id = #{courseId} AND semester = #{semester}")
     List<Score> selectByCourseIdAndSemester(@Param("courseId") Long courseId, @Param("semester") String semester);
 
     /**
@@ -58,6 +63,7 @@ public interface ScoreRepository extends BaseMapper<Score> {
      * @param semester 学期
      * @return 成绩列表
      */
+    @Select("SELECT * FROM scores WHERE semester = #{semester}")
     List<Score> selectBySemester(@Param("semester") String semester);
 
     /**

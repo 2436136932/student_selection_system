@@ -42,17 +42,42 @@ public class CourseServiceImpl implements CourseService {
         Optional<Course> existingCourse = Optional.ofNullable(courseRepository.selectById(id));
         if (existingCourse.isPresent()) {
             Course updatedCourse = existingCourse.get();
-            updatedCourse.setCourseCode(course.getCourseCode());
-            updatedCourse.setCourseName(course.getCourseName());
-            updatedCourse.setCredits(course.getCredits());
-            updatedCourse.setHours(course.getHours());
-            updatedCourse.setTeacherId(course.getTeacherId());
-            updatedCourse.setSemester(course.getSemester());
-            updatedCourse.setYear(course.getYear());
-            updatedCourse.setMaxStudents(course.getMaxStudents());
-            updatedCourse.setCurrentStudents(course.getCurrentStudents());
-            updatedCourse.setStatus(course.getStatus());
-            updatedCourse.setDescription(course.getDescription());
+            
+            // 只更新那些不为null的字段
+            if (course.getCourseCode() != null) {
+                updatedCourse.setCourseCode(course.getCourseCode());
+            }
+            if (course.getCourseName() != null) {
+                updatedCourse.setCourseName(course.getCourseName());
+            }
+            if (course.getCredits() != null) {
+                updatedCourse.setCredits(course.getCredits());
+            }
+            if (course.getHours() != null) {
+                updatedCourse.setHours(course.getHours());
+            }
+            if (course.getTeacherId() != null) {
+                updatedCourse.setTeacherId(course.getTeacherId());
+            }
+            if (course.getSemester() != null) {
+                updatedCourse.setSemester(course.getSemester());
+            }
+            if (course.getYear() != null) {
+                updatedCourse.setYear(course.getYear());
+            }
+            if (course.getMaxStudents() != null) {
+                updatedCourse.setMaxStudents(course.getMaxStudents());
+            }
+            if (course.getCurrentStudents() != null) {
+                updatedCourse.setCurrentStudents(course.getCurrentStudents());
+            }
+            if (course.getStatus() != null) {
+                updatedCourse.setStatus(course.getStatus());
+            }
+            if (course.getDescription() != null) {
+                updatedCourse.setDescription(course.getDescription());
+            }
+            
             courseRepository.updateById(updatedCourse);
             return updatedCourse;
         }
@@ -75,7 +100,7 @@ public class CourseServiceImpl implements CourseService {
      */
     @Override
     public Optional<Course> findCourseById(Long id) {
-        return Optional.ofNullable(courseRepository.selectById(id));
+        return Optional.ofNullable(courseRepository.selectByIdWithTeacher(id));
     }
 
     /**
@@ -123,7 +148,7 @@ public class CourseServiceImpl implements CourseService {
      */
     @Override
     public IPage<Course> findCoursesByPage(IPage<Course> page) {
-        return courseRepository.selectPage(page, null);
+        return courseRepository.selectPageWithTeacher(page, null);
     }
 
     /**
@@ -136,8 +161,8 @@ public class CourseServiceImpl implements CourseService {
     public IPage<Course> findCoursesByPage(Integer current, Integer size) {
         // 创建MyBatis Plus分页对象
         IPage<Course> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, size);
-        // 执行分页查询
-        return courseRepository.selectPage(page, null);
+        // 执行分页查询，包含教师信息
+        return courseRepository.selectPageWithTeacher(page, null);
     }
     
     /**
@@ -167,11 +192,13 @@ public class CourseServiceImpl implements CourseService {
             queryWrapper.like("course_name", courseName);
         }
         
-        // 注意：由于teacherName不在Course表中，这里暂时不处理
-        // 如果需要按教师名称搜索，需要使用SQL JOIN或其他方式
+        // 添加教师名称模糊查询
+        if (teacherName != null && !teacherName.isEmpty()) {
+            queryWrapper.like("t.name", teacherName);
+        }
         
-        // 执行分页查询
-        return courseRepository.selectPage(page, queryWrapper);
+        // 执行分页查询，包含教师信息
+        return courseRepository.selectPageWithTeacher(page, queryWrapper);
     }
 
     /**

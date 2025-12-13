@@ -254,12 +254,11 @@ TRUNCATE TABLE awards;
 
 TRUNCATE TABLE notices;
 TRUNCATE TABLE users;
-TRUNCATE TABLE majors;
 
 -- 启用外键约束检查
 SET FOREIGN_KEY_CHECKS = 1;
 
--- 插入管理员用户 (密码为: adminpassword)
+-- 插入管理员用户 (密码为: password)
 INSERT INTO users (username, password, role, real_name, email, phone, status) VALUES
 ('admin', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'admin', '系统管理员', 'admin@example.com', '13800138000', 1);
 
@@ -288,7 +287,6 @@ INSERT INTO students (student_number, name, gender, birth_date, major, class_nam
 ('S002', '钱同学', '女', '2002-02-02', '数学与应用数学', '数学2001', 2020, '13800138002', 'qianstudent@example.com', 1),
 ('S003', '孙同学', '男', '2002-03-03', '物理学', '物理2001', 2020, '13800138003', 'sunstudent@example.com', 1);
 
--- 插入学生用户账号（密码为: 123456）
 -- 注意：这里不需要TRUNCATE TABLE users，因为我们已经在前面清空过了
 INSERT INTO users (username, password, role, real_name, email, phone, status) VALUES
 ('student1', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '赵同学', 'zhaostudent@example.com', '13800138001', 1),
@@ -328,8 +326,5 @@ CREATE INDEX idx_notices_publish_time ON notices(publish_time);
 CREATE INDEX idx_notices_status ON notices(status);
 
 --密码本
---账号testuser2 密码testpassword2
+--账号student1 密码password
 --账号admin 密码password
---账号testuser_new 密码123456
---账号testuserS 密码123456
---账号studentY 密码123456

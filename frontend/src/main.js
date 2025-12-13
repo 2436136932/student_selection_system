@@ -11,11 +11,14 @@ axios.defaults.baseURL = 'http://localhost:8080'
 // 添加axios拦截器，自动为每个请求添加Authorization头
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem('token')
+  console.log('Axios请求拦截器 - token:', token)
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
+    console.log('Axios请求拦截器 - 添加Authorization头:', config.headers.Authorization)
   }
   return config
 }, error => {
+  console.error('Axios请求拦截器错误:', error)
   return Promise.reject(error)
 })
 
