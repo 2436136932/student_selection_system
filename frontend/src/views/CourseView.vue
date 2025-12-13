@@ -663,9 +663,9 @@ const getAllMajors = () => {
   
   axios.get('/api/majors/search', { params })
     .then(response => {
-      majors.value = response.data.content || []
+      majors.value = response.data.records || []
       currentMajors.value = majors.value
-      majorsTotal.value = response.data.totalElements || 0
+      majorsTotal.value = response.data.total || 0
     })
     .catch(error => {
       ElMessage.error('获取专业列表失败')
@@ -821,7 +821,7 @@ const saveDepartmentAssignment = () => {
     return
   }
 
-  axios.put(`/api/majors/${currentMajor.value.id}`, {
+  axios.put(`/api/majors/id/${currentMajor.value.id}`, {
     ...currentMajor.value,
     department: departmentForm.department
   })
@@ -847,7 +847,7 @@ const handleDeleteMajor = (row) => {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
-    axios.delete(`/api/majors/${row.id}`)
+    axios.delete(`/api/majors/id/${row.id}`)
       .then(response => {
         ElMessage.success('删除专业成功')
         // 重新获取专业列表
