@@ -4,6 +4,7 @@ com\example\studentselectionsystem\model\Award.class
 com\example\studentselectionsystem\service\impl\CourseServiceImpl.class
 com\example\studentselectionsystem\service\TeacherService.class
 com\example\studentselectionsystem\mapper\UserMapper.class
+com\example\studentselectionsystem\config\FileUploadConfig.class
 com\example\studentselectionsystem\service\impl\ScoreServiceImpl.class
 com\example\studentselectionsystem\service\StudentService.class
 com\example\studentselectionsystem\entity\StudentCompetition.class
@@ -11,6 +12,7 @@ com\example\studentselectionsystem\controller\AwardTypeController$1.class
 com\example\studentselectionsystem\controller\CourseController.class
 com\example\studentselectionsystem\entity\User.class
 com\example\studentselectionsystem\controller\AuthController$LoginRequest.class
+com\example\studentselectionsystem\service\CarouselService.class
 com\example\studentselectionsystem\mapper\StudentAwardApplicationMapper.class
 com\example\studentselectionsystem\controller\SelectionCriteriaController.class
 com\example\studentselectionsystem\controller\StudentController.class
@@ -20,6 +22,7 @@ com\example\studentselectionsystem\entity\Objection.class
 com\example\studentselectionsystem\entity\Teacher.class
 com\example\studentselectionsystem\service\impl\StandardServiceImpl.class
 com\example\studentselectionsystem\repository\TeacherRepository.class
+com\example\studentselectionsystem\controller\CarouselController.class
 com\example\studentselectionsystem\controller\TeacherController.class
 com\example\studentselectionsystem\entity\Notice.class
 com\example\studentselectionsystem\mapper\AwardMapper.class
@@ -66,12 +69,14 @@ com\example\studentselectionsystem\mapper\PermissionMapper.class
 com\example\studentselectionsystem\entity\Permission.class
 com\example\studentselectionsystem\service\impl\UserServiceImpl.class
 com\example\studentselectionsystem\service\impl\AwardServiceImpl.class
+com\example\studentselectionsystem\service\impl\CarouselServiceImpl.class
 com\example\studentselectionsystem\service\PermissionService.class
 com\example\studentselectionsystem\config\SecurityConfig.class
 com\example\studentselectionsystem\mapper\TeacherMapper.class
 com\example\studentselectionsystem\service\impl\TeacherServiceImpl.class
 com\example\studentselectionsystem\entity\SelectionResult.class
 com\example\studentselectionsystem\mapper\SelectionProcessMapper.class
+com\example\studentselectionsystem\mapper\CarouselMapper.class
 com\example\studentselectionsystem\controller\TestController.class
 com\example\studentselectionsystem\entity\StudentAwardApplication.class
 com\example\studentselectionsystem\repository\RoleRepository.class
@@ -83,6 +88,8 @@ com\example\studentselectionsystem\scheduler\AwardStatusScheduler.class
 com\example\studentselectionsystem\service\impl\StudentAwardApplicationServiceImpl.class
 com\example\studentselectionsystem\repository\UserRepository.class
 com\example\studentselectionsystem\service\impl\AwardTypeServiceImpl.class
+com\example\studentselectionsystem\config\StaticResourceConfig.class
+com\example\studentselectionsystem\entity\Carousel.class
 com\example\studentselectionsystem\service\impl\StudentAwardApplicationServiceImpl$1.class
 com\example\studentselectionsystem\service\impl\RoleServiceImpl.class
 com\example\studentselectionsystem\service\MajorService.class

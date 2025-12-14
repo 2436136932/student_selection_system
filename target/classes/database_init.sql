@@ -248,6 +248,24 @@ CREATE TABLE IF NOT EXISTS selection_result (
     FOREIGN KEY (application_id) REFERENCES student_award_applications(application_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评选结果表';
 
+-- 创建轮播图表
+CREATE TABLE IF NOT EXISTS carousel (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '轮播图ID',
+    image_url VARCHAR(255) NOT NULL COMMENT '图片URL',
+    title VARCHAR(100) COMMENT '标题',
+    description VARCHAR(255) COMMENT '描述',
+    sort_order INT DEFAULT 0 COMMENT '排序顺序',
+    status TINYINT DEFAULT 1 COMMENT '状态：1-启用，0-禁用',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='轮播图表';
+
+-- 插入轮播图初始数据
+INSERT INTO carousel (image_url, title, description, sort_order, status) VALUES
+('https://picsum.photos/800/400?random=1', '欢迎使用学生评选系统', '学生评选系统提供奖学金、助学金等多种评选功能', 1, 1),
+('https://picsum.photos/800/400?random=2', '评选流程说明', '了解详细的评选流程和规则', 2, 1),
+('https://picsum.photos/800/400?random=3', '最新通知', '查看系统发布的最新通知和公告', 3, 1);
+
 -- 插入初始数据（先清空相关表）
 -- 禁用外键约束检查
 SET FOREIGN_KEY_CHECKS = 0;

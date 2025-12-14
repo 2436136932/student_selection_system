@@ -255,7 +255,7 @@
               </template>
               <div class="detail-content">
                 <div class="teacher-selection">
-                  <el-button size="small" type="primary" @click="getAllTeachers(); showTeacherSelection = true">选择授课老师</el-button>
+                  <el-button v-if="hasRole('admin')" size="small" type="primary" @click="getAllTeachers(); showTeacherSelection = true">选择授课老师</el-button>
                   <div class="selected-teachers" style="margin-top: 10px;">
                     <el-tag
                       v-for="teacher in selectedTeachers"
@@ -263,10 +263,12 @@
                       closable
                       @close="removeTeacher(teacher)"
                       size="small"
+                      v-if="hasRole('admin')"
                     >
                       {{ teacher.name }} ({{ teacher.teacherNumber }})
                     </el-tag>
-                    <span v-if="selectedTeachers.length === 0" style="color: #909399; font-size: 14px;">暂无选择教师</span>
+                    <span v-else-if="selectedTeachers.length > 0">{{ selectedTeachers[0].name }} ({{ selectedTeachers[0].teacherNumber }})</span>
+                    <span v-else style="color: #909399; font-size: 14px;">暂无选择教师</span>
                   </div>
                 </div>
               </div>
@@ -279,7 +281,7 @@
               </template>
               <div class="detail-content">
                 <div class="student-selection">
-                  <el-button size="small" type="primary" @click="getAllStudents(); showStudentSelection = true">选择学生</el-button>
+                  <el-button v-if="hasRole('admin')" size="small" type="primary" @click="getAllStudents(); showStudentSelection = true">选择学生</el-button>
                   <div class="selected-students" style="margin-top: 10px;">
                     <el-tag
                       v-for="student in selectedStudents"
@@ -287,10 +289,14 @@
                       closable
                       @close="removeStudent(student)"
                       size="small"
+                      v-if="hasRole('admin')"
                     >
                       {{ student.name }} ({{ student.studentNumber }}) - {{ student.department }}
                     </el-tag>
-                    <span v-if="selectedStudents.length === 0" style="color: #909399; font-size: 14px;">暂无选择学生</span>
+                    <div v-else>
+                      <p v-if="selectedStudents.length > 0">已选择 {{ selectedStudents.length }} 名学生</p>
+                      <span v-else style="color: #909399; font-size: 14px;">暂无选择学生</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -450,29 +456,16 @@ import { ref, reactive, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import axios from 'axios'
-
-// 获取用户信息
-const getUserInfo = () => {
-  const userInfoStr = localStorage.getItem('userInfo')
-  return userInfoStr ? JSON.parse(userInfoStr) : {}
-}
-
-// 检查用户是否有指定角色
-const hasRole = (role) => {
-  const userInfo = getUserInfo()
-  return userInfo.role === role
-}
+import { hasRole } from '../utils/role'
 
 // 检查用户是否是管理员或教师
 const isAdminOrTeacher = computed(() => {
-  const userInfo = getUserInfo()
-  return userInfo.role === 'admin' || userInfo.role === 'teacher'
+  return hasRole('admin') || hasRole('teacher')
 })
 
 // 检查用户是否是管理员
 const isAdmin = computed(() => {
-  const userInfo = getUserInfo()
-  return userInfo.role === 'admin'
+  return hasRole('admin')
 })
 
 const courses = ref([])

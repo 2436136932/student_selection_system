@@ -101,14 +101,20 @@ import { ElMessage } from 'element-plus'
 import { 
   House, 
   User, 
-  Document, 
+  UserFilled,
+  Briefcase,
+  Document,
+  DocumentChecked,
+  DocumentCopy,
+  School,
   DataLine, 
   Medal, 
   Menu, 
   ArrowDown,
   Setting,
   SwitchButton,
-  Bell
+  Bell,
+  PictureRounded
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -130,14 +136,15 @@ const activeIndex = computed(() => route.path)
 const menuItems = [
   { index: '/home', icon: House, text: '首页', roles: ['admin', 'teacher', 'student'] },
   { index: '/students', icon: User, text: '学生管理', roles: ['admin'] },
-  { index: '/teachers', icon: User, text: '教师管理', roles: ['admin'] },
-  { index: '/courses', icon: Document, text: '课程管理', roles: ['admin', 'teacher'] },
-  { index: '/standards', icon: Document, text: '评奖标准管理', roles: ['admin', 'teacher', 'student'] },
+  { index: '/teachers', icon: Briefcase, text: '教师管理', roles: ['admin'] },
+  { index: '/courses', icon: School, text: '课程管理', roles: ['admin', 'teacher', 'student'] },
+  { index: '/standards', icon: DocumentChecked, text: '评奖标准管理', roles: ['admin', 'teacher', 'student'] },
   { index: '/scores', icon: DataLine, text: '成绩管理', roles: ['admin', 'teacher', 'student'] },
   { index: '/awards', icon: Medal, text: '评奖评优', roles: ['admin', 'teacher', 'student'] },
-  { index: '/student-award-applications', icon: Document, text: '奖项申请', roles: ['admin', 'teacher', 'student'] },
+  { index: '/student-award-applications', icon: DocumentCopy, text: '奖项申请', roles: ['admin', 'teacher', 'student'] },
   { index: '/notices', icon: Bell, text: '通知管理', roles: ['admin'] },
-  { index: '/users', icon: User, text: '用户管理', roles: ['admin'] }
+  { index: '/users', icon: UserFilled, text: '用户管理', roles: ['admin'] },
+  { index: '/carousel', icon: PictureRounded, text: '轮播图管理', roles: ['admin'] }
 ]
 
 // 菜单映射
@@ -151,7 +158,8 @@ const menuMap = {
   '/awards': '评奖评优',
   '/student-award-applications': '奖项申请',
   '/notices': '通知管理',
-  '/users': '用户管理'
+  '/users': '用户管理',
+  '/carousel': '轮播图管理'
 }
 
 // 检查用户登录状态

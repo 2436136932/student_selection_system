@@ -1,6 +1,18 @@
 <template>
   <div class="home-container">
     <h1>欢迎使用学生评奖评优系统</h1>
+    <!-- 轮播图组件 -->
+    <el-carousel height="400px" arrow="always" indicator-position="outside" :interval="5000">
+      <el-carousel-item v-for="carousel in carousels" :key="carousel.id">
+        <div class="carousel-item" :style="{ backgroundImage: `url(${getImageUrl(carousel.imageUrl)})` }">
+          <div class="carousel-content">
+            <h2 v-if="carousel.title" class="carousel-title">{{ carousel.title }}</h2>
+            <p v-if="carousel.description" class="carousel-description">{{ carousel.description }}</p>
+          </div>
+        </div>
+      </el-carousel-item>
+    </el-carousel>
+    
     <div class="dashboard">
       <el-card class="dashboard-card" shadow="hover">
         <template #header>
@@ -95,7 +107,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { User, Promotion, Document, Check, Bell, Notification, Warning, InfoFilled } from '@element-plus/icons-vue'
+import { ElCarousel, ElCarouselItem } from 'element-plus'
 import axios from 'axios'
+
+// 轮播图数据
+const carousels = ref([])
 
 // 统计数据
 const studentCount = ref(0)
@@ -148,6 +164,16 @@ const getRecentNotices = async () => {
   }
 }
 
+// 获取完整的图片URL
+const getImageUrl = (imageUrl) => {
+  // 如果是本地图片路径（以/uploads/开头），则拼接完整URL
+  if (imageUrl && imageUrl.startsWith('/uploads/')) {
+    return `http://localhost:8080${imageUrl}`
+  }
+  // 否则直接返回（可能是外部URL）
+  return imageUrl
+}
+
 // 获取活动状态类型
 const getStatusType = (status) => {
   switch (status) {
@@ -195,7 +221,18 @@ const formatTime = (timeString) => {
   }
 }
 
+// 获取轮播图数据
+const getCarousels = async () => {
+  try {
+    const res = await axios.get('/api/carousels/active')
+    carousels.value = res.data
+  } catch (error) {
+    console.error('获取轮播图数据失败:', error)
+  }
+}
+
 onMounted(() => {
+  getCarousels()
   getStatistics()
   getRecentEvents()
   getRecentNotices()
@@ -206,6 +243,40 @@ onMounted(() => {
 .home-container {
   padding: 20px;
 }
+
+/* 轮播图样式 */
+.el-carousel {
+  margin-bottom: 20px;
+}
+
+.carousel-item {
+  height: 400px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-content {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 20px 40px;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 80%;
+}
+
+.carousel-title {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.carousel-description {
+  font-size: 16px;
+}
+
 
 h1 {
   font-size: 28px;

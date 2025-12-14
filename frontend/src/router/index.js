@@ -69,6 +69,12 @@ const router = createRouter({
       name: 'Notices',
       component: () => import('../views/NoticeView.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/carousel',
+      name: 'Carousel',
+      component: () => import('../views/CarouselManage.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })
