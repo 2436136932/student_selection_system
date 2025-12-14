@@ -2,7 +2,7 @@
   <div class="home-container">
     <h1>欢迎使用学生评奖评优系统</h1>
     <!-- 轮播图组件 -->
-    <el-carousel height="400px" arrow="always" indicator-position="outside" :interval="5000">
+    <el-carousel height="80vh" arrow="always" indicator-position="outside" :interval="5000">
       <el-carousel-item v-for="carousel in carousels" :key="carousel.id">
         <div class="carousel-item" :style="{ backgroundImage: `url(${getImageUrl(carousel.imageUrl)})` }">
           <div class="carousel-content">
@@ -250,7 +250,7 @@ onMounted(() => {
 }
 
 .carousel-item {
-  height: 400px;
+  height: 100%;
   background-size: cover;
   background-position: center;
   position: relative;
