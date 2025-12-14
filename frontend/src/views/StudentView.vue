@@ -86,7 +86,14 @@
           <el-input v-model="form.className" placeholder="请输入班级"></el-input>
         </el-form-item>
         <el-form-item label="专业">
-          <el-input v-model="form.major" placeholder="请输入专业"></el-input>
+          <el-select v-model="form.major" placeholder="请选择专业" clearable>
+            <el-option
+              v-for="item in majors"
+              :key="item.id"
+              :label="item.name"
+              :value="item.name"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="入学年份">
           <el-input-number v-model="form.admissionYear" :min="2000" :max="2025" placeholder="请输入入学年份"></el-input-number>
@@ -152,6 +159,7 @@ const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const dialogVisible = ref(false)
+const majors = ref([])
 
 const searchForm = reactive({
   studentNumber: '',
@@ -359,8 +367,21 @@ const handleDelete = (row) => {
   })
 }
 
+// 获取专业列表
+const fetchMajors = () => {
+  axios.get('/api/majors')
+    .then(response => {
+      majors.value = response.data || []
+    })
+    .catch(error => {
+      console.error('获取专业列表失败:', error)
+      ElMessage.error('获取专业列表失败')
+    })
+}
+
 // 初始化数据
 getStudents()
+fetchMajors()
 
 // 页面加载时打印提示信息
 console.log('学生管理页面已加载，自动填充功能说明：')

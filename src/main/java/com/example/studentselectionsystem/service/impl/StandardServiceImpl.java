@@ -151,24 +151,38 @@ public class StandardServiceImpl implements StandardService {
      */
     @Override
     public IPage<Standard> findStandardsByPage(Integer current, Integer size, String code, String name, String teacher) {
-        // 创建Standard的分页对象
-        IPage<Standard> standardPage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, size);
-        
-        // 构建查询条件
-        QueryWrapper<Standard> queryWrapper = new QueryWrapper<>();
-        
-        // 添加搜索条件
-        if (code != null && !code.isEmpty()) {
-            queryWrapper.like("code", code);
+        try {
+            System.out.println("=== StandardServiceImpl.findStandardsByPage 方法开始执行 ===");
+            System.out.println("参数: current=" + current + ", size=" + size + ", code=" + code + ", name=" + name + ", teacher=" + teacher);
+            
+            IPage<Standard> standardPage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, size);
+            System.out.println("创建的分页对象: " + standardPage);
+            
+            QueryWrapper<Standard> queryWrapper = new QueryWrapper<>();
+            if (code != null && !code.isEmpty()) {
+                queryWrapper.like("code", code);
+                System.out.println("添加条件: code like '%" + code + "%'");
+            }
+            if (name != null && !name.isEmpty()) {
+                queryWrapper.like("name", name);
+                System.out.println("添加条件: name like '%" + name + "%'");
+            }
+            if (teacher != null && !teacher.isEmpty()) {
+                queryWrapper.like("teacher", teacher);
+                System.out.println("添加条件: teacher like '%" + teacher + "%'");
+            }
+            System.out.println("最终查询条件: " + queryWrapper.getSqlSegment());
+            
+            System.out.println("调用 standardRepository.selectPage 方法...");
+            IPage<Standard> result = standardRepository.selectPage(standardPage, queryWrapper);
+            System.out.println("查询结果: " + result);
+            System.out.println("=== StandardServiceImpl.findStandardsByPage 方法执行完成 ===");
+            
+            return result;
+        } catch (Exception e) {
+            System.out.println("=== StandardServiceImpl.findStandardsByPage 方法执行异常 ===");
+            e.printStackTrace();
+            throw e;
         }
-        if (name != null && !name.isEmpty()) {
-            queryWrapper.like("name", name);
-        }
-        if (teacher != null && !teacher.isEmpty()) {
-            queryWrapper.like("teacher", teacher);
-        }
-        
-        // 执行分页查询
-        return standardRepository.selectPage(standardPage, queryWrapper);
     }
 }

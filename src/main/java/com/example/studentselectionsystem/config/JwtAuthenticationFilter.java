@@ -47,7 +47,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         boolean shouldSkip = requestURI.equals("/api/auth/login") || 
                            requestURI.equals("/api/auth/register") ||
                            requestURI.startsWith("/api/test/") ||
-                           requestURI.startsWith("/api/public/");
+                           requestURI.startsWith("/api/public/") ||
+                           // 跳过学生相关公开接口
+                           requestURI.equals("/api/students") ||
+                           requestURI.equals("/api/students/count") ||
+                           requestURI.equals("/api/students/with-major") ||
+                           // 跳过高职相关公开接口
+                           requestURI.equals("/api/teachers") ||
+                           // 跳过课程相关公开接口
+                           requestURI.equals("/api/courses/with-teacher") ||
+                           requestURI.equals("/api/courses/page") ||
+                           // 跳过专业相关公开接口
+                           requestURI.equals("/api/majors/search") ||
+                           // 跳过评奖标准相关公开接口
+                           requestURI.equals("/api/standards/page") ||
+                           // 跳过统计类公开接口
+                           requestURI.equals("/api/awards/count") ||
+                           requestURI.equals("/api/student-award-applications/count") ||
+                           // 跳过最近记录类公开接口
+                           requestURI.equals("/api/awards/recent") ||
+                           requestURI.equals("/api/notices/recent");
         System.out.println("JwtAuthenticationFilter - shouldNotFilter: " + shouldSkip + " for URI: " + requestURI);
         return shouldSkip;
     }

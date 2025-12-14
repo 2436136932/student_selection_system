@@ -9,7 +9,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -148,17 +155,43 @@ public class StandardController {
      * @return 标准分页列表
      */
     @GetMapping("/page")
-    public ResponseEntity<IPage<Standard>> findStandardsByPage(
+    public ResponseEntity<?> findStandardsByPage(
             @RequestParam(defaultValue = "1") int current,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String teacher) {
         try {
+            // 直接打印出传递的参数
+            System.out.println("当前页码: " + current);
+            System.out.println("每页大小: " + size);
+            System.out.println("标准代码: " + code);
+            System.out.println("标准名称: " + name);
+            System.out.println("负责人: " + teacher);
+            
+            // 先尝试获取所有标准，看是否能成功
+            List<Standard> allStandards = standardService.findAllStandards();
+            System.out.println("获取到的所有标准数量: " + allStandards.size());
+            
+            // 再尝试调用分页方法
             IPage<Standard> standards = standardService.findStandardsByPage(current, size, code, name, teacher);
             return new ResponseEntity<>(standards, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace(); // 输出详细的异常堆栈信息
+            
+            // 创建一个包含异常信息的响应对象
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("status", "error");
+            errorResponse.put("message", e.getMessage());
+            
+            // 将异常堆栈信息转换为字符串
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String stackTrace = sw.toString();
+            errorResponse.put("stackTrace", stackTrace);
+            
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -188,6 +188,20 @@ CREATE TABLE IF NOT EXISTS selection_criteria (
     FOREIGN KEY (award_id) REFERENCES awards(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评选标准表';
 
+-- 创建评奖标准表
+CREATE TABLE IF NOT EXISTS standards (
+    id INT PRIMARY KEY AUTO_INCREMENT COMMENT '标准ID',
+    code VARCHAR(50) NOT NULL UNIQUE COMMENT '标准代码',
+    name VARCHAR(100) NOT NULL UNIQUE COMMENT '标准名称',
+    teacher VARCHAR(50) COMMENT '负责人',
+    weight DECIMAL(5,2) COMMENT '权重',
+    capacity INT DEFAULT 0 COMMENT '达标值',
+    enrolled INT DEFAULT 0 COMMENT '符合人数',
+    semester VARCHAR(20) COMMENT '学期',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评奖标准表';
+
 -- 创建学生奖项申请表
 CREATE TABLE IF NOT EXISTS student_award_applications (
     application_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID',
