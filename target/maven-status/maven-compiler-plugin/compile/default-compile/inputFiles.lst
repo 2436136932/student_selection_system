@@ -4,6 +4,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\config\JwtAuthenticationFilter.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\config\SecurityConfig.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\config\StaticResourceConfig.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\config\WebMvcConfig.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\AuthController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\AwardController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\AwardTypeController.java

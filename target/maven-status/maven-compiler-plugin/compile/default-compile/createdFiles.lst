@@ -100,6 +100,7 @@ com\example\studentselectionsystem\repository\StandardRepository.class
 com\example\studentselectionsystem\controller\AwardController.class
 com\example\studentselectionsystem\entity\Competition.class
 com\example\studentselectionsystem\mapper\NoticeMapper.class
+com\example\studentselectionsystem\config\WebMvcConfig.class
 com\example\studentselectionsystem\mapper\MajorMapper.class
 com\example\studentselectionsystem\controller\NoticeController.class
 com\example\studentselectionsystem\service\impl\MajorServiceImpl.class

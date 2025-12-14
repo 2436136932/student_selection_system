@@ -95,6 +95,8 @@ public class SecurityConfig {
             )
             // 基本认证配置
             .authorizeHttpRequests(auth -> auth
+                // 允许公开访问的静态资源
+                .requestMatchers("/uploads/**").permitAll()
                 // 允许公开访问的接口
                 .requestMatchers("/api/auth/login", "/api/auth/register", "/api/public/**", "/api/test/**", "/api/events/recent", "/api/notices/recent", "/api/awards/recent", "/api/carousels/active").permitAll()
                 // 统计类接口、学生列表、教师列表、课程和专业接口允许公开访问
