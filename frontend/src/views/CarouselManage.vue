@@ -1,9 +1,19 @@
 <template>
   <div class="carousel-manage-container">
-    <h1>轮播图管理</h1>
+    <h2>轮播图管理</h2>
     
     <div class="header-actions">
-      <el-button type="primary" @click="dialogVisible = true">
+      <div class="search-container">
+        <el-select v-model="searchCondition" placeholder="请选择搜索条件" style="width: 150px; margin-right: 10px;">
+          <el-option label="标题" value="title" />
+          <el-option label="描述" value="description" />
+          <el-option label="状态" value="status" />
+        </el-select>
+        <el-input v-model="searchKeyword" placeholder="请输入搜索关键词" style="width: 200px; margin-right: 10px;" clearable />
+        <el-button type="primary" @click="searchCarousels">搜索</el-button>
+        <el-button @click="resetSearch">重置</el-button>
+      </div>
+      <el-button type="primary" @click="dialogVisible = true" style="margin-left: 10px;">
         <el-icon><Plus /></el-icon>
         添加轮播图
       </el-button>
@@ -36,6 +46,19 @@
         </template>
       </el-table-column>
     </el-table>
+    
+    <!-- 分页组件 -->
+    <div class="pagination-container">
+      <el-pagination
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </div>
     
     <!-- 轮播图对话框 -->
     <el-dialog
@@ -108,6 +131,16 @@ import axios from 'axios'
 // 轮播图列表
 const carousels = ref([])
 
+// 分页相关数据
+const currentPage = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
+
+// 搜索相关数据
+const searchCondition = ref('title')
+const searchKeyword = ref('')
+const currentData = ref([]) // 当前显示的数据（原始数据或搜索结果）
+
 // 对话框状态
 const dialogVisible = ref(false)
 
@@ -121,11 +154,77 @@ const editingCarousel = reactive({
   status: 1
 })
 
+// 分页事件处理
+const handleSizeChange = (size) => {
+  pageSize.value = size
+  currentPage.value = 1
+  // 重新分页显示数据
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  carousels.value = currentData.value.slice(start, end)
+}
+
+const handleCurrentChange = (page) => {
+  currentPage.value = page
+  // 重新分页显示数据
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  carousels.value = currentData.value.slice(start, end)
+}
+
+// 原始轮播图数据（用于分页和搜索）
+const allCarousels = ref([])
+
+// 冒泡排序算法
+const bubbleSort = (arr, sortBy) => {
+  const sortedArr = [...arr]
+  const len = sortedArr.length
+  for (let i = 0; i < len - 1; i++) {
+    for (let j = 0; j < len - 1 - i; j++) {
+      if (sortedArr[j][sortBy] > sortedArr[j + 1][sortBy]) {
+        const temp = sortedArr[j]
+        sortedArr[j] = sortedArr[j + 1]
+        sortedArr[j + 1] = temp
+      }
+    }
+  }
+  return sortedArr
+}
+
+// 线性搜索算法
+const linearSearch = (arr, condition, keyword) => {
+  if (!keyword) return arr
+  const results = []
+  const lowerKeyword = keyword.toLowerCase()
+  
+  for (let i = 0; i < arr.length; i++) {
+    const item = arr[i]
+    let value = item[condition]
+    
+    // 特殊处理状态字段
+    if (condition === 'status') {
+      value = value === 1 ? '启用' : '禁用'
+    }
+    
+    if (value && String(value).toLowerCase().includes(lowerKeyword)) {
+      results.push(item)
+    }
+  }
+  
+  return results
+}
+
 // 获取轮播图列表
 const getCarousels = async () => {
   try {
     const res = await axios.get('/api/carousels')
-    carousels.value = res.data
+    allCarousels.value = res.data
+    currentData.value = [...allCarousels.value]
+    total.value = res.data.length
+    // 分页处理
+    const start = (currentPage.value - 1) * pageSize.value
+    const end = start + pageSize.value
+    carousels.value = currentData.value.slice(start, end)
   } catch (error) {
     console.error('获取轮播图列表失败:', error)
     ElMessage.error('获取轮播图列表失败')
@@ -247,6 +346,46 @@ const handleUploadRequest = (options) => {
     })
 }
 
+// 搜索轮播图函数
+const searchCarousels = () => {
+  if (!allCarousels.value.length) {
+    ElMessage.warning('请先获取轮播图列表')
+    return
+  }
+  
+  // 使用线性搜索过滤轮播图数据
+  const filteredCarousels = linearSearch(allCarousels.value, searchCondition.value, searchKeyword.value)
+  
+  // 使用冒泡排序对搜索结果进行排序
+  const sortedCarousels = bubbleSort(filteredCarousels, 'id')
+  
+  // 更新当前数据和总条数
+  currentData.value = sortedCarousels
+  total.value = sortedCarousels.length
+  
+  // 重置当前页码并分页显示结果
+  currentPage.value = 1
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  carousels.value = currentData.value.slice(start, end)
+}
+
+// 重置搜索函数
+const resetSearch = () => {
+  searchCondition.value = 'title'
+  searchKeyword.value = ''
+  
+  // 重置当前数据为所有轮播图数据
+  currentData.value = [...allCarousels.value]
+  total.value = allCarousels.value.length
+  
+  // 重置当前页码并分页显示所有数据
+  currentPage.value = 1
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  carousels.value = currentData.value.slice(start, end)
+}
+
 // 获取完整的图片URL
 const getImageUrl = (imageUrl) => {
   // 如果是本地图片路径（以/uploads/开头），则拼接完整URL
@@ -270,6 +409,18 @@ onMounted(() => {
 
 .header-actions {
   margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+}
+
+.pagination-container {
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
 }

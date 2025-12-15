@@ -1,9 +1,9 @@
 <template>
   <div class="student-container">
+    <h2>学生管理</h2>
     <el-card shadow="hover">
       <template #header>
         <div class="card-header">
-          <span>学生管理</span>
           <el-button v-if="hasRole('admin')" type="primary" @click="handleAdd">
             <el-icon><Plus /></el-icon> 新增学生
           </el-button>

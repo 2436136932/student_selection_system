@@ -1,9 +1,9 @@
 <template>
   <div class="score-container">
+    <h2>评分管理</h2>
     <el-card shadow="hover">
       <template #header>
         <div class="card-header">
-          <span>评分管理</span>
           <el-button v-if="hasRole('admin') || hasRole('teacher')" type="primary" @click="handleAdd">
             <el-icon-plus></el-icon-plus> 录入评分
           </el-button>
@@ -102,8 +102,8 @@
             <el-option
               v-for="course in courses"
               :key="course.id"
-              :label="course.code"
-              :value="course.code"
+              :label="course.courseCode"
+              :value="course.courseCode"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -195,16 +195,16 @@ const getAllCourses = () => {
 const getCourseInfoByCode = (courseCode) => {
   if (!courseCode) return
   
-  const course = courses.value.find(course => course.code === courseCode)
+  const course = courses.value.find(course => course.courseCode === courseCode)
   if (course) {
-    form.courseName = course.name
+    form.courseName = course.courseName
     form.semester = course.semester
   } else {
     // 如果本地没有找到，从服务器获取
     axios.get(`/api/courses/code/${courseCode}`)
       .then(response => {
         if (response.data) {
-          form.courseName = response.data.name
+          form.courseName = response.data.courseName
           form.semester = response.data.semester
         }
       })

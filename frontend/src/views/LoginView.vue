@@ -480,7 +480,7 @@ const handleRegister = () => {
 
 .login-header h1 {
   color: var(--primary-color);
-  font-size: 36px;
+  font-size: 32px;
   margin-bottom: 12px;
   font-weight: 700;
   letter-spacing: -0.5px;

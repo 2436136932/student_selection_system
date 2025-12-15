@@ -36,7 +36,6 @@ com\example\studentselectionsystem\controller\UserController.class
 com\example\studentselectionsystem\service\impl\StudentServiceImpl.class
 com\example\studentselectionsystem\service\StudentAwardApplicationService.class
 com\example\studentselectionsystem\service\AwardService.class
-com\example\studentselectionsystem\util\DatabaseChecker.class
 com\example\studentselectionsystem\controller\AwardTypeController.class
 com\example\studentselectionsystem\service\AwardTypeService.class
 com\example\studentselectionsystem\service\UserService.class

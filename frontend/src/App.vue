@@ -273,6 +273,95 @@ body {
   font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', Arial, sans-serif;
   background-color: #f5f7fa;
   color: #333;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* 统一标题样式 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', Arial, sans-serif;
+  color: #2c3e50;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-size: 28px;
+  letter-spacing: -0.5px;
+}
+
+h2 {
+  font-size: 24px;
+  letter-spacing: -0.3px;
+}
+
+h3 {
+  font-size: 20px;
+  letter-spacing: -0.2px;
+}
+
+/* 统一正文段落样式 */
+p {
+  margin-bottom: 16px;
+  color: #333;
+}
+
+/* 统一链接样式 */
+a {
+  color: #3498db;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #2980b9;
+  text-decoration: underline;
+}
+
+/* 统一按钮文字样式 */
+.el-button {
+  font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', Arial, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* 统一表单元素文字样式 */
+.el-input__inner, .el-select__input, .el-textarea__inner {
+  font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', Arial, sans-serif;
+  font-size: 14px;
+  color: #303133;
+}
+
+/* 统一标签页文字样式 */
+.el-tabs__item {
+  font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', Arial, sans-serif;
+  font-weight: 500;
+}
+
+/* 统一表格文字样式 */
+.el-table {
+  font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', Arial, sans-serif;
+}
+
+.el-table__header-wrapper th {
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+/* 统一卡片文字样式 */
+.el-card__header {
+  font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', Arial, sans-serif;
+}
+
+/* 统一面包屑文字样式 */
+.el-breadcrumb__item {
+  font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', Arial, sans-serif;
+}
+
+/* 统一通知文字样式 */
+.el-message {
+  font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', Arial, sans-serif;
 }
 
 /* 应用容器 */

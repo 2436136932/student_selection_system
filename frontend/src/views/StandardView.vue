@@ -1,9 +1,9 @@
 <template>
   <div class="standard-container">
+    <h2>评奖标准管理</h2>
     <el-card shadow="hover">
       <template #header>
         <div class="card-header">
-          <span>评奖标准管理</span>
           <el-button v-if="hasRole('admin') || hasRole('teacher')" type="primary" @click="handleAdd">
             <el-icon><Plus /></el-icon> 新增评奖标准
           </el-button>

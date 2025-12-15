@@ -2,7 +2,7 @@
   <div class="home-container">
     <h1>欢迎使用学生评奖评优系统</h1>
     <!-- 轮播图组件 -->
-    <el-carousel height="80vh" arrow="always" indicator-position="outside" :interval="5000">
+    <el-carousel height="80vh" arrow="always" indicator-position="outside" :interval="3000">
       <el-carousel-item v-for="carousel in carousels" :key="carousel.id">
         <div class="carousel-item" :style="{ backgroundImage: `url(${getImageUrl(carousel.imageUrl)})` }">
           <div class="carousel-content">
@@ -278,11 +278,7 @@ onMounted(() => {
 }
 
 
-h1 {
-  font-size: 28px;
-  margin-bottom: 20px;
-  color: #333;
-}
+/* 页面标题已使用全局样式定义 */
 
 .dashboard {
   display: flex;

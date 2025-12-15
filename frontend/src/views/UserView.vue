@@ -1,9 +1,25 @@
 <template>
   <div class="user-management">
+    <h2>用户管理</h2>
     <el-card shadow="hover">
       <template #header>
         <div class="card-header">
-          <span>用户管理</span>
+          <div class="search-container">
+            <el-select v-model="searchCondition" placeholder="请选择搜索条件" style="width: 150px; margin-right: 10px;">
+              <el-option label="用户名" value="username" />
+              <el-option label="姓名" value="name" />
+              <el-option label="邮箱" value="email" />
+              <el-option label="角色" value="role" />
+            </el-select>
+            <el-input 
+              v-model="searchKeyword" 
+              placeholder="请输入搜索关键词" 
+              style="width: 200px; margin-right: 10px;"
+              clearable
+            />
+            <el-button type="primary" @click="searchUsers">搜索</el-button>
+            <el-button @click="resetSearch">重置</el-button>
+          </div>
         </div>
       </template>
       
@@ -106,6 +122,11 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 
+// 搜索相关数据
+const searchCondition = ref('username')
+const searchKeyword = ref('')
+const allUsers = ref([]) // 保存原始用户数据，用于搜索和排序
+
 // 编辑对话框
 const dialogVisible = ref(false)
 const formRef = ref(null)
@@ -142,12 +163,19 @@ const rules = {
 const getUsers = async () => {
   loading.value = true
   try {
+    // 获取当前页的数据
     const response = await axios.get('/api/users/page', {
       params: {
         current: currentPage.value,
         size: pageSize.value
       }
     })
+    
+    // 如果是第一页，保存完整数据到allUsers用于搜索和排序
+    if (currentPage.value === 1) {
+      allUsers.value = response.data.records
+    }
+    
     users.value = response.data.records
     total.value = response.data.total
   } catch (error) {
@@ -217,6 +245,32 @@ const toggleStatus = async (row) => {
   }
 }
 
+// 搜索用户
+const searchUsers = () => {
+  if (!allUsers.value.length) {
+    ElMessage.warning('请先获取用户列表')
+    return
+  }
+  
+  // 使用线性搜索过滤用户
+  const filteredUsers = linearSearch(allUsers.value, searchCondition.value, searchKeyword.value)
+  
+  // 使用冒泡排序对搜索结果进行排序（按用户名排序）
+  const sortedUsers = bubbleSort(filteredUsers, 'username')
+  
+  // 更新显示的用户列表
+  users.value = sortedUsers
+  total.value = sortedUsers.length
+  currentPage.value = 1 // 搜索结果从第一页开始显示
+}
+
+// 重置搜索
+const resetSearch = () => {
+  searchCondition.value = 'username'
+  searchKeyword.value = ''
+  getUsers() // 重新获取原始用户列表
+}
+
 // 分页处理
 const handleSizeChange = (size) => {
   pageSize.value = size
@@ -227,6 +281,45 @@ const handleSizeChange = (size) => {
 const handleCurrentChange = (current) => {
   currentPage.value = current
   getUsers()
+}
+
+// 冒泡排序算法
+const bubbleSort = (arr, sortBy) => {
+  const sortedArr = [...arr]
+  const len = sortedArr.length
+  
+  for (let i = 0; i < len - 1; i++) {
+    for (let j = 0; j < len - 1 - i; j++) {
+      // 比较相邻元素，根据sortBy字段进行排序
+      if (sortedArr[j][sortBy] > sortedArr[j + 1][sortBy]) {
+        // 交换元素
+        const temp = sortedArr[j]
+        sortedArr[j] = sortedArr[j + 1]
+        sortedArr[j + 1] = temp
+      }
+    }
+  }
+  
+  return sortedArr
+}
+
+// 线性搜索算法
+const linearSearch = (arr, condition, keyword) => {
+  if (!keyword) return arr
+  
+  const results = []
+  const lowerKeyword = keyword.toLowerCase()
+  
+  for (let i = 0; i < arr.length; i++) {
+    const item = arr[i]
+    const value = item[condition]
+    
+    if (value && value.toLowerCase().includes(lowerKeyword)) {
+      results.push(item)
+    }
+  }
+  
+  return results
 }
 
 // 页面加载时获取用户列表
@@ -243,6 +336,11 @@ onMounted(() => {
 .card-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+
+.search-container {
+  display: flex;
   align-items: center;
 }
 

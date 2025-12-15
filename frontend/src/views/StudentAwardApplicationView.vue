@@ -1,9 +1,9 @@
 <template>
   <div class="application-container">
+    <h2>学生奖项申请</h2>
     <el-card shadow="hover">
       <template #header>
         <div class="card-header">
-          <span>学生奖项申请</span>
           <el-button v-if="hasRole('student')" type="primary" @click="dialogVisible = true">
             <el-icon><plus /></el-icon> 申请奖项
           </el-button>

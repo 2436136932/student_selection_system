@@ -1,9 +1,9 @@
 <template>
   <div class="course-container">
+    <h2>课程管理</h2>
     <el-card shadow="hover">
       <template #header>
         <div class="card-header">
-          <span>课程管理</span>
           <el-button v-if="hasRole('admin')" type="primary" @click="handleAdd">
             <el-icon><Plus /></el-icon> 新增课程
           </el-button>
@@ -161,8 +161,8 @@
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="form.status" placeholder="请选择状态">
-            <el-option label="开放选课" value="1"></el-option>
-            <el-option label="关闭选课" value="0"></el-option>
+            <el-option label="开设" value="1"></el-option>
+            <el-option label="关闭" value="0"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="课程描述">
@@ -230,7 +230,7 @@
                 <div class="detail-item">
                   <span class="detail-label">状态：</span>
                   <el-tag :type="selectedCourse.status === 1 ? 'success' : 'info'" size="small">
-                    {{ selectedCourse.status === 1 ? '开放选课' : '关闭选课' }}
+                    {{ selectedCourse.status === 1 ? '开设' : '关闭' }}
                   </el-tag>
                 </div>
               </div>
@@ -504,7 +504,7 @@ const form = reactive({
 
 // 状态格式化函数
 const statusFormatter = (row, column, cellValue) => {
-  return cellValue === 1 ? '开放选课' : '关闭选课'
+  return cellValue === 1 ? '开设' : '关闭'
 }
 
 // 查看课程详情
