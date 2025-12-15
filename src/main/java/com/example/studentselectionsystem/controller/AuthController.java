@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * 认证控制器 - 处理登录注册请求
@@ -283,6 +284,60 @@ public class AuthController {
 
         public void setRole(String role) {
             this.role = role;
+        }
+    }
+
+    /**
+     * 获取当前登录用户信息
+     * @return 当前用户信息
+     */
+    @CrossOrigin(origins = "http://localhost:5173")
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, Object>> getCurrentUser() {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // 获取当前登录用户的用户名
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            Optional<User> optionalUser = userService.findUserByUsername(username);
+            
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                // 构建用户信息
+                Map<String, Object> userInfo = new HashMap<>();
+                userInfo.put("id", user.getId());
+                userInfo.put("username", user.getUsername());
+                userInfo.put("name", user.getName());
+                userInfo.put("email", user.getEmail());
+                userInfo.put("phone", user.getPhone());
+                userInfo.put("role", user.getRole());
+                
+                // 如果是学生角色，尝试获取学号
+                if ("student".equals(user.getRole())) {
+                    try {
+                        Optional<Student> studentOptional = studentService.findStudentByUserId(user.getId());
+                        if (studentOptional.isPresent()) {
+                            Student student = studentOptional.get();
+                            userInfo.put("studentNumber", student.getStudentNumber());
+                            userInfo.put("name", student.getName());
+                        }
+                    } catch (Exception e) {
+                        System.out.println("获取学生学号失败: " + e.getMessage());
+                    }
+                }
+                
+                response.put("success", true);
+                response.put("message", "获取用户信息成功");
+                response.put("user", userInfo);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.put("success", false);
+                response.put("message", "用户不存在");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "获取用户信息失败: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

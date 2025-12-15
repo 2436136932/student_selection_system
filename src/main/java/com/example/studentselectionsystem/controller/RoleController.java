@@ -34,7 +34,7 @@ public class RoleController {
      * 更新角色信息
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Role> updateRole(@PathVariable Integer id, @RequestBody Role role) {
+    public ResponseEntity<Role> updateRole(@PathVariable Long id, @RequestBody Role role) {
         Role updatedRole = roleService.updateRole(id, role);
         if (updatedRole != null) {
             return new ResponseEntity<>(updatedRole, HttpStatus.OK);
@@ -46,7 +46,7 @@ public class RoleController {
      * 删除角色
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRole(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteRole(@PathVariable Long id) {
         roleService.deleteRole(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -55,7 +55,7 @@ public class RoleController {
      * 根据ID查找角色
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Role> findRoleById(@PathVariable Integer id) {
+    public ResponseEntity<Role> findRoleById(@PathVariable Long id) {
         Optional<Role> optionalRole = roleService.findRoleById(id);
         return optionalRole.map(role -> new ResponseEntity<>(role, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -65,7 +65,7 @@ public class RoleController {
      * 根据ID查找角色及其权限信息
      */
     @GetMapping("/{id}/with-permissions")
-    public ResponseEntity<Role> findRoleByIdWithPermissions(@PathVariable Integer id) {
+    public ResponseEntity<Role> findRoleByIdWithPermissions(@PathVariable Long id) {
         Optional<Role> optionalRole = roleService.findRoleByIdWithPermissions(id);
         return optionalRole.map(role -> new ResponseEntity<>(role, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -113,7 +113,7 @@ public class RoleController {
      * 为角色分配权限
      */
     @PostMapping("/{id}/permissions")
-    public ResponseEntity<Role> assignPermissionsToRole(@PathVariable Integer id, @RequestBody List<Integer> permissionIds) {
+    public ResponseEntity<Role> assignPermissionsToRole(@PathVariable Long id, @RequestBody List<Long> permissionIds) {
         Role updatedRole = roleService.assignPermissionsToRole(id, permissionIds);
         if (updatedRole != null) {
             return new ResponseEntity<>(updatedRole, HttpStatus.OK);

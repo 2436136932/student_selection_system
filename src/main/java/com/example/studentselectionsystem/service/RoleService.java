@@ -24,20 +24,20 @@ public interface RoleService {
      * @param role 角色信息
      * @return 更新后的角色
      */
-    Role updateRole(Integer id, Role role);
+    Role updateRole(Long id, Role role);
 
     /**
      * 删除角色
      * @param id 角色ID
      */
-    void deleteRole(Integer id);
+    void deleteRole(Long id);
 
     /**
      * 根据ID查找角色
      * @param id 角色ID
      * @return 角色信息
      */
-    Optional<Role> findRoleById(Integer id);
+    Optional<Role> findRoleById(Long id);
 
     /**
      * 根据角色名称查找角色
@@ -73,14 +73,14 @@ public interface RoleService {
      * @param permissionIds 权限ID列表
      * @return 更新后的角色
      */
-    Role assignPermissionsToRole(Integer roleId, List<Integer> permissionIds);
+    Role assignPermissionsToRole(Long roleId, List<Long> permissionIds);
 
     /**
      * 根据角色ID获取角色及其权限信息
      * @param id 角色ID
      * @return 角色信息
      */
-    Optional<Role> findRoleByIdWithPermissions(Integer id);
+    Optional<Role> findRoleByIdWithPermissions(Long id);
 
     /**
      * 获取所有角色及其权限信息

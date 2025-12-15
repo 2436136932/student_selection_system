@@ -36,7 +36,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Role updateRole(Integer id, Role role) {
+    public Role updateRole(Long id, Role role) {
         Role existingRole = roleRepository.selectById(id);
         if (existingRole != null) {
             // 更新角色信息
@@ -49,12 +49,12 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void deleteRole(Integer id) {
+    public void deleteRole(Long id) {
         roleRepository.deleteById(id);
     }
 
     @Override
-    public Optional<Role> findRoleById(Integer id) {
+    public Optional<Role> findRoleById(Long id) {
         return Optional.ofNullable(roleRepository.selectById(id));
     }
 
@@ -81,7 +81,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Role assignPermissionsToRole(Integer roleId, List<Integer> permissionIds) {
+    public Role assignPermissionsToRole(Long roleId, List<Long> permissionIds) {
         Role role = roleRepository.selectById(roleId);
         if (role != null) {
             // 获取权限列表
@@ -94,7 +94,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Optional<Role> findRoleByIdWithPermissions(Integer id) {
+    public Optional<Role> findRoleByIdWithPermissions(Long id) {
         return roleRepository.selectByIdWithPermissions(id);
     }
 

@@ -105,4 +105,22 @@ public interface CourseService {
      */
     boolean existsByCourseCode(String courseCode);
 
+    /**
+     * 根据教师ID获取课程列表
+     * @param teacherId 教师ID
+     * @param current 页码（从1开始）
+     * @param size 每页大小
+     * @return 课程分页列表
+     */
+    IPage<Course> findCoursesByTeacherId(Long teacherId, Integer current, Integer size);
+
+    /**
+     * 根据学生ID获取课程列表
+     * @param studentId 学生ID
+     * @param current 页码（从1开始）
+     * @param size 每页大小
+     * @return 课程分页列表
+     */
+    IPage<Course> findCoursesByStudentId(Long studentId, Integer current, Integer size);
+
 }

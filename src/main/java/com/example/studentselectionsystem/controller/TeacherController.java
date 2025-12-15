@@ -1,7 +1,9 @@
 package com.example.studentselectionsystem.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.example.studentselectionsystem.entity.Course;
 import com.example.studentselectionsystem.entity.Teacher;
+import com.example.studentselectionsystem.service.CourseService;
 import com.example.studentselectionsystem.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,9 @@ public class TeacherController {
 
     @Autowired
     private TeacherService teacherService;
+
+    @Autowired
+    private CourseService courseService;
 
     /**
      * 创建教师
@@ -203,6 +208,31 @@ public class TeacherController {
             response.put("success", false);
             response.put("message", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * 获取教师教授的课程
+     */
+    @GetMapping("/{id}/courses")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+    public ResponseEntity<IPage<Course>> getTeacherCourses(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "1") Integer current,
+            @RequestParam(defaultValue = "10") Integer size) {
+        try {
+            // 首先根据用户ID查找教师信息
+            Optional<Teacher> optionalTeacher = teacherService.findTeacherByUserId(id);
+            if (optionalTeacher.isPresent()) {
+                Teacher teacher = optionalTeacher.get();
+                // 使用教师ID查询课程
+                IPage<Course> courses = courseService.findCoursesByTeacherId(teacher.getId(), current, size);
+                return new ResponseEntity<>(courses, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

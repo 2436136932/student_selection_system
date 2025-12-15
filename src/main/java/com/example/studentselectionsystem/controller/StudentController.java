@@ -2,7 +2,9 @@ package com.example.studentselectionsystem.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.studentselectionsystem.entity.Course;
 import com.example.studentselectionsystem.entity.Student;
+import com.example.studentselectionsystem.service.CourseService;
 import com.example.studentselectionsystem.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,9 @@ public class StudentController {
 
     @Autowired
     private StudentService studentService;
+
+    @Autowired
+    private CourseService courseService;
 
     /**
      * 创建学生
@@ -232,6 +237,31 @@ public class StudentController {
             response.put("success", false);
             response.put("message", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * 获取学生的课程
+     */
+    @GetMapping("/{id}/courses")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
+    public ResponseEntity<IPage<Course>> getStudentCourses(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "1") Integer current,
+            @RequestParam(defaultValue = "10") Integer size) {
+        try {
+            // 首先根据用户ID查找学生信息
+            Optional<Student> optionalStudent = studentService.findStudentByUserId(id);
+            if (optionalStudent.isPresent()) {
+                Student student = optionalStudent.get();
+                // 使用学生ID查询课程
+                IPage<Course> courses = courseService.findCoursesByStudentId(student.getId(), current, size);
+                return new ResponseEntity<>(courses, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -24,7 +24,7 @@ public class Role implements Serializable {
      * 角色ID
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 角色名称
@@ -55,14 +55,14 @@ public class Role implements Serializable {
      * 角色权限关联ID列表（用于中间表操作）
      */
     @TableField(exist = false)
-    private List<Integer> permissionIds;
+    private List<Long> permissionIds;
 
     // Getter and Setter methods
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -98,11 +98,11 @@ public class Role implements Serializable {
         this.permissions = permissions;
     }
 
-    public List<Integer> getPermissionIds() {
+    public List<Long> getPermissionIds() {
         return permissionIds;
     }
 
-    public void setPermissionIds(List<Integer> permissionIds) {
+    public void setPermissionIds(List<Long> permissionIds) {
         this.permissionIds = permissionIds;
     }
 }

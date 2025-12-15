@@ -23,7 +23,7 @@ public class Permission implements Serializable {
      * 权限ID
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 权限名称
@@ -45,11 +45,11 @@ public class Permission implements Serializable {
     private Date createTime;
 
     // Getter and Setter methods
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

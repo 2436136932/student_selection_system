@@ -7,6 +7,14 @@
           <el-button v-if="hasRole('admin')" type="primary" @click="handleAdd">
             <el-icon><Plus /></el-icon> 新增课程
           </el-button>
+          <div v-if="hasRole('teacher') || hasRole('student')" style="margin-left: 10px;">
+            <el-button v-if="!isMyCourses" type="primary" @click="handleMyCourses">
+              <el-icon><User /></el-icon> 我的课程
+            </el-button>
+            <el-button v-else type="info" @click="handleAllCourses">
+              <el-icon><List /></el-icon> 全部课程
+            </el-button>
+          </div>
         </div>
       </template>
       <div class="card-body">
@@ -346,9 +354,9 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus } from '@element-plus/icons-vue'
+import { Plus, User, List } from '@element-plus/icons-vue'
 import axios from 'axios'
-import { hasRole } from '../utils/role'
+import { hasRole, getUserInfo } from '../utils/role'
 
 // 检查用户是否是管理员或教师
 const isAdminOrTeacher = computed(() => {
@@ -412,6 +420,8 @@ const selectedTeachers = ref([])
 const selectedStudents = ref([])
 const showTeacherSelection = ref(false)
 const showStudentSelection = ref(false)
+// 我的课程功能相关状态
+const isMyCourses = ref(false)
 
 const searchForm = reactive({
   courseCode: '',
@@ -803,12 +813,20 @@ const handleAdd = () => {
 // 分页处理
 const handleSizeChange = (size) => {
   pageSize.value = size
-  getCourses()
+  if (isMyCourses.value) {
+    handleMyCourses()
+  } else {
+    getCourses()
+  }
 }
 
 const handleCurrentChange = (current) => {
   currentPage.value = current
-  getCourses()
+  if (isMyCourses.value) {
+    handleMyCourses()
+  } else {
+    getCourses()
+  }
 }
 
 // 新增/编辑课程
@@ -936,6 +954,55 @@ const handleDelete = (row) => {
   }).catch(() => {
     // 取消删除
   })
+}
+
+// 获取用户的专属课程
+const handleMyCourses = () => {
+  const userInfo = getUserInfo()
+  console.log('用户信息:', userInfo)
+  
+  if (hasRole('teacher')) {
+    // 教师：获取自己教授的课程
+    axios.get(`/api/teachers/${userInfo.id}/courses`, {
+      params: {
+        current: currentPage.value,
+        size: pageSize.value
+      }
+    }).then(response => {
+      console.log('教师课程响应数据:', response.data)
+      courses.value = response.data.records || []
+      total.value = response.data.total || 0
+      isMyCourses.value = true
+      ElMessage.success('获取您教授的课程成功')
+    }).catch(error => {
+      console.error('获取教师课程失败:', error)
+      ElMessage.error('获取您教授的课程失败')
+    })
+  } else if (hasRole('student')) {
+    // 学生：获取自己被安排的课程
+    axios.get(`/api/students/${userInfo.id}/courses`, {
+      params: {
+        current: currentPage.value,
+        size: pageSize.value
+      }
+    }).then(response => {
+      console.log('学生课程响应数据:', response.data)
+      courses.value = response.data.records || []
+      total.value = response.data.total || 0
+      isMyCourses.value = true
+      ElMessage.success('获取您的课程成功')
+    }).catch(error => {
+      console.error('获取学生课程失败:', error)
+      ElMessage.error('获取您的课程失败')
+    })
+  }
+}
+
+// 返回查看全部课程
+const handleAllCourses = () => {
+  getCourses()
+  isMyCourses.value = false
+  ElMessage.success('已切换到全部课程')
 }
 
 // 初始化数据

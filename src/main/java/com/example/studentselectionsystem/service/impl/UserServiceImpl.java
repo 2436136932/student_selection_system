@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(Integer id, User user) {
+    public User updateUser(Long id, User user) {
         Optional<User> optionalUser = Optional.ofNullable(userRepository.selectById(id));
         if (optionalUser.isPresent()) {
             User existingUser = optionalUser.get();
@@ -72,12 +72,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Integer id) {
+    public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
     @Override
-    public Optional<User> findUserById(Integer id) {
+    public Optional<User> findUserById(Long id) {
         return Optional.ofNullable(userRepository.selectById(id));
     }
 
@@ -140,7 +140,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User assignRolesToUser(Integer userId, List<Integer> roleIds) {
+    public User assignRolesToUser(Long userId, List<Long> roleIds) {
         Optional<User> optionalUser = Optional.ofNullable(userRepository.selectById(userId));
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -154,7 +154,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findUserByIdWithRoles(Integer id) {
+    public Optional<User> findUserByIdWithRoles(Long id) {
         return userRepository.selectByIdWithRoles(id);
     }
 

@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.studentselectionsystem.entity.Course;
 import com.example.studentselectionsystem.entity.Major;
 import com.example.studentselectionsystem.entity.Score;
+import com.example.studentselectionsystem.entity.Selection;
 import com.example.studentselectionsystem.entity.Student;
 import com.example.studentselectionsystem.service.CourseService;
 import com.example.studentselectionsystem.service.MajorService;
 import com.example.studentselectionsystem.service.ScoreService;
+import com.example.studentselectionsystem.service.SelectionService;
 import com.example.studentselectionsystem.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,6 +51,9 @@ public class CourseController {
     
     @Autowired
     private MajorService majorService;
+    
+    @Autowired
+    private SelectionService selectionService;
 
     /**
      * 创建课程
@@ -355,11 +360,16 @@ public class CourseController {
                 scoreService.deleteScore(score.getId());
             }
             
-            // 为新的学生列表创建成绩记录
+            // 删除课程的所有现有选课记录
+            selectionService.deleteSelectionsByCourseId(id);
+            
+            // 为新的学生列表创建成绩记录和选课记录
             List<Score> newScores = new ArrayList<>();
+            List<Selection> newSelections = new ArrayList<>();
             for (Long studentId : studentIds) {
                 Optional<Student> student = studentService.findStudentById(studentId);
                 if (student.isPresent()) {
+                    // 创建成绩记录
                     Score score = new Score();
                     score.setStudentId(studentId);
                     score.setCourseId(id);
@@ -370,6 +380,12 @@ public class CourseController {
                     score.setCreatedAt(LocalDateTime.now());
                     score.setUpdatedAt(LocalDateTime.now());
                     newScores.add(scoreService.createScore(score));
+                    
+                    // 创建选课记录
+                    Selection selection = new Selection();
+                    selection.setStudentId(studentId);
+                    selection.setCourseId(id);
+                    newSelections.add(selectionService.createSelection(selection));
                 }
             }
             

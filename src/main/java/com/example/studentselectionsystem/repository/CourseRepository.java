@@ -75,4 +75,22 @@ public interface CourseRepository extends BaseMapper<Course> {
     @Select("SELECT c.*, t.name as teacher_name FROM courses c LEFT JOIN teachers t ON c.teacher_id = t.id ${ew.customSqlSegment}")
     IPage<Course> selectPageWithTeacher(IPage<Course> page, @Param("ew") QueryWrapper<Course> queryWrapper);
 
+    /**
+     * 根据教师ID分页查询课程，包含教师信息
+     * @param page 分页参数
+     * @param teacherId 教师ID
+     * @return 课程分页列表
+     */
+    @Select("SELECT c.*, t.name as teacher_name FROM courses c LEFT JOIN teachers t ON c.teacher_id = t.id WHERE c.teacher_id = #{teacherId}")
+    IPage<Course> selectByTeacherId(IPage<Course> page, @Param("teacherId") Long teacherId);
+
+    /**
+     * 根据学生ID分页查询课程，包含教师信息
+     * @param page 分页参数
+     * @param studentId 学生ID
+     * @return 课程分页列表
+     */
+    @Select("SELECT c.*, t.name as teacher_name FROM courses c LEFT JOIN teachers t ON c.teacher_id = t.id INNER JOIN selections s ON c.id = s.course_id WHERE s.student_id = #{studentId} AND s.status = 1")
+    IPage<Course> selectByStudentId(IPage<Course> page, @Param("studentId") Long studentId);
+
 }

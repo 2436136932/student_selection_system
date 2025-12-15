@@ -24,20 +24,20 @@ public interface UserService {
      * @param user 用户信息
      * @return 更新后的用户
      */
-    User updateUser(Integer id, User user);
+    User updateUser(Long id, User user);
 
     /**
      * 删除用户
      * @param id 用户ID
      */
-    void deleteUser(Integer id);
+    void deleteUser(Long id);
 
     /**
      * 根据ID查找用户
      * @param id 用户ID
      * @return 用户信息
      */
-    Optional<User> findUserById(Integer id);
+    Optional<User> findUserById(Long id);
 
     /**
      * 根据用户名查找用户
@@ -80,14 +80,14 @@ public interface UserService {
      * @param roleIds 角色ID列表
      * @return 更新后的用户
      */
-    User assignRolesToUser(Integer userId, List<Integer> roleIds);
+    User assignRolesToUser(Long userId, List<Long> roleIds);
 
     /**
      * 根据用户ID获取用户及其角色信息
      * @param id 用户ID
      * @return 用户信息
      */
-    Optional<User> findUserByIdWithRoles(Integer id);
+    Optional<User> findUserByIdWithRoles(Long id);
 
     /**
      * 检查用户名是否已存在

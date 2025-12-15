@@ -48,6 +48,7 @@ com\example\studentselectionsystem\config\JwtAuthenticationFilter.class
 com\example\studentselectionsystem\entity\SelectionProcess.class
 com\example\studentselectionsystem\repository\ScoreRepository.class
 com\example\studentselectionsystem\mapper\StudentMapper.class
+com\example\studentselectionsystem\entity\Selection.class
 com\example\studentselectionsystem\repository\CourseRepository.class
 com\example\studentselectionsystem\mapper\VolunteerActivityMapper.class
 com\example\studentselectionsystem\service\CourseService.class
@@ -58,6 +59,7 @@ com\example\studentselectionsystem\service\ScoreService.class
 com\example\studentselectionsystem\controller\AuthController$RegisterRequest.class
 com\example\studentselectionsystem\entity\Course.class
 com\example\studentselectionsystem\mapper\ScoreMapper.class
+com\example\studentselectionsystem\mapper\SelectionMapper.class
 com\example\studentselectionsystem\config\CustomUserDetailsService.class
 com\example\studentselectionsystem\controller\PermissionController.class
 com\example\studentselectionsystem\mapper\CompetitionMapper.class
@@ -81,9 +83,11 @@ com\example\studentselectionsystem\entity\StudentAwardApplication.class
 com\example\studentselectionsystem\repository\RoleRepository.class
 com\example\studentselectionsystem\dao\AwardDAO.class
 com\example\studentselectionsystem\entity\Standard.class
+com\example\studentselectionsystem\service\impl\SelectionServiceImpl.class
 com\example\studentselectionsystem\entity\SelectionCriteria.class
 com\example\studentselectionsystem\entity\VolunteerActivity.class
 com\example\studentselectionsystem\scheduler\AwardStatusScheduler.class
+com\example\studentselectionsystem\service\SelectionService.class
 com\example\studentselectionsystem\service\impl\StudentAwardApplicationServiceImpl.class
 com\example\studentselectionsystem\repository\UserRepository.class
 com\example\studentselectionsystem\service\impl\AwardTypeServiceImpl.class

@@ -300,6 +300,17 @@ INSERT INTO teachers (teacher_number, name, gender, title, department, phone, em
 ('T002', '李四', '女', '副教授', '数学学院', '13900139002', 'lisi@example.com'),
 ('T003', '王五', '男', '讲师', '物理学院', '13900139003', 'wangwu@example.com');
 
+-- 插入教师用户 (密码为: password)
+INSERT INTO users (username, password, role, real_name, email, phone, status) VALUES
+('teacher1', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'teacher', '张三', 'zhangsan@example.com', '13900139001', 1),
+('teacher2', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'teacher', '李四', 'lisi@example.com', '13900139002', 1),
+('teacher3', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'teacher', '王五', 'wangwu@example.com', '13900139003', 1);
+
+-- 更新教师表中的user_id
+UPDATE teachers SET user_id = (SELECT id FROM users WHERE username = 'teacher1') WHERE teacher_number = 'T001';
+UPDATE teachers SET user_id = (SELECT id FROM users WHERE username = 'teacher2') WHERE teacher_number = 'T002';
+UPDATE teachers SET user_id = (SELECT id FROM users WHERE username = 'teacher3') WHERE teacher_number = 'T003';
+
 -- 插入示例课程
 INSERT INTO courses (course_code, course_name, credits, hours, department, teacher_id, semester, year, max_students, current_students, status, description) VALUES
 ('CS101', '计算机导论', 3.0, 48, '计算机学院', 1, '2024-2025-1', 2024, 100, 0, 1, '计算机科学基础课程'),
@@ -339,6 +350,25 @@ INSERT INTO notices (title, content, publisher_id, publisher_name, publish_time,
 ('2024年度奖学金发放通知', '2024年度奖学金已经发放，请各位获奖同学及时查收。如有疑问，请联系学生工作处。', 1, '系统管理员', '2025-01-10 14:00:00', 1, 'info'),
 ('评优系统使用说明', '为方便各位同学使用评优系统，现将系统使用方法和注意事项进行说明，请大家仔细阅读。', 1, '系统管理员', '2025-08-20 09:00:00', 1, 'info'),
 ('关于推迟科技创新大赛申报截止时间的通知', '由于部分同学反映准备时间不足，经研究决定，将科技创新大赛申报截止时间推迟至2025年4月25日。', 1, '系统管理员', '2025-04-10 16:00:00', 1, 'warning');
+
+-- 为学生添加选课记录
+INSERT INTO selections (student_id, course_id, selection_time, status) VALUES
+(1, 1, NOW(), 1),  -- 学生1选计算机导论
+(1, 2, NOW(), 1),  -- 学生1选高等数学
+(2, 1, NOW(), 1),  -- 学生2选计算机导论
+(3, 3, NOW(), 1);  -- 学生3选大学物理
+
+-- 为学生添加成绩记录
+INSERT INTO scores (student_id, course_id, usual_score, exam_score, total_score, grade, status) VALUES
+(1, 1, 85.5, 90.0, 87.5, 'A', 1),  -- 学生1计算机导论成绩
+(1, 2, 80.0, 85.0, 82.5, 'B', 1),  -- 学生1高等数学成绩
+(2, 1, 75.0, 80.0, 77.5, 'B', 1),  -- 学生2计算机导论成绩
+(3, 3, 90.0, 95.0, 92.5, 'A', 1);  -- 学生3大学物理成绩
+
+-- 更新课程的当前选课人数
+UPDATE courses SET current_students = (SELECT COUNT(*) FROM selections WHERE course_id = 1 AND status = 1) WHERE id = 1;
+UPDATE courses SET current_students = (SELECT COUNT(*) FROM selections WHERE course_id = 2 AND status = 1) WHERE id = 2;
+UPDATE courses SET current_students = (SELECT COUNT(*) FROM selections WHERE course_id = 3 AND status = 1) WHERE id = 3;
 
 -- 创建索引
 -- 注意：去掉IF NOT EXISTS语法以兼容不同MySQL版本

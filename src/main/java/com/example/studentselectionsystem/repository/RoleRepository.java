@@ -16,7 +16,7 @@ public interface RoleRepository extends BaseMapper<Role> {
     Optional<Role> selectByName(@Param("name") String name);
 
     @Select("SELECT r.*, p.* FROM role r LEFT JOIN role_permission rp ON r.id = rp.role_id LEFT JOIN permission p ON rp.permission_id = p.id WHERE r.id = #{id}")
-    Optional<Role> selectByIdWithPermissions(@Param("id") Integer id);
+    Optional<Role> selectByIdWithPermissions(@Param("id") Long id);
 
     @Select("SELECT r.*, p.* FROM role r LEFT JOIN role_permission rp ON r.id = rp.role_id LEFT JOIN permission p ON rp.permission_id = p.id")
     List<Role> selectAllWithPermissions();

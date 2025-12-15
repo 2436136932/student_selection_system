@@ -26,9 +26,7 @@ public class StudentAwardSelectionSystemApplication {
      * MyBatis Plus分页插件配置
      */
     @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor() {
-        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        // 添加分页插件
+    public PaginationInnerInterceptor paginationInnerInterceptor() {
         PaginationInnerInterceptor paginationInterceptor = new PaginationInnerInterceptor();
         // 设置数据库类型为MySQL
         paginationInterceptor.setDbType(DbType.MYSQL);
@@ -36,9 +34,7 @@ public class StudentAwardSelectionSystemApplication {
         paginationInterceptor.setOverflow(true);
         // 设置单页最大记录数
         paginationInterceptor.setMaxLimit(500L);
-        
-        interceptor.addInnerInterceptor(paginationInterceptor);
-        return interceptor;
+        return paginationInterceptor;
     }
 
 

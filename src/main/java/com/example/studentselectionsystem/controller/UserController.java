@@ -38,7 +38,7 @@ public class UserController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
         User updatedUser = userService.updateUser(id, user);
         if (updatedUser != null) {
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
@@ -51,7 +51,7 @@ public class UserController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -61,7 +61,7 @@ public class UserController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or (authentication.principal.username == @userService.findUserById(#id).get().getUsername())")
-    public ResponseEntity<User> findUserById(@PathVariable Integer id) {
+    public ResponseEntity<User> findUserById(@PathVariable Long id) {
         Optional<User> optionalUser = userService.findUserById(id);
         return optionalUser.map(user -> new ResponseEntity<>(user, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -72,7 +72,7 @@ public class UserController {
      */
     @GetMapping("/{id}/with-roles")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> findUserByIdWithRoles(@PathVariable Integer id) {
+    public ResponseEntity<User> findUserByIdWithRoles(@PathVariable Long id) {
         Optional<User> optionalUser = userService.findUserByIdWithRoles(id);
         return optionalUser.map(user -> new ResponseEntity<>(user, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -123,7 +123,7 @@ public class UserController {
      */
     @PostMapping("/{id}/roles")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> assignRolesToUser(@PathVariable Integer id, @RequestBody List<Integer> roleIds) {
+    public ResponseEntity<User> assignRolesToUser(@PathVariable Long id, @RequestBody List<Long> roleIds) {
         User updatedUser = userService.assignRolesToUser(id, roleIds);
         if (updatedUser != null) {
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);

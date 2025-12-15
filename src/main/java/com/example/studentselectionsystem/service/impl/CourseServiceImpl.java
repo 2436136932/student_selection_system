@@ -221,4 +221,34 @@ public class CourseServiceImpl implements CourseService {
         return courseRepository.existsByCourseCode(courseCode);
     }
 
+    /**
+     * 根据教师ID获取课程列表
+     * @param teacherId 教师ID
+     * @param current 页码（从1开始）
+     * @param size 每页大小
+     * @return 课程分页列表
+     */
+    @Override
+    public IPage<Course> findCoursesByTeacherId(Long teacherId, Integer current, Integer size) {
+        // 创建MyBatis Plus分页对象
+        IPage<Course> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, size);
+        // 执行分页查询，包含教师信息
+        return courseRepository.selectByTeacherId(page, teacherId);
+    }
+
+    /**
+     * 根据学生ID获取课程列表
+     * @param studentId 学生ID
+     * @param current 页码（从1开始）
+     * @param size 每页大小
+     * @return 课程分页列表
+     */
+    @Override
+    public IPage<Course> findCoursesByStudentId(Long studentId, Integer current, Integer size) {
+        // 创建MyBatis Plus分页对象
+        IPage<Course> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, size);
+        // 执行分页查询，包含教师信息
+        return courseRepository.selectByStudentId(page, studentId);
+    }
+
 }
