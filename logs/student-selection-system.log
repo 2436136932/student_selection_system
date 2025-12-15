@@ -1,0 +1,246 @@
+2025-12-15T13:27:53.170+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-4] o.a.coyote.http11.Http11InputBuffer      : Before fill(): parsingHeader: [true], parsingRequestLine: [true], parsingRequestLinePhase: [0], parsingRequestLineStart: [0], byteBuffer.position(): [0], byteBuffer.limit(): [0], end: [784]
+2025-12-15T13:27:53.171+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-8] o.a.coyote.http11.Http11InputBuffer      : Before fill(): parsingHeader: [true], parsingRequestLine: [true], parsingRequestLinePhase: [0], parsingRequestLineStart: [0], byteBuffer.position(): [0], byteBuffer.limit(): [0], end: [784]
+2025-12-15T13:27:53.171+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-9] o.a.coyote.http11.Http11InputBuffer      : Before fill(): parsingHeader: [true], parsingRequestLine: [true], parsingRequestLinePhase: [0], parsingRequestLineStart: [0], byteBuffer.position(): [0], byteBuffer.limit(): [0], end: [831]
+2025-12-15T13:27:53.173+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-4] o.a.tomcat.util.net.SocketWrapperBase    : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@51854386:org.apache.tomcat.util.net.NioChannel@6953e11d:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:62853]], Read from buffer: [0]
+2025-12-15T13:27:53.173+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-8] o.a.tomcat.util.net.SocketWrapperBase    : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@31d8f124:org.apache.tomcat.util.net.NioChannel@5c45b543:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52161]], Read from buffer: [0]
+2025-12-15T13:27:53.174+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-9] o.a.tomcat.util.net.SocketWrapperBase    : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@52ceb40c:org.apache.tomcat.util.net.NioChannel@4a58ac46:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52162]], Read from buffer: [0]
+2025-12-15T13:27:53.174+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-4] org.apache.tomcat.util.net.NioEndpoint   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@51854386:org.apache.tomcat.util.net.NioChannel@6953e11d:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:62853]], Read direct from socket: [551]
+2025-12-15T13:27:53.174+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-8] org.apache.tomcat.util.net.NioEndpoint   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@31d8f124:org.apache.tomcat.util.net.NioChannel@5c45b543:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52161]], Read direct from socket: [598]
+2025-12-15T13:27:53.174+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-9] org.apache.tomcat.util.net.NioEndpoint   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@52ceb40c:org.apache.tomcat.util.net.NioChannel@4a58ac46:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52162]], Read direct from socket: [551]
+2025-12-15T13:27:53.174+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-4] o.a.coyote.http11.Http11InputBuffer      : Received [OPTIONS /api/courses/with-teacher HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+Accept: */*
+Access-Control-Request-Method: GET
+Access-Control-Request-Headers: authorization
+Origin: http://localhost:5173
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) TraeCN/1.104.3 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-site
+Sec-Fetch-Dest: empty
+Referer: http://localhost:5173/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN
+
+]
+2025-12-15T13:27:53.174+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-8] o.a.coyote.http11.Http11InputBuffer      : Received [OPTIONS /api/courses/page?current=1&size=10&courseCode=&courseName=&teacherName= HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+Accept: */*
+Access-Control-Request-Method: GET
+Access-Control-Request-Headers: authorization
+Origin: http://localhost:5173
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) TraeCN/1.104.3 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-site
+Sec-Fetch-Dest: empty
+Referer: http://localhost:5173/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN
+
+]
+2025-12-15T13:27:53.174+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-9] o.a.coyote.http11.Http11InputBuffer      : Received [OPTIONS /api/courses/with-teacher HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+Accept: */*
+Access-Control-Request-Method: GET
+Access-Control-Request-Headers: authorization
+Origin: http://localhost:5173
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) TraeCN/1.104.3 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-site
+Sec-Fetch-Dest: empty
+Referer: http://localhost:5173/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN
+
+]
+2025-12-15T13:27:53.174+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-4] o.a.c.authenticator.AuthenticatorBase    : Security checking request OPTIONS /api/courses/with-teacher
+2025-12-15T13:27:53.174+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-8] o.a.c.authenticator.AuthenticatorBase    : Security checking request OPTIONS /api/courses/page
+2025-12-15T13:27:53.174+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-4] org.apache.catalina.realm.RealmBase      :   No applicable constraints defined
+2025-12-15T13:27:53.174+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-9] o.a.c.authenticator.AuthenticatorBase    : Security checking request OPTIONS /api/courses/with-teacher
+2025-12-15T13:27:53.174+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-8] org.apache.catalina.realm.RealmBase      :   No applicable constraints defined
+2025-12-15T13:27:53.175+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-9] org.apache.catalina.realm.RealmBase      :   No applicable constraints defined
+2025-12-15T13:27:53.174+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-4] o.a.c.authenticator.AuthenticatorBase    : Not subject to any constraint
+2025-12-15T13:27:53.175+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-8] o.a.c.authenticator.AuthenticatorBase    : Not subject to any constraint
+2025-12-15T13:27:53.175+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-9] o.a.c.authenticator.AuthenticatorBase    : Not subject to any constraint
+2025-12-15T13:27:53.175+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/courses/with-teacher
+2025-12-15T13:27:53.175+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/courses/page?current=1&size=10&courseCode=&courseName=&teacherName=
+2025-12-15T13:27:53.175+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/courses/with-teacher
+2025-12-15T13:27:53.176+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-4] o.a.coyote.http11.Http11InputBuffer      : Before fill(): parsingHeader: [true], parsingRequestLine: [true], parsingRequestLinePhase: [0], parsingRequestLineStart: [0], byteBuffer.position(): [0], byteBuffer.limit(): [0], end: [551]
+2025-12-15T13:27:53.176+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-9] o.a.coyote.http11.Http11InputBuffer      : Before fill(): parsingHeader: [true], parsingRequestLine: [true], parsingRequestLinePhase: [0], parsingRequestLineStart: [0], byteBuffer.position(): [0], byteBuffer.limit(): [0], end: [551]
+2025-12-15T13:27:53.176+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-8] o.a.coyote.http11.Http11InputBuffer      : Before fill(): parsingHeader: [true], parsingRequestLine: [true], parsingRequestLinePhase: [0], parsingRequestLineStart: [0], byteBuffer.position(): [0], byteBuffer.limit(): [0], end: [598]
+2025-12-15T13:27:53.176+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-4] o.a.tomcat.util.net.SocketWrapperBase    : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@51854386:org.apache.tomcat.util.net.NioChannel@6953e11d:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:62853]], Read from buffer: [0]
+2025-12-15T13:27:53.176+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-9] o.a.tomcat.util.net.SocketWrapperBase    : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@52ceb40c:org.apache.tomcat.util.net.NioChannel@4a58ac46:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52162]], Read from buffer: [0]
+2025-12-15T13:27:53.176+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-8] o.a.tomcat.util.net.SocketWrapperBase    : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@31d8f124:org.apache.tomcat.util.net.NioChannel@5c45b543:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52161]], Read from buffer: [0]
+2025-12-15T13:27:53.176+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-4] org.apache.tomcat.util.net.NioEndpoint   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@51854386:org.apache.tomcat.util.net.NioChannel@6953e11d:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:62853]], Read direct from socket: [0]
+2025-12-15T13:27:53.176+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-9] org.apache.tomcat.util.net.NioEndpoint   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@52ceb40c:org.apache.tomcat.util.net.NioChannel@4a58ac46:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52162]], Read direct from socket: [0]
+2025-12-15T13:27:53.176+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-4] o.a.coyote.http11.Http11InputBuffer      : Received []
+2025-12-15T13:27:53.176+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-8] org.apache.tomcat.util.net.NioEndpoint   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@31d8f124:org.apache.tomcat.util.net.NioChannel@5c45b543:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52161]], Read direct from socket: [0]
+2025-12-15T13:27:53.176+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-9] o.a.coyote.http11.Http11InputBuffer      : Received []
+2025-12-15T13:27:53.176+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-4] o.apache.coyote.http11.Http11Processor   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@51854386:org.apache.tomcat.util.net.NioChannel@6953e11d:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:62853]], Status in: [OPEN_READ], State out: [OPEN]
+2025-12-15T13:27:53.176+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-8] o.a.coyote.http11.Http11InputBuffer      : Received []
+2025-12-15T13:27:53.176+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-9] o.apache.coyote.http11.Http11Processor   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@52ceb40c:org.apache.tomcat.util.net.NioChannel@4a58ac46:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52162]], Status in: [OPEN_READ], State out: [OPEN]
+2025-12-15T13:27:53.177+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-8] o.apache.coyote.http11.Http11Processor   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@31d8f124:org.apache.tomcat.util.net.NioChannel@5c45b543:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52161]], Status in: [OPEN_READ], State out: [OPEN]
+2025-12-15T13:27:53.177+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-9] org.apache.tomcat.util.net.NioEndpoint   : Registered read interest for [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@52ceb40c:org.apache.tomcat.util.net.NioChannel@4a58ac46:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52162]]
+2025-12-15T13:27:53.177+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-4] org.apache.tomcat.util.net.NioEndpoint   : Registered read interest for [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@51854386:org.apache.tomcat.util.net.NioChannel@6953e11d:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:62853]]
+2025-12-15T13:27:53.177+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-8] org.apache.tomcat.util.net.NioEndpoint   : Registered read interest for [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@31d8f124:org.apache.tomcat.util.net.NioChannel@5c45b543:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52161]]
+2025-12-15T13:27:53.180+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.a.coyote.http11.Http11InputBuffer      : Before fill(): parsingHeader: [true], parsingRequestLine: [true], parsingRequestLinePhase: [0], parsingRequestLineStart: [0], byteBuffer.position(): [0], byteBuffer.limit(): [0], end: [598]
+2025-12-15T13:27:53.180+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.a.coyote.http11.Http11InputBuffer      : Before fill(): parsingHeader: [true], parsingRequestLine: [true], parsingRequestLinePhase: [0], parsingRequestLineStart: [0], byteBuffer.position(): [0], byteBuffer.limit(): [0], end: [551]
+2025-12-15T13:27:53.180+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.a.tomcat.util.net.SocketWrapperBase    : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@52ceb40c:org.apache.tomcat.util.net.NioChannel@4a58ac46:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52162]], Read from buffer: [0]
+2025-12-15T13:27:53.180+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.a.tomcat.util.net.SocketWrapperBase    : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@31d8f124:org.apache.tomcat.util.net.NioChannel@5c45b543:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52161]], Read from buffer: [0]
+2025-12-15T13:27:53.180+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] org.apache.tomcat.util.net.NioEndpoint   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@52ceb40c:org.apache.tomcat.util.net.NioChannel@4a58ac46:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52162]], Read direct from socket: [784]
+2025-12-15T13:27:53.180+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] org.apache.tomcat.util.net.NioEndpoint   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@31d8f124:org.apache.tomcat.util.net.NioChannel@5c45b543:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52161]], Read direct from socket: [831]
+2025-12-15T13:27:53.180+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.a.coyote.http11.Http11InputBuffer      : Received [GET /api/courses/with-teacher HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+sec-ch-ua-platform: "Windows"
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX0FETUlOIl0sInN1YiI6ImFkbWluIiwiaWF0IjoxNzY1NzEyOTIzLCJleHAiOjE3NjU3OTkzMjN9.qdAv2X1huM888UPIq5-7ocdhOqQk4P1Mv4w5i6IW-FM
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) TraeCN/1.104.3 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36
+Accept: application/json, text/plain, */*
+sec-ch-ua: "Not)A;Brand";v="8", "Chromium";v="138"
+sec-ch-ua-mobile: ?0
+Origin: http://localhost:5173
+Sec-Fetch-Site: same-site
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: http://localhost:5173/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN
+
+]
+2025-12-15T13:27:53.180+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.a.coyote.http11.Http11InputBuffer      : Received [GET /api/courses/page?current=1&size=10&courseCode=&courseName=&teacherName= HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+sec-ch-ua-platform: "Windows"
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX0FETUlOIl0sInN1YiI6ImFkbWluIiwiaWF0IjoxNzY1NzEyOTIzLCJleHAiOjE3NjU3OTkzMjN9.qdAv2X1huM888UPIq5-7ocdhOqQk4P1Mv4w5i6IW-FM
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) TraeCN/1.104.3 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36
+Accept: application/json, text/plain, */*
+sec-ch-ua: "Not)A;Brand";v="8", "Chromium";v="138"
+sec-ch-ua-mobile: ?0
+Origin: http://localhost:5173
+Sec-Fetch-Site: same-site
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: http://localhost:5173/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN
+
+]
+2025-12-15T13:27:53.181+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.a.c.authenticator.AuthenticatorBase    : Security checking request GET /api/courses/with-teacher
+2025-12-15T13:27:53.181+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] org.apache.catalina.realm.RealmBase      :   No applicable constraints defined
+2025-12-15T13:27:53.181+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.a.c.authenticator.AuthenticatorBase    : Security checking request GET /api/courses/page
+2025-12-15T13:27:53.181+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.a.c.authenticator.AuthenticatorBase    : Not subject to any constraint
+2025-12-15T13:27:53.181+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] org.apache.catalina.realm.RealmBase      :   No applicable constraints defined
+2025-12-15T13:27:53.181+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.a.c.authenticator.AuthenticatorBase    : Not subject to any constraint
+2025-12-15T13:27:53.181+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/courses/with-teacher
+2025-12-15T13:27:53.181+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/courses/page?current=1&size=10&courseCode=&courseName=&teacherName=
+2025-12-15T13:27:53.182+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-12-15T13:27:53.182+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-12-15T13:27:53.182+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.182+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.182+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.182+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.182+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.182+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.182+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.182+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.182+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.182+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.183+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.183+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.183+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.183+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.183+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.183+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.183+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.183+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.183+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.183+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.183+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.183+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.183+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.184+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.184+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.184+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.184+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.184+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.184+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/courses/with-teacher
+2025-12-15T13:27:53.184+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.184+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] org.apache.tomcat.util.http.Parameters   : Set encoding to UTF-8
+2025-12-15T13:27:53.184+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/courses/page?current=1&size=10&courseCode=&courseName=&teacherName=
+2025-12-15T13:27:53.184+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/courses/with-teacher", parameters={}
+2025-12-15T13:27:53.185+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.185+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] org.apache.tomcat.util.http.Parameters   : Set encoding to UTF-8
+2025-12-15T13:27:53.185+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] org.apache.tomcat.util.http.Parameters   : Decoding query null UTF-8
+2025-12-15T13:27:53.185+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] org.apache.tomcat.util.http.Parameters   : Start processing with input [current=1&size=10&courseCode=&courseName=&teacherName=]
+2025-12-15T13:27:53.185+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/courses/page?current=1&size=10&courseCode=&courseName=&teacherName=", parameters={masked}
+2025-12-15T13:27:53.185+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.jdbc.datasource.DataSourceUtils      : Fetching JDBC Connection from DataSource
+2025-12-15T13:27:53.185+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findCoursesByPage(int, int, String, String, String)
+2025-12-15T13:27:53.187+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.s.jdbc.datasource.DataSourceUtils      : Fetching JDBC Connection from DataSource
+2025-12-15T13:27:53.191+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-12-15T13:27:53.191+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[Course(id=1, courseCode=CS101, courseName=计算机导论, credits=3.0, hours=48, department=计算机学院, teacherId (truncated)...]
+2025-12-15T13:27:53.192+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-12-15T13:27:53.192+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.a.coyote.http11.Http11InputBuffer      : Before fill(): parsingHeader: [true], parsingRequestLine: [true], parsingRequestLinePhase: [0], parsingRequestLineStart: [0], byteBuffer.position(): [0], byteBuffer.limit(): [0], end: [784]
+2025-12-15T13:27:53.193+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.a.tomcat.util.net.SocketWrapperBase    : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@52ceb40c:org.apache.tomcat.util.net.NioChannel@4a58ac46:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52162]], Read from buffer: [0]
+2025-12-15T13:27:53.193+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] org.apache.tomcat.util.net.NioEndpoint   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@52ceb40c:org.apache.tomcat.util.net.NioChannel@4a58ac46:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52162]], Read direct from socket: [784]
+2025-12-15T13:27:53.193+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.a.coyote.http11.Http11InputBuffer      : Received [GET /api/courses/with-teacher HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+sec-ch-ua-platform: "Windows"
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX0FETUlOIl0sInN1YiI6ImFkbWluIiwiaWF0IjoxNzY1NzEyOTIzLCJleHAiOjE3NjU3OTkzMjN9.qdAv2X1huM888UPIq5-7ocdhOqQk4P1Mv4w5i6IW-FM
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) TraeCN/1.104.3 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36
+Accept: application/json, text/plain, */*
+sec-ch-ua: "Not)A;Brand";v="8", "Chromium";v="138"
+sec-ch-ua-mobile: ?0
+Origin: http://localhost:5173
+Sec-Fetch-Site: same-site
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: http://localhost:5173/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN
+
+]
+2025-12-15T13:27:53.193+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.a.c.authenticator.AuthenticatorBase    : Security checking request GET /api/courses/with-teacher
+2025-12-15T13:27:53.193+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] org.apache.catalina.realm.RealmBase      :   No applicable constraints defined
+2025-12-15T13:27:53.193+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-12-15T13:27:53.194+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.a.c.authenticator.AuthenticatorBase    : Not subject to any constraint
+2025-12-15T13:27:53.194+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.baomidou.mybatisplus.extension.plugins.pagination.Page@561abc9f]
+2025-12-15T13:27:53.194+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/courses/with-teacher
+2025-12-15T13:27:53.194+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-12-15T13:27:53.194+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-12-15T13:27:53.195+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.195+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.a.coyote.http11.Http11InputBuffer      : Before fill(): parsingHeader: [true], parsingRequestLine: [true], parsingRequestLinePhase: [0], parsingRequestLineStart: [0], byteBuffer.position(): [0], byteBuffer.limit(): [0], end: [831]
+2025-12-15T13:27:53.195+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.195+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.a.tomcat.util.net.SocketWrapperBase    : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@31d8f124:org.apache.tomcat.util.net.NioChannel@5c45b543:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52161]], Read from buffer: [0]
+2025-12-15T13:27:53.195+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.195+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] org.apache.tomcat.util.net.NioEndpoint   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@31d8f124:org.apache.tomcat.util.net.NioChannel@5c45b543:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52161]], Read direct from socket: [0]
+2025-12-15T13:27:53.195+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.195+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.a.coyote.http11.Http11InputBuffer      : Received []
+2025-12-15T13:27:53.195+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.195+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] o.apache.coyote.http11.Http11Processor   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@31d8f124:org.apache.tomcat.util.net.NioChannel@5c45b543:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52161]], Status in: [OPEN_READ], State out: [OPEN]
+2025-12-15T13:27:53.195+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.196+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-1] org.apache.tomcat.util.net.NioEndpoint   : Registered read interest for [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@31d8f124:org.apache.tomcat.util.net.NioChannel@5c45b543:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52161]]
+2025-12-15T13:27:53.196+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.196+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.196+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.196+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.196+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.196+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.197+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.197+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.197+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/courses/with-teacher
+2025-12-15T13:27:53.197+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] org.apache.tomcat.util.http.Parameters   : Set encoding to UTF-8
+2025-12-15T13:27:53.197+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/courses/with-teacher", parameters={}
+2025-12-15T13:27:53.198+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.studentselectionsystem.controller.CourseController#findAllCoursesWithTeacher()
+2025-12-15T13:27:53.198+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.jdbc.datasource.DataSourceUtils      : Fetching JDBC Connection from DataSource
+2025-12-15T13:27:53.201+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-12-15T13:27:53.202+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[Course(id=1, courseCode=CS101, courseName=计算机导论, credits=3.0, hours=48, department=计算机学院, teacherId (truncated)...]
+2025-12-15T13:27:53.203+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-12-15T13:27:53.204+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.a.coyote.http11.Http11InputBuffer      : Before fill(): parsingHeader: [true], parsingRequestLine: [true], parsingRequestLinePhase: [0], parsingRequestLineStart: [0], byteBuffer.position(): [0], byteBuffer.limit(): [0], end: [784]
+2025-12-15T13:27:53.204+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.a.tomcat.util.net.SocketWrapperBase    : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@52ceb40c:org.apache.tomcat.util.net.NioChannel@4a58ac46:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52162]], Read from buffer: [0]
+2025-12-15T13:27:53.204+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] org.apache.tomcat.util.net.NioEndpoint   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@52ceb40c:org.apache.tomcat.util.net.NioChannel@4a58ac46:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52162]], Read direct from socket: [0]
+2025-12-15T13:27:53.204+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.a.coyote.http11.Http11InputBuffer      : Received []
+2025-12-15T13:27:53.204+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] o.apache.coyote.http11.Http11Processor   : Socket: [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@52ceb40c:org.apache.tomcat.util.net.NioChannel@4a58ac46:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52162]], Status in: [OPEN_READ], State out: [OPEN]
+2025-12-15T13:27:53.204+08:00 DEBUG 45236 --- [http-nio-0.0.0.0-8080-exec-6] org.apache.tomcat.util.net.NioEndpoint   : Registered read interest for [org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper@52ceb40c:org.apache.tomcat.util.net.NioChannel@4a58ac46:java.nio.channels.SocketChannel[connected local=/[0:0:0:0:0:0:0:1]:8080 remote=/[0:0:0:0:0:0:0:1]:52162]]

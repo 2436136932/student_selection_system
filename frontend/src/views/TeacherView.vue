@@ -23,7 +23,7 @@
 
     <!-- 新增按钮 -->
     <div class="button-group">
-      <el-button type="primary" @click="dialogVisible = true">新增教师</el-button>
+      <el-button v-if="hasRole('admin')" type="primary" @click="dialogVisible = true">新增教师</el-button>
     </div>
 
     <!-- 数据表格 -->
@@ -38,8 +38,8 @@
       <el-table-column prop="email" label="邮箱" width="150"></el-table-column>
       <el-table-column label="操作" width="150">
         <template #default="scope">
-          <el-button type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button type="danger" size="small" @click="handleDelete(scope.row.id)">删除</el-button>
+          <el-button v-if="hasRole('admin')" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button v-if="hasRole('admin')" type="danger" size="small" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -79,7 +79,9 @@
           <el-input v-model="teacher.title" placeholder="请输入职称"></el-input>
         </el-form-item>
         <el-form-item label="部门" prop="department">
-          <el-input v-model="teacher.department" placeholder="请输入所在部门"></el-input>
+          <el-select v-model="teacher.department" placeholder="请选择所在部门">
+            <el-option v-for="dept in departments" :key="dept" :label="dept" :value="dept"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="电话" prop="phone">
           <el-input v-model="teacher.phone" placeholder="请输入电话"></el-input>
@@ -102,6 +104,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import axios from 'axios'
+import { hasRole, getUserInfo } from '../utils/role'
 
 // 响应式数据
 const teachers = ref([])
@@ -110,6 +113,17 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const dialogVisible = ref(false)
 const teacherFormRef = ref()
+
+// 部门列表数据
+const departments = ref([
+  '人文学院', '文学院', '历史学院', '哲学学院', '法学院', 
+  '经济学院', '管理学院', '外国语学院', '教育学院', '音乐学院',
+  '美术学院', '体育学院', '数学与统计学院', '物理学院', '化学学院',
+  '生命科学学院', '地理科学学院', '计算机学院', '电子工程学院', '机械工程学院',
+  '材料科学与工程学院', '建筑学院', '环境科学与工程学院', '交通学院', '航空航天学院',
+  '医学院', '药学院', '公共卫生学院', '口腔医学院', '护理学院',
+  '马克思主义学院'
+])
 
 const searchForm = reactive({
   teacherNumber: '',
@@ -274,29 +288,80 @@ const findUserByTeacherName = async () => {
 }
 
 const handleSave = () => {
+  console.log('开始保存教师信息');
+  console.log('表单数据:', JSON.stringify(teacher, null, 2));
+  
   teacherFormRef.value.validate((valid) => {
     if (valid) {
+      console.log('表单验证通过');
+      
       if (teacher.id) {
         // 编辑
+        console.log('执行编辑操作');
         axios.put(`/api/teachers/${teacher.id}`, teacher).then(() => {
           ElMessage.success('更新成功')
           dialogVisible.value = false
           getTeachers()
         }).catch(error => {
           console.error('更新教师失败:', error)
+          console.error('错误响应:', error.response)
           ElMessage.error('更新教师失败')
         })
       } else {
         // 新增
-        axios.post('/api/teachers', teacher).then(() => {
+        console.log('执行新增操作');
+        console.log('当前用户信息:', JSON.stringify(getUserInfo(), null, 2));
+        console.log('当前用户角色:', getUserInfo().role);
+        console.log('是否为管理员:', hasRole('admin'));
+        console.log('是否为admin角色(大写):', hasRole('ADMIN'));
+        
+        if (!hasRole('admin')) {
+          console.error('用户没有管理员权限，新增教师操作被禁止');
+          ElMessage.error('权限不足：您不是管理员，无法新增教师');
+          return;
+        }
+        
+        console.log('准备调用新增教师API');
+        axios.post('/api/teachers', teacher)
+        .then(response => {
+          console.log('新增教师API调用成功:', response);
           ElMessage.success('新增成功')
           dialogVisible.value = false
           getTeachers()
-        }).catch(error => {
-          console.error('新增教师失败:', error)
-          ElMessage.error('新增教师失败')
+        })
+        .catch(error => {
+          console.error('新增教师API调用失败:', error);
+          console.error('错误响应状态:', error.response ? error.response.status : '无响应');
+          console.error('错误响应数据:', error.response ? error.response.data : '无数据');
+          console.error('错误配置:', error.config);
+          console.error('用户角色:', getUserInfo().role);
+          
+          // 显示更详细的错误信息
+          let errorMsg = '新增教师失败'
+          if (error.response) {
+            if (error.response.status === 403) {
+              errorMsg = '权限不足：您没有权限执行此操作';
+              console.error('403错误 - 权限不足');
+            } else if (error.response.status === 500) {
+              errorMsg = '服务器内部错误，请稍后重试';
+              console.error('500错误 - 服务器内部错误');
+            } else if (error.response.data && error.response.data.message) {
+              errorMsg += `: ${error.response.data.message}`;
+            } else {
+              errorMsg += `: HTTP ${error.response.status}`;
+            }
+          } else if (error.request) {
+            errorMsg = '网络错误：服务器无响应';
+            console.error('网络错误 - 服务器无响应');
+          } else {
+            errorMsg += `: ${error.message}`;
+          }
+          
+          ElMessage.error(errorMsg);
         })
       }
+    } else {
+      console.log('表单验证失败');
     }
   })
 }

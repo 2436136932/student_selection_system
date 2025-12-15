@@ -75,6 +75,12 @@ const router = createRouter({
       name: 'Carousel',
       component: () => import('../views/CarouselManage.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/majors',
+      name: 'Majors',
+      component: () => import('../views/MajorManage.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })

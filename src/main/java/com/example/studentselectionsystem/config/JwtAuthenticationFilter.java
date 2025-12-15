@@ -52,8 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                            requestURI.equals("/api/students") ||
                            requestURI.equals("/api/students/count") ||
                            requestURI.equals("/api/students/with-major") ||
-                           // 跳过高职相关公开接口
-                           requestURI.equals("/api/teachers") ||
+                           
                            // 跳过课程相关公开接口
                            requestURI.equals("/api/courses/with-teacher") ||
                            requestURI.equals("/api/courses/page") ||
