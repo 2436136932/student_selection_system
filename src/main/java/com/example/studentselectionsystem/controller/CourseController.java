@@ -11,6 +11,7 @@ import com.example.studentselectionsystem.service.MajorService;
 import com.example.studentselectionsystem.service.ScoreService;
 import com.example.studentselectionsystem.service.SelectionService;
 import com.example.studentselectionsystem.service.StudentService;
+import com.example.studentselectionsystem.util.PageResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -217,7 +218,7 @@ public class CourseController {
      * @return 课程分页列表
      */
     @GetMapping("/page")
-    public ResponseEntity<IPage<Course>> findCoursesByPage(
+    public ResponseEntity<?> findCoursesByPage(
             @RequestParam(defaultValue = "1") int current,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String courseCode,
@@ -225,7 +226,7 @@ public class CourseController {
             @RequestParam(required = false) String teacherName) {
         try {
             IPage<Course> courses = courseService.findCoursesByPage(current, size, courseCode, courseName, teacherName);
-            return new ResponseEntity<>(courses, HttpStatus.OK);
+            return ResponseEntity.ok(PageResultUtil.convertToPageResult(courses));
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

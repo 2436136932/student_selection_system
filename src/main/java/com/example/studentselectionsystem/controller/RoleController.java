@@ -3,6 +3,7 @@ package com.example.studentselectionsystem.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.studentselectionsystem.entity.Role;
 import com.example.studentselectionsystem.service.RoleService;
+import com.example.studentselectionsystem.util.PageResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -103,10 +104,10 @@ public class RoleController {
      * 分页获取角色
      */
     @GetMapping("/page")
-    public ResponseEntity<IPage<Role>> findRolesByPage(@RequestParam(defaultValue = "1") Integer current, 
+    public ResponseEntity<?> findRolesByPage(@RequestParam(defaultValue = "1") Integer current, 
                                                        @RequestParam(defaultValue = "10") Integer size) {
         IPage<Role> roles = roleService.findRolesByPage(current, size);
-        return new ResponseEntity<>(roles, HttpStatus.OK);
+        return ResponseEntity.ok(PageResultUtil.convertToPageResult(roles));
     }
 
     /**

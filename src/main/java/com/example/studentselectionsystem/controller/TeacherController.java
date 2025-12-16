@@ -5,6 +5,7 @@ import com.example.studentselectionsystem.entity.Course;
 import com.example.studentselectionsystem.entity.Teacher;
 import com.example.studentselectionsystem.service.CourseService;
 import com.example.studentselectionsystem.service.TeacherService;
+import com.example.studentselectionsystem.util.PageResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -156,10 +157,10 @@ public class TeacherController {
      * 分页获取教师
      */
     @GetMapping("/page")
-    public ResponseEntity<IPage<Teacher>> findTeachersByPage(@RequestParam(defaultValue = "1") Integer current,
+    public ResponseEntity<?> findTeachersByPage(@RequestParam(defaultValue = "1") Integer current,
                                                               @RequestParam(defaultValue = "10") Integer size) {
         IPage<Teacher> teachers = teacherService.findTeachersByPage(current, size);
-        return new ResponseEntity<>(teachers, HttpStatus.OK);
+        return ResponseEntity.ok(PageResultUtil.convertToPageResult(teachers));
     }
 
     /**

@@ -6,6 +6,7 @@ import com.example.studentselectionsystem.entity.Course;
 import com.example.studentselectionsystem.entity.Student;
 import com.example.studentselectionsystem.service.CourseService;
 import com.example.studentselectionsystem.service.StudentService;
+import com.example.studentselectionsystem.util.PageResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -163,14 +164,14 @@ public class StudentController {
      * 获取所有学生
      */
     @GetMapping
-    public ResponseEntity<com.baomidou.mybatisplus.core.metadata.IPage<Student>> findAllStudents(
+    public ResponseEntity<?> findAllStudents(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(required = false) String studentNumber,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String className) {
         com.baomidou.mybatisplus.core.metadata.IPage<Student> students = studentService.findStudentsByPageWithSearch(page, size, studentNumber, name, className);
-        return new ResponseEntity<>(students, HttpStatus.OK);
+        return ResponseEntity.ok(PageResultUtil.convertToPageResult(students));
     }
 
     /**
@@ -186,10 +187,10 @@ public class StudentController {
      * 分页获取学生
      */
     @GetMapping("/page")
-    public ResponseEntity<IPage<Student>> findStudentsByPage(@RequestParam(defaultValue = "1") Integer current,
+    public ResponseEntity<?> findStudentsByPage(@RequestParam(defaultValue = "1") Integer current,
                                                               @RequestParam(defaultValue = "10") Integer size) {
         IPage<Student> students = studentService.findStudentsByPage(current, size);
-        return new ResponseEntity<>(students, HttpStatus.OK);
+        return ResponseEntity.ok(PageResultUtil.convertToPageResult(students));
     }
 
     /**

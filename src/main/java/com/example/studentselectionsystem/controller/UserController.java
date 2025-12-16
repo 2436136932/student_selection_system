@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.studentselectionsystem.entity.User;
 import com.example.studentselectionsystem.service.UserService;
+import com.example.studentselectionsystem.util.PageResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -112,10 +113,10 @@ public class UserController {
      */
     @GetMapping("/page")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    public ResponseEntity<IPage<User>> findUsersByPage(@RequestParam(defaultValue = "1") Integer current,
+    public ResponseEntity<?> findUsersByPage(@RequestParam(defaultValue = "1") Integer current,
                                                       @RequestParam(defaultValue = "10") Integer size) {
         IPage<User> users = userService.findUsersByPage(current, size);
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return ResponseEntity.ok(PageResultUtil.convertToPageResult(users));
     }
 
     /**

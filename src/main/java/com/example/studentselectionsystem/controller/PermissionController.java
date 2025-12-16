@@ -3,6 +3,7 @@ package com.example.studentselectionsystem.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.studentselectionsystem.entity.Permission;
 import com.example.studentselectionsystem.service.PermissionService;
+import com.example.studentselectionsystem.util.PageResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -86,11 +87,11 @@ public class PermissionController {
      * @param size 每页大小
      */
     @GetMapping("/page")
-    public ResponseEntity<IPage<Permission>> findPermissionsByPage(
+    public ResponseEntity<?> findPermissionsByPage(
             @RequestParam(defaultValue = "1") Integer current,
             @RequestParam(defaultValue = "10") Integer size) {
         IPage<Permission> permissions = permissionService.findPermissionsByPage(current, size);
-        return new ResponseEntity<>(permissions, HttpStatus.OK);
+        return ResponseEntity.ok(PageResultUtil.convertToPageResult(permissions));
     }
 
     /**
