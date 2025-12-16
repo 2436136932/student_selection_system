@@ -197,6 +197,11 @@ window.addEventListener('storage', (event) => {
   }
 })
 
+// 监听路由变化，当路由从登录页跳转到其他页面时，检查登录状态
+watch(() => route.path, (newPath) => {
+  checkLoginStatus()
+})
+
 // 切换侧边栏折叠状态
 const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value
