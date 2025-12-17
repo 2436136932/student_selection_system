@@ -66,7 +66,7 @@ public class AwardServiceImpl implements AwardService {
             }
         } else {
             // 如果状态是进行中，根据业务逻辑设置阶段
-            Integer awardId = entityAward.getId();
+            Long awardId = entityAward.getId();
             // 获取该奖项的所有申请
             List<com.example.studentselectionsystem.entity.StudentAwardApplication> applications = 
                 studentAwardApplicationService.findApplicationsByAwardId(awardId);
@@ -138,6 +138,13 @@ public class AwardServiceImpl implements AwardService {
         modelAward.setQuota(entityAward.getQuota());
         modelAward.setStartTime(entityAward.getStartTime());
         modelAward.setStatus(entityAward.getStatus());
+        // 设置审批教师信息
+        if (entityAward.getApprovingTeacherId() != null) {
+            modelAward.setApprovingTeacherId(entityAward.getApprovingTeacherId());
+        }
+        if (entityAward.getApprovingTeacherName() != null) {
+            modelAward.setApprovingTeacherName(entityAward.getApprovingTeacherName());
+        }
         return modelAward;
     }
 
@@ -155,13 +162,20 @@ public class AwardServiceImpl implements AwardService {
         entityAward.setStatus(award.getStatus());
         entityAward.setCreateTime(new Date());
         entityAward.setUpdateTime(new Date());
+        // 设置审批教师信息
+        if (award.getApprovingTeacherId() != null) {
+            entityAward.setApprovingTeacherId(award.getApprovingTeacherId());
+        }
+        if (award.getApprovingTeacherName() != null) {
+            entityAward.setApprovingTeacherName(award.getApprovingTeacherName());
+        }
         return awardMapper.insert(entityAward) > 0;
     }
 
     @Override
     public boolean updateAward(com.example.studentselectionsystem.model.Award award) {
         com.example.studentselectionsystem.entity.Award entityAward = new com.example.studentselectionsystem.entity.Award();
-        entityAward.setId(Integer.parseInt(award.getAwardId()));
+        entityAward.setId(Long.parseLong(award.getAwardId()));
         entityAward.setAwardName(award.getAwardName());
         entityAward.setAwardLevel(award.getAwardLevel());
         entityAward.setDescription(award.getDescription());
@@ -174,6 +188,19 @@ public class AwardServiceImpl implements AwardService {
         entityAward.setRequirement(award.getRequirement());
         entityAward.setAwardType(award.getAwardType());
         entityAward.setUpdateTime(new Date());
+        // 设置审批教师信息
+        if (award.getApprovingTeacherId() != null) {
+            entityAward.setApprovingTeacherId(award.getApprovingTeacherId());
+        } else {
+            // 如果传入的审批教师ID为空，则清空该字段
+            entityAward.setApprovingTeacherId(null);
+        }
+        if (award.getApprovingTeacherName() != null) {
+            entityAward.setApprovingTeacherName(award.getApprovingTeacherName());
+        } else {
+            // 如果传入的审批教师姓名为空，则清空该字段
+            entityAward.setApprovingTeacherName(null);
+        }
         return awardMapper.updateById(entityAward) > 0;
     }
 

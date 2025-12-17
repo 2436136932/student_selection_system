@@ -186,6 +186,15 @@ public class TeacherController {
     }
 
     /**
+     * 获取所有教师（用于下拉选择）
+     */
+    @GetMapping("/all")
+    public ResponseEntity<List<Teacher>> getAllTeachers() {
+        List<Teacher> teachers = teacherService.findAllTeachers();
+        return new ResponseEntity<>(teachers, HttpStatus.OK);
+    }
+
+    /**
      * 更新教师信息
      */
     @PutMapping("/{id}")

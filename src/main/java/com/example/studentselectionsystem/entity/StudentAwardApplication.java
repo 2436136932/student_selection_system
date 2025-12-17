@@ -42,7 +42,7 @@ public class StudentAwardApplication implements Serializable {
      * 奖项ID
      */
     @TableField("award_id")
-    private Integer awardId;
+    private Long awardId;
 
     /**
      * 奖项信息（不映射到数据库）
@@ -134,7 +134,7 @@ public class StudentAwardApplication implements Serializable {
         return student;
     }
 
-    public Integer getAwardId() {
+    public Long getAwardId() {
         return awardId;
     }
 
@@ -199,7 +199,7 @@ public class StudentAwardApplication implements Serializable {
         this.student = student;
     }
 
-    public void setAwardId(Integer awardId) {
+    public void setAwardId(Long awardId) {
         this.awardId = awardId;
     }
 

@@ -23,7 +23,7 @@ public interface AwardTypeService {
      * @param id 奖项ID
      * @return 奖项类型信息
      */
-    Optional<Award> getAwardTypeById(Integer id);
+    Optional<Award> getAwardTypeById(Long id);
     
     /**
      * 获取所有奖项类型
@@ -59,12 +59,12 @@ public interface AwardTypeService {
      * 删除奖项类型
      * @param id 奖项ID
      */
-    void deleteAwardType(Integer id);
+    void deleteAwardType(Long id);
     
     /**
      * 发布奖项
      * @param id 奖项ID
      * @return 发布后的奖项
      */
-    Award publishAwardType(Integer id);
+    Award publishAwardType(Long id);
 }

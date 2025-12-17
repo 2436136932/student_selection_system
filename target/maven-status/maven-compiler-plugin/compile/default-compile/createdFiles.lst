@@ -104,10 +104,12 @@ com\example\studentselectionsystem\controller\AwardController.class
 com\example\studentselectionsystem\entity\Competition.class
 com\example\studentselectionsystem\mapper\NoticeMapper.class
 com\example\studentselectionsystem\config\WebMvcConfig.class
+com\example\studentselectionsystem\util\PageResultUtil.class
 com\example\studentselectionsystem\mapper\MajorMapper.class
 com\example\studentselectionsystem\controller\NoticeController.class
 com\example\studentselectionsystem\service\impl\MajorServiceImpl.class
 com\example\studentselectionsystem\entity\Award.class
+com\example\studentselectionsystem\util\PageResultUtil$PageResult.class
 com\example\studentselectionsystem\controller\StudentAwardApplicationController.class
 com\example\studentselectionsystem\mapper\SelectionResultMapper.class
 com\example\studentselectionsystem\service\impl\PermissionServiceImpl.class

@@ -24,7 +24,7 @@ public class Award implements Serializable {
      * 奖项ID
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 奖项名称
@@ -109,6 +109,18 @@ public class Award implements Serializable {
     private String currentStage;
 
     /**
+     * 审批教师ID
+     */
+    @TableField("approving_teacher_id")
+    private Long approvingTeacherId;
+
+    /**
+     * 审批教师姓名
+     */
+    @TableField("approving_teacher_name")
+    private String approvingTeacherName;
+
+    /**
      * 奖项评选标准关联（不映射到数据库）
      */
     @TableField(exist = false)
@@ -133,11 +145,11 @@ public class Award implements Serializable {
     private List<SelectionResult> selectionResults;
 
     // Getter and Setter methods
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -275,5 +287,21 @@ public class Award implements Serializable {
 
     public void setCurrentStage(String currentStage) {
         this.currentStage = currentStage;
+    }
+
+    public Long getApprovingTeacherId() {
+        return approvingTeacherId;
+    }
+
+    public void setApprovingTeacherId(Long approvingTeacherId) {
+        this.approvingTeacherId = approvingTeacherId;
+    }
+
+    public String getApprovingTeacherName() {
+        return approvingTeacherName;
+    }
+
+    public void setApprovingTeacherName(String approvingTeacherName) {
+        this.approvingTeacherName = approvingTeacherName;
     }
 }

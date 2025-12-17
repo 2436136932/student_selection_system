@@ -72,7 +72,7 @@ public interface StudentAwardApplicationService {
      * @param awardId 奖项ID
      * @return 申请列表
      */
-    List<StudentAwardApplication> findApplicationsByAwardId(Integer awardId);
+    List<StudentAwardApplication> findApplicationsByAwardId(Long awardId);
 
     /**
      * 查找所有申请
@@ -95,9 +95,10 @@ public interface StudentAwardApplicationService {
      * @param status 审批状态
      * @param studentNumber 学生学号
      * @param awardName 奖项名称
+     * @param currentTeacherId 当前教师ID（用于过滤只有该教师审批的奖项申请）
      * @return 申请列表
      */
-    IPage<StudentAwardApplication> findApplicationsByCondition(Page<StudentAwardApplication> page, Integer awardId, String studentName, Integer status, String studentNumber, String awardName);
+    IPage<StudentAwardApplication> findApplicationsByCondition(Page<StudentAwardApplication> page, Long awardId, String studentName, Integer status, String studentNumber, String awardName, Long currentTeacherId);
 
     /**
      * 根据学生ID和奖项ID查找申请
@@ -105,9 +106,9 @@ public interface StudentAwardApplicationService {
      * @param awardId 奖项ID
      * @return 申请信息
      */
-    Optional<StudentAwardApplication> findApplicationByStudentAndAward(Long studentId, Integer awardId);
+    Optional<StudentAwardApplication> findApplicationByStudentAndAward(Long studentId, Long awardId);
     
-    Optional<StudentAwardApplication> findApplicationByStudentNumberAndAward(String studentNumber, Integer awardId);
+    Optional<StudentAwardApplication> findApplicationByStudentNumberAndAward(String studentNumber, Long awardId);
 
     /**
      * 检查学生是否已申请该奖项
@@ -115,9 +116,9 @@ public interface StudentAwardApplicationService {
      * @param awardId 奖项ID
      * @return 是否已申请
      */
-    boolean checkStudentApplicationExists(Long studentId, Integer awardId);
+    boolean checkStudentApplicationExists(Long studentId, Long awardId);
     
-    boolean checkStudentApplicationExistsByStudentNumber(String studentNumber, Integer awardId);
+    boolean checkStudentApplicationExistsByStudentNumber(String studentNumber, Long awardId);
 
     /**
      * 获取所有申请总数
@@ -130,7 +131,7 @@ public interface StudentAwardApplicationService {
      * @param awardId 奖项ID
      * @return 申请总数
      */
-    long countApplicationsByAwardId(Integer awardId);
+    long countApplicationsByAwardId(Long awardId);
 
     /**
      * 获取已批准的申请总数
@@ -143,19 +144,19 @@ public interface StudentAwardApplicationService {
      * @param awardId 奖项ID
      * @return 已批准申请总数
      */
-    long countApprovedApplicationsByAwardId(Integer awardId);
+    long countApprovedApplicationsByAwardId(Long awardId);
     
     /**
      * 根据奖项ID获取教师审核通过的申请数
      * @param awardId 奖项ID
      * @return 教师审核通过的申请数
      */
-    long countTeacherApprovedApplicationsByAwardId(Integer awardId);
+    long countTeacherApprovedApplicationsByAwardId(Long awardId);
     
     /**
      * 根据奖项ID获取管理员审核通过的申请数
      * @param awardId 奖项ID
      * @return 管理员审核通过的申请数
      */
-    long countAdminApprovedApplicationsByAwardId(Integer awardId);
+    long countAdminApprovedApplicationsByAwardId(Long awardId);
 }

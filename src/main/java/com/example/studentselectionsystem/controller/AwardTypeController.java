@@ -41,7 +41,7 @@ public class AwardTypeController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Award> updateAwardType(@PathVariable Integer id, @RequestBody Award award) {
+    public ResponseEntity<Award> updateAwardType(@PathVariable Long id, @RequestBody Award award) {
         // 确保路径参数和请求体中的ID一致
         award.setId(id);
         Award updatedAward = awardTypeService.updateAwardType(award);
@@ -59,7 +59,7 @@ public class AwardTypeController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deleteAwardType(@PathVariable Integer id) {
+    public ResponseEntity<String> deleteAwardType(@PathVariable Long id) {
         awardTypeService.deleteAwardType(id);
         return ResponseEntity.ok("删除奖项类型成功");
     }
@@ -71,7 +71,7 @@ public class AwardTypeController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    public ResponseEntity<Award> getAwardTypeById(@PathVariable Integer id) {
+    public ResponseEntity<Award> getAwardTypeById(@PathVariable Long id) {
         Optional<Award> award = awardTypeService.getAwardTypeById(id);
         return award.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -115,7 +115,7 @@ public class AwardTypeController {
      */
     @PutMapping("/{id}/publish")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Award> publishAwardType(@PathVariable Integer id) {
+    public ResponseEntity<Award> publishAwardType(@PathVariable Long id) {
         Award publishedAward = awardTypeService.publishAwardType(id);
         if (publishedAward != null) {
             return ResponseEntity.ok(publishedAward);

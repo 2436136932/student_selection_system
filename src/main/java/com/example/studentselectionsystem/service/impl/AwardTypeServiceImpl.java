@@ -82,7 +82,7 @@ public class AwardTypeServiceImpl implements AwardTypeService {
     }
 
     @Override
-    public Optional<Award> getAwardTypeById(Integer id) {
+    public Optional<Award> getAwardTypeById(Long id) {
         Award award = awardMapper.selectById(id);
         if (award != null) {
             updateAwardCurrentStatus(award);
@@ -138,12 +138,12 @@ public class AwardTypeServiceImpl implements AwardTypeService {
     }
 
     @Override
-    public void deleteAwardType(Integer id) {
+    public void deleteAwardType(Long id) {
         awardMapper.deleteById(id);
     }
     
     @Override
-    public Award publishAwardType(Integer id) {
+    public Award publishAwardType(Long id) {
         Award award = awardMapper.selectById(id);
         if (award != null) {
             award.setStatus("已发布"); // 设置奖项状态为已发布

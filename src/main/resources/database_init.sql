@@ -118,6 +118,8 @@ CREATE TABLE IF NOT EXISTS awards (
     status VARCHAR(20) DEFAULT '未发布' COMMENT '奖项状态：未发布/已发布/已结束',
     current_status VARCHAR(20) DEFAULT '待开始' COMMENT '当前状态：待开始/进行中/已完成/已关闭',
     current_stage VARCHAR(20) DEFAULT '未开始' COMMENT '当前阶段：学生申请/教师审批/管理员审批/结果公示',
+    approving_teacher_id BIGINT COMMENT '审批教师ID',
+    approving_teacher_name VARCHAR(50) COMMENT '审批教师姓名',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='奖项表';
@@ -318,11 +320,12 @@ INSERT INTO courses (course_code, course_name, credits, hours, department, teach
 ('PH301', '大学物理', 3.5, 56, '物理学院', 3, '2024-2025-1', 2024, 120, 0, 1, '物理基础课程');
 
 -- 插入示例奖项
-INSERT INTO awards (award_name, award_level, award_type, description, requirement) VALUES
-('国家奖学金', 'national', 'academic', '国家最高级别奖学金', '成绩优异，综合素质突出'),
-('省级三好学生', 'provincial', 'comprehensive', '省级优秀学生荣誉', '德智体美劳全面发展'),
-('校级一等奖学金', 'school', 'academic', '校级最高级别奖学金', '专业成绩排名前5%'),
-('院级优秀学生干部', 'department', 'leadership', '院级优秀学生干部', '在学生工作中表现突出');
+INSERT INTO awards (award_name, award_level, award_type, description, requirement, approving_teacher_id, approving_teacher_name) VALUES
+('国家奖学金', 'national', 'academic', '国家最高级别奖学金', '成绩优异，综合素质突出', 1, '张三'),
+('省级三好学生', 'provincial', 'comprehensive', '省级优秀学生荣誉', '德智体美劳全面发展', 1, '张三'),
+('校级一等奖学金', 'school', 'academic', '校级最高级别奖学金', '专业成绩排名前5%', 2, '李四'),
+('院级优秀学生干部', 'department', 'leadership', '院级优秀学生干部', '在学生工作中表现突出', 3, '王五');
+
 
 -- 插入示例学生
 INSERT INTO students (student_number, name, gender, birth_date, major, class_name, admission_year, phone, email, status) VALUES

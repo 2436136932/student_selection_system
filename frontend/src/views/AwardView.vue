@@ -311,6 +311,20 @@
             <el-option label="已结束" value="已结束"></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="审批教师">
+          <el-select 
+            v-model="form.approvingTeacherId" 
+            placeholder="请选择审批教师"
+            @change="handleTeacherChange"
+          >
+            <el-option 
+              v-for="teacher in teachers" 
+              :key="teacher.id" 
+              :label="teacher.name" 
+              :value="teacher.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
@@ -714,6 +728,7 @@ export default {
     const total = ref(0)
     const awards = ref([])
     const majors = ref([])
+    const teachers = ref([])
     const activeTab = ref('awards')
     const form = reactive({
       awardId: null,
@@ -725,7 +740,9 @@ export default {
       quota: null,
       description: '',
       requirement: '',
-      status: '未发布' // 添加状态字段
+      status: '未发布', // 添加状态字段
+      approvingTeacherId: null,
+      approvingTeacherName: ''
     })
     
     // 评选流程管理
@@ -806,6 +823,27 @@ export default {
       }
     }
 
+    // 获取教师列表
+    const getTeachers = async () => {
+      try {
+        const response = await axios.get('/api/teachers/all')
+        teachers.value = response.data
+      } catch (error) {
+        ElMessage.error('获取教师列表失败')
+        teachers.value = []
+      }
+    }
+
+    // 处理教师选择变化
+    const handleTeacherChange = (teacherId) => {
+      const selectedTeacher = teachers.value.find(teacher => teacher.id === teacherId)
+      if (selectedTeacher) {
+        form.approvingTeacherName = selectedTeacher.name
+      } else {
+        form.approvingTeacherName = ''
+      }
+    }
+
 
 
     // 新增/编辑奖项
@@ -882,6 +920,8 @@ export default {
       form.description = ''
       form.requirement = ''
       form.status = '未发布'
+      form.approvingTeacherId = null
+      form.approvingTeacherName = ''
     }
     
     // 新建奖项
@@ -1442,6 +1482,7 @@ export default {
     onMounted(() => {
       getAwards()
       getMajors()
+      getTeachers()
     })
 
     return {
@@ -1456,6 +1497,7 @@ export default {
       searchForm,
       activeTab,
       majors,
+      teachers,
       
       // 评选流程管理
       selectionProcessList,
@@ -1475,6 +1517,8 @@ export default {
 
       // 奖项类型管理方法
       getAwards,
+      getTeachers,
+      handleTeacherChange,
       handleAdd,
       handleSubmit,
       handleEdit,

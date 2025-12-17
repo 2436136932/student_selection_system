@@ -74,6 +74,16 @@ public class Award {
      * 奖项状态：未发布/已发布/已结束
      */
     private String status;
+
+    /**
+     * 审批教师ID
+     */
+    private Long approvingTeacherId;
+
+    /**
+     * 审批教师姓名
+     */
+    private String approvingTeacherName;
     
     /**
      * 截止时间
@@ -218,5 +228,21 @@ public class Award {
     
     public void setStatus(String status) {
         this.status = status;
+    }
+    
+    public Long getApprovingTeacherId() {
+        return approvingTeacherId;
+    }
+    
+    public void setApprovingTeacherId(Long approvingTeacherId) {
+        this.approvingTeacherId = approvingTeacherId;
+    }
+    
+    public String getApprovingTeacherName() {
+        return approvingTeacherName;
+    }
+    
+    public void setApprovingTeacherName(String approvingTeacherName) {
+        this.approvingTeacherName = approvingTeacherName;
     }
 }

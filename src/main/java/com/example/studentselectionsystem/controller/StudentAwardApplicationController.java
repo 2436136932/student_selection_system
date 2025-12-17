@@ -5,8 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.studentselectionsystem.entity.StudentAwardApplication;
 import com.example.studentselectionsystem.service.StudentAwardApplicationService;
 import com.example.studentselectionsystem.service.UserService;
+import com.example.studentselectionsystem.service.AwardService;
 import com.example.studentselectionsystem.entity.User;
 import com.example.studentselectionsystem.entity.Student;
+import com.example.studentselectionsystem.entity.Teacher;
+import com.example.studentselectionsystem.entity.Award;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,12 @@ public class StudentAwardApplicationController {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private com.example.studentselectionsystem.service.TeacherService teacherService;
+    
+    @Autowired
+    private AwardService awardService;
 
     /**
      * 创建学生奖项申请
@@ -171,6 +180,22 @@ public class StudentAwardApplicationController {
                         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
                     }
                 }
+            } 
+            // 如果是教师角色，只能查看自己负责审批的申请
+            else if ((role.equals("ROLE_TEACHER") || role.equals("TEACHER")) && principal != null) {
+                Optional<User> optionalUser = userService.findUserByUsername(principal.getName());
+                if (optionalUser.isPresent()) {
+                    Optional<Teacher> optionalTeacher = teacherService.findTeacherByUserId(optionalUser.get().getId());
+                    if (optionalTeacher.isPresent()) {
+                        Long currentTeacherId = optionalTeacher.get().getId();
+                        // 查询申请对应的奖项信息
+                        Optional<com.example.studentselectionsystem.model.Award> awardOptional = awardService.getAwardById(String.valueOf(application.getAwardId()));
+                        if (!awardOptional.isPresent() || awardOptional.get().getApprovingTeacherId() == null || !awardOptional.get().getApprovingTeacherId().equals(currentTeacherId)) {
+                            // 教师试图查看非自己负责审批的申请，返回403 Forbidden
+                            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                        }
+                    }
+                }
             }
             
             return new ResponseEntity<>(application, HttpStatus.OK);
@@ -235,7 +260,7 @@ public class StudentAwardApplicationController {
      */
     @GetMapping("/award/{awardId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    public ResponseEntity<List<StudentAwardApplication>> findApplicationsByAwardId(@PathVariable Integer awardId) {
+    public ResponseEntity<List<StudentAwardApplication>> findApplicationsByAwardId(@PathVariable Long awardId) {
         List<StudentAwardApplication> applications = studentAwardApplicationService.findApplicationsByAwardId(awardId);
         return new ResponseEntity<>(applications, HttpStatus.OK);
     }
@@ -269,7 +294,7 @@ public class StudentAwardApplicationController {
     public ResponseEntity<IPage<StudentAwardApplication>> searchApplications(
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam(required = false) Integer awardId,
+            @RequestParam(required = false) Long awardId,
             @RequestParam(required = false) String studentName,
             @RequestParam(required = false) Integer status,
             @RequestParam(required = false) String studentNumber,
@@ -280,6 +305,7 @@ public class StudentAwardApplicationController {
         // 获取当前用户角色
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String role = authentication.getAuthorities().iterator().next().getAuthority();
+        Long currentTeacherId = null;
         
         // 如果是学生角色，只允许查看自己的申请
         if ((role.equals("ROLE_STUDENT") || role.equals("STUDENT")) && principal != null) {
@@ -295,10 +321,21 @@ public class StudentAwardApplicationController {
             }
             // 学生只能查询自己的申请，忽略传入的studentName参数
             studentName = null;
+        } else if ((role.equals("ROLE_TEACHER") || role.equals("TEACHER")) && principal != null) {
+            // 如果是教师角色，获取当前登录教师的ID
+            Optional<User> optionalUser = userService.findUserByUsername(principal.getName());
+            if (optionalUser.isPresent()) {
+                // 通过用户ID获取教师信息
+                Optional<Teacher> optionalTeacher = teacherService.findTeacherByUserId(optionalUser.get().getId());
+                if (optionalTeacher.isPresent()) {
+                    // 设置当前教师的ID，用于过滤申请
+                    currentTeacherId = optionalTeacher.get().getId();
+                }
+            }
         }
         
         IPage<StudentAwardApplication> applicationPage = 
-            studentAwardApplicationService.findApplicationsByCondition(page, awardId, studentName, status, studentNumber, awardName);
+            studentAwardApplicationService.findApplicationsByCondition(page, awardId, studentName, status, studentNumber, awardName, currentTeacherId);
         return ResponseEntity.ok(applicationPage);
     }
 
@@ -310,7 +347,7 @@ public class StudentAwardApplicationController {
     public ResponseEntity<Boolean> checkStudentApplicationExists(
             @RequestParam(required = false) Long studentId,
             @RequestParam(required = false) String studentNumber,
-            @RequestParam Integer awardId) {
+            @RequestParam Long awardId) {
         boolean exists;
         if (studentNumber != null) {
             exists = studentAwardApplicationService.checkStudentApplicationExistsByStudentNumber(studentNumber, awardId);
@@ -346,7 +383,7 @@ public class StudentAwardApplicationController {
      * 根据奖项ID获取申请总数
      */
     @GetMapping("/award/{awardId}/count")
-    public ResponseEntity<Long> getApplicationCountByAwardId(@PathVariable Integer awardId) {
+    public ResponseEntity<Long> getApplicationCountByAwardId(@PathVariable Long awardId) {
         try {
             long count = studentAwardApplicationService.countApplicationsByAwardId(awardId);
             return new ResponseEntity<>(count, HttpStatus.OK);
@@ -360,7 +397,7 @@ public class StudentAwardApplicationController {
      * 根据奖项ID获取最终获奖数
      */
     @GetMapping("/award/{awardId}/approved-count")
-    public ResponseEntity<Long> getApprovedCountByAwardId(@PathVariable Integer awardId) {
+    public ResponseEntity<Long> getApprovedCountByAwardId(@PathVariable Long awardId) {
         try {
             long count = studentAwardApplicationService.countApprovedApplicationsByAwardId(awardId);
             return new ResponseEntity<>(count, HttpStatus.OK);
@@ -374,7 +411,7 @@ public class StudentAwardApplicationController {
      * 根据奖项ID获取教师审核通过数
      */
     @GetMapping("/award/{awardId}/teacher-approved-count")
-    public ResponseEntity<Long> getTeacherApprovedCountByAwardId(@PathVariable Integer awardId) {
+    public ResponseEntity<Long> getTeacherApprovedCountByAwardId(@PathVariable Long awardId) {
         try {
             long count = studentAwardApplicationService.countTeacherApprovedApplicationsByAwardId(awardId);
             return new ResponseEntity<>(count, HttpStatus.OK);
@@ -388,7 +425,7 @@ public class StudentAwardApplicationController {
      * 根据奖项ID获取管理员审核通过数
      */
     @GetMapping("/award/{awardId}/admin-approved-count")
-    public ResponseEntity<Long> getAdminApprovedCountByAwardId(@PathVariable Integer awardId) {
+    public ResponseEntity<Long> getAdminApprovedCountByAwardId(@PathVariable Long awardId) {
         try {
             long count = studentAwardApplicationService.countAdminApprovedApplicationsByAwardId(awardId);
             return new ResponseEntity<>(count, HttpStatus.OK);
