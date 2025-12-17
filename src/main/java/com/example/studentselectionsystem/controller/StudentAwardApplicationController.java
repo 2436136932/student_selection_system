@@ -55,35 +55,28 @@ public class StudentAwardApplicationController {
     @PostMapping
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<StudentAwardApplication> createApplication(@RequestBody StudentAwardApplication application, Principal principal) {
-        try {
-            logger.info("Creating award application: {}", application);
-            
-            // 从当前登录用户获取学生信息
-            if (principal != null) {
-                Optional<User> optionalUser = userService.findUserByUsername(principal.getName());
-                if (optionalUser.isPresent()) {
-                    Optional<Student> optionalStudent = studentService.findStudentByUserId(optionalUser.get().getId());
-                    if (optionalStudent.isPresent()) {
-                        Long studentId = optionalStudent.get().getId();
-                        logger.info("Using studentId: {}", studentId);
-                        application.setStudentId(studentId);
-                    } else {
-                        logger.error("Student not found for user: {}", principal.getName());
-                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                    }
+        // 从当前登录用户获取学生信息
+        if (principal != null) {
+            Optional<User> optionalUser = userService.findUserByUsername(principal.getName());
+            if (optionalUser.isPresent()) {
+                Optional<Student> optionalStudent = studentService.findStudentByUserId(optionalUser.get().getId());
+                if (optionalStudent.isPresent()) {
+                    Long studentId = optionalStudent.get().getId();
+                    logger.info("Using studentId: {}", studentId);
+                    application.setStudentId(studentId);
                 } else {
-                    logger.error("User not found: {}", principal.getName());
+                    logger.error("Student not found for user: {}", principal.getName());
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
+            } else {
+                logger.error("User not found: {}", principal.getName());
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-            
-            StudentAwardApplication createdApplication = studentAwardApplicationService.createApplication(application);
-            logger.info("Created award application: {}", createdApplication);
-            return new ResponseEntity<>(createdApplication, HttpStatus.CREATED);
-        } catch (Exception e) {
-            logger.error("Error creating award application", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        
+        StudentAwardApplication createdApplication = studentAwardApplicationService.createApplication(application);
+        logger.info("Created award application: {}", createdApplication);
+        return new ResponseEntity<>(createdApplication, HttpStatus.CREATED);
     }
 
     /**

@@ -377,23 +377,33 @@ const handleSubmit = () => {
     }
     
     // 提交申请
-    axios.post('/api/student-award-applications', {
-      student: {
-        studentNumber: form.studentNumber  // 这里form.studentNumber是学号
-      },
-      awardId: form.awardId,
-      description: form.description  // 添加申请理由
-    }).then(response => {
-      ElMessage.success('申请奖项成功')
-      dialogVisible.value = false
-      getApplications()
-      // 重置表单
-      form.awardId = ''
-      form.description = ''
-    }).catch(error => {
-      ElMessage.error('申请奖项失败')
-      console.error('Error submitting application:', error)
-    })
+            console.log('Submitting application with data:', {
+              awardId: form.awardId,
+              description: form.description
+            })
+            axios.post('/api/student-award-applications', {
+              awardId: form.awardId,
+              description: form.description  // 添加申请理由
+            }).then(response => {
+              console.log('Application submission successful:', response.data)
+              ElMessage.success('申请奖项成功')
+              dialogVisible.value = false
+              getApplications()
+              // 重置表单
+              form.awardId = ''
+              form.description = ''
+            }).catch(error => {
+              console.error('Error submitting application:', error)
+              console.error('Error details:', {
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                data: error.response?.data,
+                config: error.config
+              })
+              // 如果后端返回了具体的错误信息，使用后端返回的信息，否则使用默认信息
+              const errorMessage = error.response?.data?.message || '申请奖项失败'
+              ElMessage.error(errorMessage)
+            })
   })
 }
 

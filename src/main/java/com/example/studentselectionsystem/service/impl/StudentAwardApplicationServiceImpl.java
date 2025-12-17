@@ -63,7 +63,7 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
         );
         
         if (existingApplication != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "该学生已获得过此奖项，不能再次申请");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "您已经申请通过该奖项，不可重复申请");
         }
         
         // 查询奖项信息
@@ -356,10 +356,12 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
 
     @Override
     public boolean checkStudentApplicationExists(Long studentId, Long awardId) {
+        // 只检查学生是否已经有一个已经通过的申请（状态为3）
         return studentAwardApplicationMapper.exists(
                 new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
                         .eq(StudentAwardApplication::getStudentId, studentId)
                         .eq(StudentAwardApplication::getAwardId, awardId)
+                        .eq(StudentAwardApplication::getStatus, 3) // 3表示管理员审批通过，即最终获奖
         );
     }
 
