@@ -262,15 +262,22 @@ const registerRules = reactive({
 
 // 登录处理
 const handleLogin = () => {
+  console.log('开始登录流程')
   loginFormRef.value.validate((valid) => {
+    console.log('表单验证结果:', valid)
     if (valid) {
       loginLoading.value = true
+      console.log('登录请求参数:', {
+        username: loginForm.username,
+        password: loginForm.password
+      })
       // 调用后端登录API
       axios.post('/api/auth/login', {
         username: loginForm.username,
         password: loginForm.password
       })
       .then(response => {
+        console.log('登录请求响应:', response)
         loginLoading.value = false
         if (response.data.success) {
           // 检查用户实际角色与选择的角色是否匹配
@@ -295,9 +302,10 @@ const handleLogin = () => {
         }
       })
       .catch(error => {
+        console.error('登录请求失败:', error)
+        console.error('错误详情:', error.response)
         loginLoading.value = false
         ElMessage.error('登录失败，请检查网络或联系管理员')
-        console.error('登录错误:', error)
       })
     }
   })

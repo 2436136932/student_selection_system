@@ -16,14 +16,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpHeaders;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.time.Instant;
+import java.util.UUID;
 
 /**
  * 学生奖项申请控制器
@@ -48,6 +62,180 @@ public class StudentAwardApplicationController {
     
     @Autowired
     private AwardService awardService;
+
+    // 文件存储根路径，从配置文件读取
+    @Value("${file.storage.dir}")
+    private String STORAGE_DIR;
+    
+    // 允许的文件扩展名，从配置文件读取
+    @Value("${file.storage.allowed-extensions}")
+    private String allowedExtensions;
+
+    /**
+     * 上传申请材料
+     */
+    @PostMapping("/upload")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<Map<String, Object>> uploadMaterial(@RequestParam("file") MultipartFile file, 
+                                                             Principal principal) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // 1. 验证文件格式
+            String originalFilename = file.getOriginalFilename();
+            String fileExtension = originalFilename != null ? originalFilename.substring(originalFilename.lastIndexOf('.') + 1).toLowerCase() : "";
+            List<String> allowedExtensionsList = Arrays.asList(this.allowedExtensions.split(","));
+            
+            if (!allowedExtensionsList.contains(fileExtension)) {
+                response.put("success", false);
+                response.put("message", "不支持的文件格式，请上传Word、PDF、PPT或图片文件");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+            
+            // 2. 验证文件大小（最大10MB）
+            long maxSize = 10 * 1024 * 1024; // 10MB
+            if (file.getSize() > maxSize) {
+                response.put("success", false);
+                response.put("message", "文件大小超过限制，最大支持10MB");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+            
+            // 3. 验证用户是否为学生
+            Optional<User> optionalUser = userService.findUserByUsername(principal.getName());
+            if (!optionalUser.isPresent()) {
+                response.put("success", false);
+                response.put("message", "用户不存在");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+            
+            Optional<Student> optionalStudent = studentService.findStudentByUserId(optionalUser.get().getId());
+            if (!optionalStudent.isPresent()) {
+                response.put("success", false);
+                response.put("message", "当前用户不是学生");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+            
+            // 4. 生成唯一文件名
+            String uniqueFilename = UUID.randomUUID().toString() + "." + fileExtension;
+            Path filePath = Paths.get(STORAGE_DIR, uniqueFilename);
+            
+            // 确保存储目录存在
+            Files.createDirectories(filePath.getParent());
+            
+            // 5. 保存文件
+            file.transferTo(filePath.toFile());
+            
+            // 6. 返回成功信息
+            response.put("success", true);
+            response.put("message", "文件上传成功");
+            response.put("materialPath", uniqueFilename);
+            response.put("materialName", originalFilename);
+            response.put("materialSize", file.getSize());
+            response.put("materialType", file.getContentType());
+            
+            return new ResponseEntity<>(response, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            logger.error("文件上传失败: {}", e.getMessage(), e);
+            response.put("success", false);
+            response.put("message", "文件上传失败: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * 下载申请材料
+     */
+    @GetMapping("/download/{applicationId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
+    public ResponseEntity<Resource> downloadMaterial(@PathVariable Integer applicationId, Principal principal) {
+        try {
+            // 1. 查找申请
+            Optional<StudentAwardApplication> optionalApplication = studentAwardApplicationService.findApplicationById(applicationId);
+            if (!optionalApplication.isPresent()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            
+            StudentAwardApplication application = optionalApplication.get();
+            
+            // 2. 验证用户权限（复用findApplicationById方法的权限逻辑）
+            ResponseEntity<StudentAwardApplication> permissionCheck = findApplicationById(applicationId, principal);
+            if (permissionCheck.getStatusCode() != HttpStatus.OK) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+            
+            // 3. 检查是否有材料
+            if (application.getMaterialPath() == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            
+            // 4. 构建文件路径
+            Path filePath = Paths.get(STORAGE_DIR, application.getMaterialPath());
+            Resource resource = new UrlResource(filePath.toUri());
+            
+            if (!resource.exists() || !resource.isReadable()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            
+            // 5. 返回文件
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + application.getMaterialName() + "\"")
+                    .header(HttpHeaders.CONTENT_TYPE, application.getMaterialType())
+                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(application.getMaterialSize()))
+                    .body(resource);
+            
+        } catch (Exception e) {
+            logger.error("文件下载失败: {}", e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    /**
+     * 预览申请材料
+     */
+    @GetMapping("/preview/{applicationId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
+    public ResponseEntity<Resource> previewMaterial(@PathVariable Integer applicationId, Principal principal) {
+        try {
+            // 1. 查找申请
+            Optional<StudentAwardApplication> optionalApplication = studentAwardApplicationService.findApplicationById(applicationId);
+            if (!optionalApplication.isPresent()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            
+            StudentAwardApplication application = optionalApplication.get();
+            
+            // 2. 验证用户权限（复用findApplicationById方法的权限逻辑）
+            ResponseEntity<StudentAwardApplication> permissionCheck = findApplicationById(applicationId, principal);
+            if (permissionCheck.getStatusCode() != HttpStatus.OK) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+            
+            // 3. 检查是否有材料
+            if (application.getMaterialPath() == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            
+            // 4. 构建文件路径
+            Path filePath = Paths.get(STORAGE_DIR, application.getMaterialPath());
+            Resource resource = new UrlResource(filePath.toUri());
+            
+            if (!resource.exists() || !resource.isReadable()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            
+            // 5. 返回文件，使用inline方式支持浏览器预览
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + application.getMaterialName() + "\"")
+                    .header(HttpHeaders.CONTENT_TYPE, application.getMaterialType())
+                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(application.getMaterialSize()))
+                    .body(resource);
+            
+        } catch (Exception e) {
+            logger.error("文件预览失败: {}", e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     /**
      * 创建学生奖项申请
@@ -77,6 +265,56 @@ public class StudentAwardApplicationController {
         StudentAwardApplication createdApplication = studentAwardApplicationService.createApplication(application);
         logger.info("Created award application: {}", createdApplication);
         return new ResponseEntity<>(createdApplication, HttpStatus.CREATED);
+    }
+
+    /**
+     * 更新学生奖项申请
+     */
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<StudentAwardApplication> updateApplication(
+            @PathVariable Integer id, 
+            @RequestBody StudentAwardApplication application, 
+            Principal principal) {
+        try {
+            // 检查申请是否存在
+            Optional<StudentAwardApplication> optionalApplication = studentAwardApplicationService.findApplicationById(id);
+            if (!optionalApplication.isPresent()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            
+            StudentAwardApplication existingApplication = optionalApplication.get();
+            
+            // 验证学生权限
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String role = authentication.getAuthorities().iterator().next().getAuthority();
+            if ((role.equals("ROLE_STUDENT") || role.equals("STUDENT")) && principal != null) {
+                Optional<User> optionalUser = userService.findUserByUsername(principal.getName());
+                if (optionalUser.isPresent()) {
+                    Optional<Student> optionalStudent = studentService.findStudentByUserId(optionalUser.get().getId());
+                    if (optionalStudent.isPresent() && !optionalStudent.get().getId().equals(existingApplication.getStudentId())) {
+                        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                    }
+                }
+            }
+            
+            // 设置申请ID
+            application.setId(id);
+            // 确保学生ID不变
+            application.setStudentId(existingApplication.getStudentId());
+            
+            // 更新申请
+            StudentAwardApplication updatedApplication = studentAwardApplicationService.updateApplication(application);
+            logger.info("Updated award application: {}", updatedApplication);
+            return new ResponseEntity<>(updatedApplication, HttpStatus.OK);
+            
+        } catch (ResponseStatusException e) {
+            logger.error("更新申请失败: {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            logger.error("更新申请失败: {}", e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**

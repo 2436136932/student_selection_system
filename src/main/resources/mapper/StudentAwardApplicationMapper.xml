@@ -16,6 +16,10 @@
         <result column="admin_approval_time" property="adminApprovalTime" />
         <result column="admin_approval_comments" property="adminApprovalComments" />
         <result column="description" property="description" />
+        <result column="material_path" property="materialPath" />
+        <result column="material_name" property="materialName" />
+        <result column="material_size" property="materialSize" />
+        <result column="material_type" property="materialType" />
         <result column="created_at" property="createTime" />
         <result column="updated_at" property="updateTime" />
     </resultMap>
@@ -53,6 +57,10 @@
             sa.admin_approval_comments, 
             sa.created_at, 
             sa.updated_at, 
+            sa.material_path, 
+            sa.material_name, 
+            sa.material_size, 
+            sa.material_type, 
             a.award_name, 
             a.award_level, 
             a.award_type, 
@@ -85,6 +93,10 @@
             sa.admin_approval_comments, 
             sa.created_at, 
             sa.updated_at, 
+            sa.material_path, 
+            sa.material_name, 
+            sa.material_size, 
+            sa.material_type, 
             a.award_name, 
             a.award_level, 
             a.award_type, 
@@ -107,8 +119,8 @@
         ORDER BY sa.application_time DESC
     </select>
 
-    <!-- 查询所有申请，包含奖项信息 -->
-    <select id="selectAllApplicationsWithAwardPage" resultMap="ApplicationWithAwardResultMap">
+    <!-- 根据学生ID分页查询申请，包含奖项信息 -->
+    <select id="selectApplicationsWithAwardByStudentIdPage" resultMap="ApplicationWithAwardResultMap">
         SELECT 
             sa.application_id, 
             sa.student_id, 
@@ -123,6 +135,10 @@
             sa.admin_approval_comments, 
             sa.created_at, 
             sa.updated_at, 
+            sa.material_path, 
+            sa.material_name, 
+            sa.material_size, 
+            sa.material_type, 
             a.award_name, 
             a.award_level, 
             a.award_type, 
@@ -154,6 +170,10 @@
             sa.admin_approval_comments, 
             sa.created_at, 
             sa.updated_at, 
+            sa.material_path, 
+            sa.material_name, 
+            sa.material_size, 
+            sa.material_type, 
             a.award_name, 
             a.award_level, 
             a.award_type, 

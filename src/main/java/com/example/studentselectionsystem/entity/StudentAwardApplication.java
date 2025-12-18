@@ -121,6 +121,30 @@ public class StudentAwardApplication implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
+    /**
+     * 申请材料文件路径
+     */
+    @TableField("material_path")
+    private String materialPath;
+
+    /**
+     * 申请材料文件名
+     */
+    @TableField("material_name")
+    private String materialName;
+
+    /**
+     * 申请材料文件大小（字节）
+     */
+    @TableField("material_size")
+    private Long materialSize;
+
+    /**
+     * 申请材料文件类型
+     */
+    @TableField("material_type")
+    private String materialType;
+
     // Getter methods
     public Integer getId() {
         return id;
@@ -186,6 +210,22 @@ public class StudentAwardApplication implements Serializable {
         return updateTime;
     }
 
+    public String getMaterialPath() {
+        return materialPath;
+    }
+
+    public String getMaterialName() {
+        return materialName;
+    }
+
+    public Long getMaterialSize() {
+        return materialSize;
+    }
+
+    public String getMaterialType() {
+        return materialType;
+    }
+
     // Setter methods
     public void setId(Integer id) {
         this.id = id;
@@ -249,5 +289,21 @@ public class StudentAwardApplication implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public void setMaterialPath(String materialPath) {
+        this.materialPath = materialPath;
+    }
+
+    public void setMaterialName(String materialName) {
+        this.materialName = materialName;
+    }
+
+    public void setMaterialSize(Long materialSize) {
+        this.materialSize = materialSize;
+    }
+
+    public void setMaterialType(String materialType) {
+        this.materialType = materialType;
     }
 }

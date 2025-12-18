@@ -92,6 +92,33 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     }
 
     @Override
+    public StudentAwardApplication updateApplication(StudentAwardApplication application) {
+        // 检查申请是否存在
+        Integer applicationId = application.getId();
+        if (applicationId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "申请ID不能为空");
+        }
+        
+        StudentAwardApplication existingApplication = studentAwardApplicationMapper.selectById(applicationId);
+        if (existingApplication == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "申请不存在");
+        }
+        
+        // 检查申请是否处于可编辑状态
+        if (existingApplication.getStatus() != 0) { // 只有待审核状态可以编辑
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "申请已进入审批流程，无法编辑");
+        }
+        
+        // 更新申请信息
+        application.setUpdateTime(new Date());
+        application.setCreateTime(existingApplication.getCreateTime());
+        application.setApplicationTime(existingApplication.getApplicationTime());
+        application.setStatus(existingApplication.getStatus());
+        studentAwardApplicationMapper.updateById(application);
+        return application;
+    }
+
+    @Override
     public StudentAwardApplication updateApplicationStatus(Integer id, Integer status) {
         StudentAwardApplication application = studentAwardApplicationMapper.selectById(id);
         if (application != null) {

@@ -20,6 +20,13 @@ public interface StudentAwardApplicationService {
     StudentAwardApplication createApplication(StudentAwardApplication application);
 
     /**
+     * 更新学生奖项申请
+     * @param application 申请信息
+     * @return 更新后的申请
+     */
+    StudentAwardApplication updateApplication(StudentAwardApplication application);
+
+    /**
      * 更新申请状态
      * @param id 申请ID
      * @param status 新状态

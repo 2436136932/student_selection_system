@@ -632,6 +632,15 @@
         <el-table-column prop="applicationDate" label="申请日期" width="150">
           <template #default="scope">{{ scope.row.applicationDate ? new Date(scope.row.applicationDate).toLocaleString() : '-' }}</template>
         </el-table-column>
+        <el-table-column prop="materialName" label="申请材料" min-width="200">
+          <template #default="scope">
+            <span v-if="scope.row.materialName" class="material-link" @click="downloadMaterial(scope.row)">
+              <el-icon class="download-icon"><download /></el-icon>
+              {{ scope.row.materialName }}
+            </span>
+            <span v-else class="no-material">无</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="approvalStatus" label="审批状态" width="120">
           <template #default="scope">
             <el-tag
@@ -716,6 +725,7 @@ import { ElMessage } from 'element-plus'
 import { hasRole, getUserInfo } from '../utils/role'
 import axios from 'axios'
 import router from '../router'
+import { Download } from '@element-plus/icons-vue'
 
 export default {
   name: 'AwardView',
@@ -1053,6 +1063,29 @@ export default {
         console.error('获取学生申请列表失败:', error)
       } finally {
         applicationLoading.value = false
+      }
+    }
+
+    // 下载申请材料
+    const downloadMaterial = (row) => {
+      console.log('下载申请材料:', row)
+      if (!row.id) {
+        ElMessage.error('申请ID不存在，无法下载材料')
+        return
+      }
+      
+      try {
+        const link = document.createElement('a')
+        link.href = `/api/student-award-applications/download/${row.id}`
+        link.download = row.materialName || 'application_material'
+        link.target = '_blank'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        ElMessage.success('文件下载已开始')
+      } catch (error) {
+        console.error('Error downloading material:', error)
+        ElMessage.error('文件下载失败，请重试')
       }
     }
 
@@ -1567,7 +1600,8 @@ export default {
   resetApplicationForm,
   handleApplicationSizeChange,
   handleApplicationCurrentChange,
-  handleViewResults
+  handleViewResults,
+  downloadMaterial
 
     }
   }

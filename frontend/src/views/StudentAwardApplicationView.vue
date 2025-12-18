@@ -71,8 +71,31 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="150" fixed="right" v-if="hasRole('student')">
+          <el-table-column label="操作" width="220" fixed="right" v-if="hasRole('student')">
             <template #default="scope">
+              <!-- 调试信息 -->
+              <div v-if="false" style="color: red; font-size: 10px;">
+                materialPath: {{ scope.row.materialPath }}
+                <br>
+                materialName: {{ scope.row.materialName }}
+              </div>
+              <!-- 预览材料按钮 -->
+              <el-button 
+                size="small" 
+                type="primary" 
+                @click="previewMaterial(scope.row)"
+              >
+                <el-icon><Picture /></el-icon> 预览材料
+              </el-button>
+              <!-- 下载材料按钮 -->
+              <el-button 
+                size="small" 
+                type="success" 
+                @click="downloadMaterial(scope.row)"
+              >
+                <el-icon><Download /></el-icon> 下载材料
+              </el-button>
+              <!-- 取消申请按钮 -->
               <el-button 
                 v-if="scope.row.status === 0" 
                 size="small" 
@@ -81,6 +104,7 @@
               >
                 <el-icon><delete /></el-icon> 取消申请
               </el-button>
+              <!-- 已处理按钮 -->
               <el-button 
                 v-else 
                 size="small" 
@@ -90,8 +114,30 @@
               </el-button>
             </template>
           </el-table-column>
-          <el-table-column label="审核操作" width="150" fixed="right" v-if="hasRole('admin') || hasRole('teacher')">
+          <el-table-column label="审核操作" width="250" fixed="right" v-if="hasRole('admin') || hasRole('teacher')">
             <template #default="scope">
+              <!-- 调试信息 -->
+              <div v-if="false" style="color: red; font-size: 10px;">
+                materialPath: {{ scope.row.materialPath }}
+                <br>
+                materialName: {{ scope.row.materialName }}
+              </div>
+              <!-- 预览申请材料 -->
+              <el-button 
+                size="small" 
+                type="primary" 
+                @click="previewMaterial(scope.row)"
+              >
+                <el-icon><Picture /></el-icon> 预览材料
+              </el-button>
+              <!-- 下载申请材料 -->
+              <el-button 
+                size="small" 
+                type="success" 
+                @click="downloadMaterial(scope.row)"
+              >
+                <el-icon><Download /></el-icon> 下载材料
+              </el-button>
               <!-- 教师只能在状态为0（待教师审批）时看到审批按钮 -->
               <!-- 管理员可以在状态为1（待管理员审批）时看到审批按钮 -->
               <el-button 
@@ -163,6 +209,26 @@
         <el-form-item label="申请理由" prop="description">
           <el-input v-model="form.description" type="textarea" placeholder="请输入申请理由" rows="4"></el-input>
         </el-form-item>
+        <el-form-item label="申请材料" prop="material">
+          <el-upload
+            ref="uploadRef"
+            :action="uploadUrl"
+            :before-upload="beforeUpload"
+            :on-success="handleUploadSuccess"
+            :on-error="handleUploadError"
+            :file-list="fileList"
+            :auto-upload="false"
+            accept=".doc,.docx,.pdf,.ppt,.pptx,.png,.jpg,.jpeg"
+            class="upload-demo"
+          >
+            <el-button type="primary" slot="trigger">
+              <el-icon><Upload /></el-icon> 选择文件
+            </el-button>
+            <template #tip>
+              <div class="el-upload__tip">支持上传 Word、PDF、PPT、PNG、JPG 格式的文件，最大10MB</div>
+            </template>
+          </el-upload>
+        </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
@@ -171,14 +237,26 @@
         </span>
       </template>
     </el-dialog>
+    
+    <!-- 材料预览组件 -->
+    <MaterialPreview
+      v-model:visible="materialPreviewVisible"
+      :url="previewUrl"
+      :download-url="downloadUrl"
+      :file-name="currentMaterialName"
+      :file-size="currentMaterialSize"
+      @close="handlePreviewClose"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Edit, Delete, Plus, Check, Close } from '@element-plus/icons-vue'
+import { Edit, Delete, Plus, Check, Close, Upload, Download, Picture } from '@element-plus/icons-vue'
 import axios from 'axios'
+// 导入材料预览组件
+import MaterialPreview from '../components/MaterialPreview.vue'
 
 // 获取用户信息
 const getUserInfo = () => {
@@ -189,7 +267,9 @@ const getUserInfo = () => {
 // 检查用户是否有指定角色
 const hasRole = (role) => {
   const userInfo = getUserInfo()
-  return userInfo.role === role
+  const userRole = userInfo.role || ''
+  // 处理角色名称，支持"student"或"ROLE_STUDENT"格式
+  return userRole.toLowerCase() === role.toLowerCase() || userRole.toLowerCase() === `role_${role.toLowerCase()}`
 }
 
 // 计算当前用户是否为学生
@@ -204,6 +284,23 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const dialogVisible = ref(false)
 const loading = ref(false)
+// 文件上传相关
+const uploadRef = ref(null)
+const uploadUrl = '/api/student-award-applications/upload'
+const fileList = ref([])
+const materialInfo = reactive({
+  materialPath: '',
+  materialName: '',
+  materialSize: 0,
+  materialType: ''
+})
+
+// 材料预览相关
+const materialPreviewVisible = ref(false)
+const previewUrl = ref('')
+const downloadUrl = ref('')
+const currentMaterialName = ref('')
+const currentMaterialSize = ref(0)
 
 const searchForm = reactive({
   awardName: '',
@@ -224,6 +321,44 @@ const formatDate = (row, column, cellValue) => {
     return date.toLocaleString()
   }
   return ''
+}
+
+// 文件上传前校验
+const beforeUpload = (file) => {
+  const allowedTypes = ['.doc', '.docx', '.pdf', '.ppt', '.pptx', '.png', '.jpg', '.jpeg']
+  const fileExtension = `.${file.name.split('.').pop().toLowerCase()}`
+  const isTypeAllowed = allowedTypes.includes(fileExtension)
+  const isLt10M = file.size / 1024 / 1024 < 10
+
+  if (!isTypeAllowed) {
+    ElMessage.error('只允许上传 Word、PDF、PPT、PNG、JPG 格式的文件')
+    return false
+  }
+  if (!isLt10M) {
+    ElMessage.error('上传文件大小不能超过 10MB')
+    return false
+  }
+  return true
+}
+
+// 文件上传成功处理
+const handleUploadSuccess = (response) => {
+  console.log('文件上传成功:', response)
+  if (response.success) {
+    materialInfo.materialPath = response.materialPath
+    materialInfo.materialName = response.materialName
+    materialInfo.materialSize = response.materialSize
+    materialInfo.materialType = response.materialType
+    ElMessage.success('文件上传成功')
+  } else {
+    ElMessage.error('文件上传失败: ' + (response.message || '未知错误'))
+  }
+}
+
+// 文件上传失败处理
+const handleUploadError = (error) => {
+  console.error('文件上传失败:', error)
+  ElMessage.error('文件上传失败，请重试')
 }
 
 // 获取状态文本
@@ -376,35 +511,74 @@ const handleSubmit = () => {
       return
     }
     
-    // 提交申请
-            console.log('Submitting application with data:', {
-              awardId: form.awardId,
-              description: form.description
-            })
-            axios.post('/api/student-award-applications', {
-              awardId: form.awardId,
-              description: form.description  // 添加申请理由
-            }).then(response => {
-              console.log('Application submission successful:', response.data)
-              ElMessage.success('申请奖项成功')
-              dialogVisible.value = false
-              getApplications()
-              // 重置表单
-              form.awardId = ''
-              form.description = ''
-            }).catch(error => {
-              console.error('Error submitting application:', error)
-              console.error('Error details:', {
-                status: error.response?.status,
-                statusText: error.response?.statusText,
-                data: error.response?.data,
-                config: error.config
-              })
-              // 如果后端返回了具体的错误信息，使用后端返回的信息，否则使用默认信息
-              const errorMessage = error.response?.data?.message || '申请奖项失败'
-              ElMessage.error(errorMessage)
-            })
+    // 先上传文件（如果有选择文件）
+    const uploadFilePromise = fileList.value.length > 0 ? uploadFile() : Promise.resolve()
+    
+    uploadFilePromise.then(() => {
+      // 准备提交的申请数据
+      const applicationData = {
+        awardId: form.awardId,
+        description: form.description,
+        // 包含材料信息
+        materialPath: materialInfo.materialPath,
+        materialName: materialInfo.materialName,
+        materialSize: materialInfo.materialSize,
+        materialType: materialInfo.materialType
+      }
+      
+      console.log('Submitting application with data:', applicationData)
+      
+      // 提交申请
+      axios.post('/api/student-award-applications', applicationData).then(response => {
+        console.log('Application submission successful:', response.data)
+        ElMessage.success('申请奖项成功')
+        dialogVisible.value = false
+        getApplications()
+        // 重置表单
+        resetApplicationForm()
+      }).catch(error => {
+        console.error('Error submitting application:', error)
+        console.error('Error details:', {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          config: error.config
+        })
+        // 如果后端返回了具体的错误信息，使用后端返回的信息，否则使用默认信息
+        const errorMessage = error.response?.data?.message || '申请奖项失败'
+        ElMessage.error(errorMessage)
+      })
+    }).catch(error => {
+      console.error('File upload failed:', error)
+      ElMessage.error('文件上传失败，请重试')
+    })
   })
+}
+
+// 上传文件方法
+const uploadFile = () => {
+  return new Promise((resolve, reject) => {
+    if (uploadRef.value && fileList.value.length > 0) {
+      uploadRef.value.submit().then(() => {
+        resolve()
+      }).catch(error => {
+        reject(error)
+      })
+    } else {
+      resolve()
+    }
+  })
+}
+
+// 重置申请表单
+const resetApplicationForm = () => {
+  form.awardId = ''
+  form.description = ''
+  fileList.value = []
+  materialInfo.materialPath = ''
+  materialInfo.materialName = ''
+  materialInfo.materialSize = 0
+  materialInfo.materialType = ''
 }
 
 // 检查是否已申请该奖项
@@ -441,6 +615,65 @@ const handleCancelApplication = (row) => {
   }).catch(() => {
     // 取消操作
   })
+}
+
+// 处理预览对话框关闭事件
+const handlePreviewClose = () => {
+  // 重置预览状态
+  materialPreviewVisible.value = false
+  previewUrl.value = ''
+  downloadUrl.value = ''
+  currentMaterialName.value = ''
+  currentMaterialSize.value = 0
+}
+
+// 预览申请材料
+const previewMaterial = (row) => {
+  if (!row.id) {
+    ElMessage.error('申请ID不存在，无法预览材料')
+    return
+  }
+  
+  if (!row.materialPath) {
+    ElMessage.error('该申请未上传材料')
+    return
+  }
+  
+  try {
+    // 设置预览URL和下载URL
+    previewUrl.value = `/api/student-award-applications/preview/${row.id}`
+    downloadUrl.value = `/api/student-award-applications/download/${row.id}`
+    currentMaterialName.value = row.materialName || 'application_material'
+    currentMaterialSize.value = row.materialSize || 0
+    
+    // 显示预览对话框
+    materialPreviewVisible.value = true
+  } catch (error) {
+    console.error('Error previewing material:', error)
+    ElMessage.error('文件预览失败，请重试')
+  }
+}
+
+// 下载申请材料
+const downloadMaterial = (row) => {
+  if (!row.id) {
+    ElMessage.error('申请ID不存在，无法下载材料')
+    return
+  }
+  
+  try {
+    const link = document.createElement('a')
+    link.href = `/api/student-award-applications/download/${row.id}`
+    link.download = row.materialName || 'application_material'
+    link.target = '_blank'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    ElMessage.success('文件下载已开始')
+  } catch (error) {
+    console.error('Error downloading material:', error)
+    ElMessage.error('文件下载失败，请重试')
+  }
 }
 
 // 审核通过
