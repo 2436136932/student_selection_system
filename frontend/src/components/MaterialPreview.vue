@@ -77,9 +77,6 @@
             <el-button type="primary" @click="handleDownload">
               <el-icon><Download /></el-icon> 下载文件
             </el-button>
-            <el-button type="info" @click="openInNewTab">
-              <el-icon><Link /></el-icon> 在新标签页打开
-            </el-button>
           </div>
         </div>
         
@@ -96,9 +93,6 @@
           <div class="ppt-actions">
             <el-button type="primary" @click="handleDownload">
               <el-icon><Download /></el-icon> 下载文件
-            </el-button>
-            <el-button type="info" @click="openInNewTab">
-              <el-icon><Link /></el-icon> 在新标签页打开
             </el-button>
           </div>
         </div>
@@ -321,7 +315,7 @@ const handleClose = () => {
 }
 
 // 处理下载
-const handleDownload = () => {
+const handleDownload = async () => {
   try {
     // 确保下载URL使用完整的后端URL
     let downloadUrl = props.downloadUrl
@@ -329,17 +323,42 @@ const handleDownload = () => {
       downloadUrl = `http://localhost:8080${downloadUrl}`
     }
     
+    // 使用axios获取文件的blob数据，确保携带JWT令牌
+    const response = await axios.get(downloadUrl, {
+      responseType: 'blob',
+      headers: {
+        Authorization: localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : ''
+      }
+    })
+    
+    // 创建临时的blob URL
+    const blob = new Blob([response.data], { type: response.headers['content-type'] })
+    const blobUrl = URL.createObjectURL(blob)
+    
+    // 使用a标签下载文件
     const link = document.createElement('a')
-    link.href = downloadUrl
+    link.href = blobUrl
     link.download = props.fileName
     link.target = '_blank'
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+    
+    // 清理blob URL
+    setTimeout(() => {
+      URL.revokeObjectURL(blobUrl)
+    }, 1000)
+    
     ElMessage.success('文件下载已开始')
   } catch (error) {
     console.error('文件下载失败:', error)
-    ElMessage.error('文件下载失败，请重试')
+    console.error('错误详情:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      config: error.response?.config
+    })
+    ElMessage.error(`文件下载失败: ${error.response?.status || '未知错误'} - ${error.response?.statusText || '请求失败'}`)
   }
 }
 

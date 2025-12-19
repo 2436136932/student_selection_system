@@ -839,24 +839,53 @@ const previewMaterial = (row) => {
 }
 
 // 下载申请材料
-const downloadMaterial = (row) => {
+const downloadMaterial = async (row) => {
   if (!row.id) {
     ElMessage.error('申请ID不存在，无法下载材料')
     return
   }
   
   try {
+    // 生成完整的下载URL
+    const baseUrl = 'http://localhost:8080'
+    const downloadUrl = `${baseUrl}/api/student-award-applications/download/${row.id}`
+    
+    // 使用axios获取文件的blob数据，确保携带JWT令牌
+    const response = await axios.get(downloadUrl, {
+      responseType: 'blob',
+      headers: {
+        Authorization: localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : ''
+      }
+    })
+    
+    // 创建临时的blob URL
+    const blob = new Blob([response.data], { type: response.headers['content-type'] })
+    const blobUrl = URL.createObjectURL(blob)
+    
+    // 使用a标签下载文件
     const link = document.createElement('a')
-    link.href = `/api/student-award-applications/download/${row.id}`
+    link.href = blobUrl
     link.download = row.materialName || 'application_material'
     link.target = '_blank'
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+    
+    // 清理blob URL
+    setTimeout(() => {
+      URL.revokeObjectURL(blobUrl)
+    }, 1000)
+    
     ElMessage.success('文件下载已开始')
   } catch (error) {
     console.error('Error downloading material:', error)
-    ElMessage.error('文件下载失败，请重试')
+    console.error('错误详情:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      config: error.response?.config
+    })
+    ElMessage.error(`文件下载失败: ${error.response?.status || '未知错误'} - ${error.response?.statusText || '请求失败'}`)
   }
 }
 
