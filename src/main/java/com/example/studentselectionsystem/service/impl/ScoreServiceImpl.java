@@ -286,12 +286,13 @@ public class ScoreServiceImpl implements ScoreService {
     }
 
     @Override
-    public IPage<Score> findScoresByPage(Integer current, Integer size, String studentNumber, String courseCode, String semester) {
+    public IPage<Score> findScoresByPage(Integer current, Integer size, String studentNumber, String courseCode, String courseName) {
         // 创建MyBatis Plus分页对象
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Score> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, size);
         
         // 构建查询条件
         QueryWrapper<Score> queryWrapper = new QueryWrapper<>();
+        boolean hasStudentCondition = false;
         
         // 处理学生学号查询
         if (studentNumber != null && !studentNumber.isEmpty()) {
@@ -301,6 +302,11 @@ public class ScoreServiceImpl implements ScoreService {
             Student student = studentRepository.selectOne(studentWrapper);
             if (student != null) {
                 queryWrapper.eq("student_id", student.getId());
+                hasStudentCondition = true;
+            } else {
+                // 如果根据学号查询不到学生信息，返回空结果
+                System.out.println("根据学号查询不到学生信息: " + studentNumber);
+                return page;
             }
         }
         
@@ -315,9 +321,21 @@ public class ScoreServiceImpl implements ScoreService {
             }
         }
         
-        // 处理学期查询
-        if (semester != null && !semester.isEmpty()) {
-            queryWrapper.like("semester", semester);
+        // 处理课程名称查询
+        if (courseName != null && !courseName.isEmpty()) {
+            // 先根据课程名称查询课程列表
+            QueryWrapper<Course> courseWrapper = new QueryWrapper<>();
+            courseWrapper.like("course_name", courseName);
+            List<Course> courses = courseRepository.selectList(courseWrapper);
+            if (!courses.isEmpty()) {
+                // 获取课程ID列表
+                List<Long> courseIds = courses.stream().map(Course::getId).collect(java.util.stream.Collectors.toList());
+                queryWrapper.in("course_id", courseIds);
+            } else {
+                // 如果根据课程名称查询不到课程信息，返回空结果
+                System.out.println("根据课程名称查询不到课程信息: " + courseName);
+                return page;
+            }
         }
         
         // 查询成绩数据
@@ -326,6 +344,7 @@ public class ScoreServiceImpl implements ScoreService {
         // 填充学生信息和课程信息
         populateScoreSemesters(scorePage.getRecords());
         
+        System.out.println("findScoresByPage查询结果: " + scorePage.getTotal() + "条记录");
         return scorePage;
     }
 

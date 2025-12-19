@@ -87,6 +87,12 @@ const router = createRouter({
       name: 'Profile',
       component: () => import('../views/ProfileView.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/system-settings',
+      name: 'SystemSettings',
+      component: () => import('../views/SystemSettingsView.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })

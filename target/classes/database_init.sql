@@ -336,13 +336,18 @@ INSERT INTO awards (award_name, award_level, award_type, description, requiremen
 INSERT INTO students (student_number, name, gender, birth_date, major, class_name, admission_year, phone, email, status) VALUES
 ('S001', '赵同学', '男', '2002-01-01', '计算机科学与技术', '计科2001', 2020, '13800138001', 'zhaostudent@example.com', 1),
 ('S002', '钱同学', '女', '2002-02-02', '数学与应用数学', '数学2001', 2020, '13800138002', 'qianstudent@example.com', 1),
-('S003', '孙同学', '男', '2002-03-03', '物理学', '物理2001', 2020, '13800138003', 'sunstudent@example.com', 1);
+('S003', '孙同学', '男', '2002-03-03', '物理学', '物理2001', 2020, '13800138003', 'sunstudent@example.com', 1),   
+
+
 
 -- 注意：这里不需要TRUNCATE TABLE users，因为我们已经在前面清空过了
 INSERT INTO users (username, password, role, real_name, email, phone, avatar, status) VALUES
 ('student1', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '赵同学', 'zhaostudent@example.com', '13800138001', 'https://picsum.photos/id/1005/200/200', 1),
 ('student2', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '钱同学', 'qianstudent@example.com', '13800138002', 'https://picsum.photos/id/1005/200/200', 1),
-('student3', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '孙同学', 'sunstudent@example.com', '13800138003', 'https://picsum.photos/id/1005/200/200', 1);
+('student3', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '孙同学', 'sunstudent@example.com', '13800138003', 'https://picsum.photos/id/1005/200/200', 1),
+
+
+
 
 -- 更新学生表中的user_id
 UPDATE students SET user_id = (SELECT id FROM users WHERE username = 'student1') WHERE student_number = 'S001';

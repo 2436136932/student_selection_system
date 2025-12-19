@@ -4,14 +4,20 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.studentselectionsystem.entity.Score;
 import com.example.studentselectionsystem.entity.Course;
 import com.example.studentselectionsystem.entity.Student;
+import com.example.studentselectionsystem.entity.User;
 import com.example.studentselectionsystem.service.ScoreService;
 import com.example.studentselectionsystem.service.CourseService;
 import com.example.studentselectionsystem.service.StudentService;
+import com.example.studentselectionsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +37,71 @@ public class ScoreController {
     
     @Autowired
     private StudentService studentService;
+    
+    @Autowired
+    private UserService userService;
+    
+    /**
+     * 获取当前学生的学号（仅适用于学生角色）
+     * @return 当前学生的学号，如果不是学生则返回null
+     */
+    private String getCurrentStudentNumber() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            // 检查是否为学生角色
+            boolean isStudent = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT") || a.getAuthority().equals("STUDENT"));
+            if (isStudent) {
+                try {
+                    String username = authentication.getName();
+                    // 通过用户名查询用户信息
+                    Optional<User> userOptional = userService.findUserByUsername(username);
+                    if (userOptional.isPresent()) {
+                        User user = userOptional.get();
+                        // 通过用户ID查询学生信息
+                        Optional<Student> studentOptional = studentService.findStudentByUserId(user.getId());
+                        if (studentOptional.isPresent()) {
+                            return studentOptional.get().getStudentNumber();
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println("获取当前学生学号失败: " + e.getMessage());
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * 获取当前学生的ID（仅适用于学生角色）
+     * @return 当前学生的ID，如果不是学生则返回null
+     */
+    private Long getCurrentStudentId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            // 检查是否为学生角色
+            boolean isStudent = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT") || a.getAuthority().equals("STUDENT"));
+            if (isStudent) {
+                try {
+                    String username = authentication.getName();
+                    // 通过用户名查询用户信息
+                    Optional<User> userOptional = userService.findUserByUsername(username);
+                    if (userOptional.isPresent()) {
+                        User user = userOptional.get();
+                        // 通过用户ID查询学生信息
+                        Optional<Student> studentOptional = studentService.findStudentByUserId(user.getId());
+                        if (studentOptional.isPresent()) {
+                            return studentOptional.get().getId();
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println("获取当前学生ID失败: " + e.getMessage());
+                }
+            }
+        }
+        return null;
+    }
 
     /**
      * 创建成绩记录
@@ -155,10 +226,16 @@ public class ScoreController {
      * @param studentId 学生ID
      * @return 成绩列表
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or authentication.principal.username == #studentId")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping("/student/{studentId}")
     public ResponseEntity<List<Score>> findScoresByStudentId(@PathVariable("studentId") Long studentId) {
         try {
+            // 如果是学生角色，验证是否访问自己的成绩
+            Long currentStudentId = getCurrentStudentId();
+            if (currentStudentId != null && !currentStudentId.equals(studentId)) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+            
             List<Score> scores = scoreService.findScoresByStudentId(studentId);
             if (scores.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -174,10 +251,20 @@ public class ScoreController {
      * @param courseId 课程ID
      * @return 成绩列表
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping("/course/{courseId}")
     public ResponseEntity<List<Score>> findScoresByCourseId(@PathVariable("courseId") Long courseId) {
         try {
             List<Score> scores = scoreService.findScoresByCourseId(courseId);
+            
+            // 如果是学生角色，过滤为自己的成绩
+            Long currentStudentId = getCurrentStudentId();
+            if (currentStudentId != null) {
+                scores = scores.stream()
+                    .filter(score -> currentStudentId.equals(score.getStudentId()))
+                    .collect(Collectors.toList());
+            }
+            
             if (scores.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
@@ -193,10 +280,17 @@ public class ScoreController {
      * @param courseId 课程ID
      * @return 成绩信息
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping("/student/{studentId}/course/{courseId}")
     public ResponseEntity<Score> findScoreByStudentIdAndCourseId(
             @PathVariable("studentId") Long studentId,
             @PathVariable("courseId") Long courseId) {
+        // 如果是学生角色，验证是否访问自己的成绩
+        Long currentStudentId = getCurrentStudentId();
+        if (currentStudentId != null && !currentStudentId.equals(studentId)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        
         Optional<Score> score = scoreService.findScoreByStudentIdAndCourseId(studentId, courseId);
         if (score.isPresent()) {
             return new ResponseEntity<>(score.get(), HttpStatus.OK);
@@ -211,11 +305,18 @@ public class ScoreController {
      * @param semester 学期
      * @return 成绩列表
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping("/student/{studentId}/semester/{semester}")
     public ResponseEntity<List<Score>> findScoresByStudentIdAndSemester(
             @PathVariable("studentId") Long studentId,
             @PathVariable("semester") String semester) {
         try {
+            // 如果是学生角色，验证是否访问自己的成绩
+            Long currentStudentId = getCurrentStudentId();
+            if (currentStudentId != null && !currentStudentId.equals(studentId)) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+            
             List<Score> scores = scoreService.findScoresByStudentIdAndSemester(studentId, semester);
             if (scores.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -232,12 +333,22 @@ public class ScoreController {
      * @param semester 学期
      * @return 成绩列表
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping("/course/{courseId}/semester/{semester}")
     public ResponseEntity<List<Score>> findScoresByCourseIdAndSemester(
             @PathVariable("courseId") Long courseId,
             @PathVariable("semester") String semester) {
         try {
             List<Score> scores = scoreService.findScoresByCourseIdAndSemester(courseId, semester);
+            
+            // 如果是学生角色，过滤为自己的成绩
+            Long currentStudentId = getCurrentStudentId();
+            if (currentStudentId != null) {
+                scores = scores.stream()
+                    .filter(score -> currentStudentId.equals(score.getStudentId()))
+                    .collect(Collectors.toList());
+            }
+            
             if (scores.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
@@ -252,10 +363,20 @@ public class ScoreController {
      * @param semester 学期
      * @return 成绩列表
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping("/semester/{semester}")
     public ResponseEntity<List<Score>> findScoresBySemester(@PathVariable("semester") String semester) {
         try {
             List<Score> scores = scoreService.findScoresBySemester(semester);
+            
+            // 如果是学生角色，过滤为自己的成绩
+            Long currentStudentId = getCurrentStudentId();
+            if (currentStudentId != null) {
+                scores = scores.stream()
+                    .filter(score -> currentStudentId.equals(score.getStudentId()))
+                    .collect(Collectors.toList());
+            }
+            
             if (scores.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
@@ -269,6 +390,7 @@ public class ScoreController {
      * 获取所有成绩
      * @return 成绩列表
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping
     public ResponseEntity<List<Score>> findAllScores() {
         // 添加日志记录
@@ -276,6 +398,15 @@ public class ScoreController {
         logger.info("进入findAllScores方法");
         try {
             List<Score> scores = scoreService.findAllScores();
+            
+            // 如果是学生角色，过滤为自己的成绩
+            Long currentStudentId = getCurrentStudentId();
+            if (currentStudentId != null) {
+                scores = scores.stream()
+                    .filter(score -> currentStudentId.equals(score.getStudentId()))
+                    .collect(Collectors.toList());
+            }
+            
             logger.info("findAllScores成功，获取到" + scores.size() + "条记录");
             return ResponseEntity.ok(scores);
         } catch (Throwable t) {
@@ -290,17 +421,33 @@ public class ScoreController {
      * @param size 每页大小
      * @return 成绩分页列表
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping("/page")
     public ResponseEntity<IPage<Score>> findScoresByPage(
             @RequestParam(defaultValue = "1") Integer current,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(required = false) String studentNumber,
             @RequestParam(required = false) String courseCode,
-            @RequestParam(required = false) String semester) {
+            @RequestParam(required = false) String courseName) {
         try {
-            IPage<Score> scores = scoreService.findScoresByPage(current, size, studentNumber, courseCode, semester);
+            System.out.println("=== findScoresByPage 方法开始执行 ===");
+            System.out.println("参数: current=" + current + ", size=" + size + ", studentNumber=" + studentNumber + ", courseCode=" + courseCode + ", courseName=" + courseName);
+            
+            // 如果是学生角色，强制使用当前学生的学号
+            String currentStudentNumber = getCurrentStudentNumber();
+            if (currentStudentNumber != null) {
+                System.out.println("学生角色，强制使用学号: " + currentStudentNumber);
+                studentNumber = currentStudentNumber;
+            }
+            
+            IPage<Score> scores = scoreService.findScoresByPage(current, size, studentNumber, courseCode, courseName);
+            System.out.println("findScoresByPage 查询结果: " + scores.getTotal() + "条记录");
+            System.out.println("=== findScoresByPage 方法执行完成 ===");
+            
             return new ResponseEntity<>(scores, HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println("=== findScoresByPage 方法执行异常 ===");
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -310,9 +457,16 @@ public class ScoreController {
      * @param studentId 学生ID
      * @return 总成绩
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping("/student/{studentId}/total")
     public ResponseEntity<Double> getTotalScoreByStudentId(@PathVariable("studentId") Long studentId) {
         try {
+            // 如果是学生角色，验证是否访问自己的成绩
+            Long currentStudentId = getCurrentStudentId();
+            if (currentStudentId != null && !currentStudentId.equals(studentId)) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+            
             Double totalScore = scoreService.getTotalScoreByStudentId(studentId);
             return new ResponseEntity<>(totalScore, HttpStatus.OK);
         } catch (Exception e) {
@@ -325,9 +479,16 @@ public class ScoreController {
      * @param studentId 学生ID
      * @return 平均成绩
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping("/student/{studentId}/average")
     public ResponseEntity<Double> getAverageScoreByStudentId(@PathVariable("studentId") Long studentId) {
         try {
+            // 如果是学生角色，验证是否访问自己的成绩
+            Long currentStudentId = getCurrentStudentId();
+            if (currentStudentId != null && !currentStudentId.equals(studentId)) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+            
             Double averageScore = scoreService.getAverageScoreByStudentId(studentId);
             return new ResponseEntity<>(averageScore, HttpStatus.OK);
         } catch (Exception e) {
@@ -341,11 +502,18 @@ public class ScoreController {
      * @param semester 学期
      * @return 总成绩
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping("/student/{studentId}/semester/{semester}/total")
     public ResponseEntity<Double> getTotalScoreByStudentIdAndSemester(
             @PathVariable("studentId") Long studentId,
             @PathVariable("semester") String semester) {
         try {
+            // 如果是学生角色，验证是否访问自己的成绩
+            Long currentStudentId = getCurrentStudentId();
+            if (currentStudentId != null && !currentStudentId.equals(studentId)) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+            
             Double totalScore = scoreService.getTotalScoreByStudentIdAndSemester(studentId, semester);
             return new ResponseEntity<>(totalScore, HttpStatus.OK);
         } catch (Exception e) {
@@ -359,11 +527,18 @@ public class ScoreController {
      * @param semester 学期
      * @return 平均成绩
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping("/student/{studentId}/semester/{semester}/average")
     public ResponseEntity<Double> getAverageScoreByStudentIdAndSemester(
             @PathVariable("studentId") Long studentId,
             @PathVariable("semester") String semester) {
         try {
+            // 如果是学生角色，验证是否访问自己的成绩
+            Long currentStudentId = getCurrentStudentId();
+            if (currentStudentId != null && !currentStudentId.equals(studentId)) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+            
             Double averageScore = scoreService.getAverageScoreByStudentIdAndSemester(studentId, semester);
             return new ResponseEntity<>(averageScore, HttpStatus.OK);
         } catch (Exception e) {
@@ -376,9 +551,19 @@ public class ScoreController {
      * @param courseId 课程ID
      * @return 平均成绩
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping("/course/{courseId}/average")
     public ResponseEntity<Double> getAverageScoreByCourseId(@PathVariable("courseId") Long courseId) {
         try {
+            // 如果是学生角色，检查该课程是否包含当前学生的成绩
+            Long currentStudentId = getCurrentStudentId();
+            if (currentStudentId != null) {
+                Optional<Score> studentScore = scoreService.findScoreByStudentIdAndCourseId(currentStudentId, courseId);
+                if (!studentScore.isPresent()) {
+                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                }
+            }
+            
             Double averageScore = scoreService.getAverageScoreByCourseId(courseId);
             return new ResponseEntity<>(averageScore, HttpStatus.OK);
         } catch (Exception e) {
@@ -392,11 +577,21 @@ public class ScoreController {
      * @param semester 学期
      * @return 平均成绩
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping("/course/{courseId}/semester/{semester}/average")
     public ResponseEntity<Double> getAverageScoreByCourseIdAndSemester(
             @PathVariable("courseId") Long courseId,
             @PathVariable("semester") String semester) {
         try {
+            // 如果是学生角色，检查该课程是否包含当前学生的成绩
+            Long currentStudentId = getCurrentStudentId();
+            if (currentStudentId != null) {
+                Optional<Score> studentScore = scoreService.findScoreByStudentIdAndCourseId(currentStudentId, courseId);
+                if (!studentScore.isPresent()) {
+                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                }
+            }
+            
             Double averageScore = scoreService.getAverageScoreByCourseIdAndSemester(courseId, semester);
             return new ResponseEntity<>(averageScore, HttpStatus.OK);
         } catch (Exception e) {
@@ -408,10 +603,20 @@ public class ScoreController {
      * 使用冒泡排序算法按成绩降序排序
      * @return 排序后的成绩列表
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping("/sorted/desc")
     public ResponseEntity<List<Score>> bubbleSortByScoreDesc() {
         try {
             List<Score> scores = scoreService.findAllScores();
+            
+            // 如果是学生角色，过滤为自己的成绩
+            Long currentStudentId = getCurrentStudentId();
+            if (currentStudentId != null) {
+                scores = scores.stream()
+                    .filter(score -> currentStudentId.equals(score.getStudentId()))
+                    .collect(Collectors.toList());
+            }
+            
             List<Score> sortedScores = scoreService.bubbleSortByScoreDesc(scores);
             if (sortedScores.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -426,10 +631,20 @@ public class ScoreController {
      * 使用冒泡排序算法按成绩升序排序
      * @return 排序后的成绩列表
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
     @GetMapping("/sorted/asc")
     public ResponseEntity<List<Score>> bubbleSortByScoreAsc() {
         try {
             List<Score> scores = scoreService.findAllScores();
+            
+            // 如果是学生角色，过滤为自己的成绩
+            Long currentStudentId = getCurrentStudentId();
+            if (currentStudentId != null) {
+                scores = scores.stream()
+                    .filter(score -> currentStudentId.equals(score.getStudentId()))
+                    .collect(Collectors.toList());
+            }
+            
             List<Score> sortedScores = scoreService.bubbleSortByScoreAsc(scores);
             if (sortedScores.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -454,6 +669,12 @@ public class ScoreController {
             @RequestParam(required = false) String courseCode,
             @RequestParam(required = false) String semester) {
         try {
+            // 如果是学生角色，强制使用当前学生的学号
+            String currentStudentNumber = getCurrentStudentNumber();
+            if (currentStudentNumber != null) {
+                studentNumber = currentStudentNumber;
+            }
+            
             java.util.Map<String, Object> statistics = scoreService.getScoreStatistics(studentNumber, courseCode, semester);
             return ResponseEntity.ok(statistics);
         } catch (Exception e) {

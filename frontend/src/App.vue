@@ -1,9 +1,9 @@
 <template>
   <!-- 根据用户是否登录显示不同界面 -->
-  <div v-if="isLoggedIn" class="app-container">
+  <div v-if="isLoggedIn" class="app-container" :class="{ 'dark-mode': isDarkMode }">
     <el-container style="height: 100vh;">
       <!-- 侧边栏导航 -->
-      <el-aside width="220px" class="sidebar">
+      <el-aside :width="isCollapse ? '64px' : '220px'" class="sidebar">
         <div class="logo-container">
           <div class="logo-icon">
             <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -12,7 +12,7 @@
               <path d="M50 50L60 60H40L50 50Z" fill="#2c3e50"/>
             </svg>
           </div>
-          <h3 class="logo-text">学生评奖评优系统</h3>
+          <h3 class="logo-text" v-if="!isCollapse">学生评奖评优系统</h3>
         </div>
         <el-menu
           :default-active="activeIndex"
@@ -27,9 +27,13 @@
             class="menu-item"
           >
             <el-icon class="menu-icon"><component :is="menu.icon" /></el-icon>
-            <span class="menu-text">{{ menu.text }}</span>
+            <span class="menu-text" v-if="!isCollapse">{{ menu.text }}</span>
           </el-menu-item>
         </el-menu>
+        <div class="sidebar-toggle-btn" @click="toggleCollapse">
+          <el-icon v-if="isCollapse"><ArrowRight /></el-icon>
+          <el-icon v-else><ArrowLeft /></el-icon>
+        </div>
       </el-aside>
 
       <!-- 主内容区域 -->
@@ -38,13 +42,6 @@
         <el-header class="top-header">
           <div class="header-content">
             <div class="header-left">
-              <el-icon class="toggle-btn" @click="toggleCollapse"><menu /></el-icon>
-              <div class="breadcrumb">
-                <el-breadcrumb separator="/" separator-class="el-icon-right">
-                  <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-                  <el-breadcrumb-item>{{ getCurrentMenuName() }}</el-breadcrumb-item>
-                </el-breadcrumb>
-              </div>
             </div>
             <div class="header-right">
               <div class="header-info">
@@ -86,7 +83,7 @@
         </el-header>
 
         <!-- 内容区域 -->
-        <el-main class="main-content">
+        <el-main class="main-content" :class="{ 'compact-mode': isCompactMode }">
           <div class="content-wrapper">
             <router-view />
           </div>
@@ -117,6 +114,8 @@ import {
   Medal, 
   Menu, 
   ArrowDown,
+  ArrowLeft,
+  ArrowRight,
   Setting,
   SwitchButton,
   Bell,
@@ -137,6 +136,12 @@ const isCollapse = ref(false)
 
 // 当前激活的菜单项
 const activeIndex = computed(() => route.path)
+
+// 紧凑模式
+const isCompactMode = ref(false)
+
+// 深色模式
+const isDarkMode = ref(false)
 
 // 菜单定义，包含每个菜单的权限信息
 const menuItems = [
@@ -168,7 +173,8 @@ const menuMap = {
   '/notices': '通知管理',
   '/users': '用户管理',
   '/carousel': '轮播图管理',
-  '/profile': '个人中心'
+  '/profile': '个人中心',
+  '/system-settings': '系统设置'
 }
 
 // 检查用户登录状态
@@ -183,9 +189,21 @@ const checkLoginStatus = () => {
   }
 }
 
-// 组件挂载时检查登录状态
+// 组件挂载时检查登录状态和读取设置
 onMounted(() => {
   checkLoginStatus()
+  
+  // 读取显示设置
+  const savedDisplaySettings = localStorage.getItem('displaySettings')
+  if (savedDisplaySettings) {
+    try {
+      const displaySettings = JSON.parse(savedDisplaySettings)
+      isCompactMode.value = displaySettings.compactMode || false
+      isDarkMode.value = displaySettings.darkMode || false
+    } catch (e) {
+      console.error('解析显示设置失败:', e)
+    }
+  }
 })
 
 // 监听userInfo变化
@@ -201,6 +219,19 @@ watch(userInfo, (newVal) => {
 window.addEventListener('storage', (event) => {
   if (event.key === 'userInfo') {
     checkLoginStatus()
+  } else if (event.key === 'displaySettings') {
+    // 重新读取显示设置
+    const savedDisplaySettings = localStorage.getItem('displaySettings')
+    if (savedDisplaySettings) {
+      try {
+        const displaySettings = JSON.parse(savedDisplaySettings)
+        showBreadcrumb.value = displaySettings.showBreadcrumb !== false
+        isCompactMode.value = displaySettings.compactMode || false
+        isDarkMode.value = displaySettings.darkMode || false
+      } catch (e) {
+        console.error('解析显示设置失败:', e)
+      }
+    }
   }
 })
 
@@ -273,7 +304,7 @@ const handleDropdownCommand = (command) => {
       router.push('/profile')
       break
     case 'settings':
-      ElMessage.info('系统设置功能开发中')
+      router.push('/system-settings')
       break
     case 'logout':
       handleLogout()
@@ -405,15 +436,40 @@ a:hover {
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   overflow: hidden;
+  position: relative;
 }
 
 .logo-container {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 65px;
-  background-color: #3498db;
+  background-color: var(--el-color-primary);
   padding: 0 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-toggle-btn {
+  cursor: pointer;
+  color: white;
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 255, 255, 0.1);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-toggle-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .logo-icon {
@@ -473,6 +529,245 @@ a:hover {
   padding: 0 25px;
   height: 65px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* 紧凑模式 */
+.compact-mode .el-card {
+  margin: 5px 0;
+  padding: 10px;
+}
+
+.compact-mode .el-form-item {
+  margin-bottom: 10px;
+}
+
+.compact-mode .el-button {
+  margin: 2px;
+}
+
+.compact-mode .el-input {
+  margin: 2px 0;
+}
+
+.compact-mode .setting-item-card {
+  margin-top: 10px !important;
+}
+
+/* 深色模式 */
+.dark-mode {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.dark-mode .top-header {
+  background-color: #2c3e50;
+  border-bottom: 1px solid #34495e;
+}
+
+.dark-mode .main-content {
+  background-color: #1a1a1a;
+}
+
+.dark-mode .content-wrapper {
+  background-color: #1a1a1a;
+}
+
+.dark-mode .el-card {
+  background-color: #2c3e50;
+  border: 1px solid #34495e;
+  color: #ffffff;
+}
+
+.dark-mode .el-card__header {
+  background-color: #34495e;
+  border-bottom: 1px solid #34495e;
+}
+
+.dark-mode .el-form-item__label {
+  color: #ffffff;
+}
+
+.dark-mode .el-input__inner {
+  background-color: #34495e;
+  border: 1px solid #4a637b;
+  color: #ffffff;
+}
+
+.dark-mode .el-input__inner::placeholder {
+  color: #95a5a6;
+}
+
+.dark-mode .el-button {
+  background-color: #34495e;
+  border: 1px solid #4a637b;
+  color: #ffffff;
+}
+
+.dark-mode .el-button:hover {
+  background-color: #4a637b;
+}
+
+.dark-mode .el-button--primary {
+  background-color: var(--el-color-primary);
+  border: 1px solid var(--el-color-primary);
+}
+
+.dark-mode .sidebar {
+  background-color: #2c3e50;
+}
+
+.dark-mode .sidebar-menu {
+  background-color: #2c3e50;
+}
+
+.dark-mode .sidebar-menu .el-menu-item {
+  color: #ecf0f1;
+}
+
+.dark-mode .sidebar-menu .el-menu-item:hover {
+  background-color: #34495e;
+}
+
+.dark-mode .sidebar-menu .el-menu-item.is-active {
+  background-color: var(--el-color-primary);
+  color: white;
+}
+
+.dark-mode .breadcrumb {
+  color: #ecf0f1;
+}
+
+.dark-mode .breadcrumb .el-breadcrumb__inner {
+  color: #ecf0f1;
+}
+
+.dark-mode .el-tag {
+  background-color: #34495e;
+  border: 1px solid #4a637b;
+  color: #ffffff;
+}
+
+.dark-mode .el-switch__core {
+  background-color: #4a637b;
+}
+
+.dark-mode .el-switch.is-checked .el-switch__core {
+  background-color: var(--el-color-primary);
+}
+
+.dark-mode .el-radio-button__inner {
+  background-color: #34495e;
+  border-color: #4a637b;
+  color: #ffffff;
+}
+
+.dark-mode .el-radio-button__orig-radio:checked + .el-radio-button__inner {
+  background-color: var(--el-color-primary);
+  border-color: var(--el-color-primary);
+  color: #ffffff;
+}
+
+.dark-mode .el-dropdown-menu {
+  background-color: #2c3e50;
+  border: 1px solid #34495e;
+}
+
+.dark-mode .el-dropdown-item {
+  color: #ecf0f1;
+}
+
+.dark-mode .el-dropdown-item:hover {
+  background-color: #34495e;
+}
+
+.dark-mode .role-tag {
+  background-color: #34495e;
+  color: #ffffff;
+  border: 1px solid #4a637b;
+}
+
+.dark-mode .el-table {
+  background-color: #2c3e50;
+  color: #ffffff;
+}
+
+.dark-mode .el-table__header-wrapper th {
+  background-color: #34495e;
+  color: #ffffff;
+  border-bottom: 1px solid #4a637b;
+}
+
+.dark-mode .el-table__body-wrapper td {
+  background-color: #2c3e50;
+  color: #ffffff;
+  border-bottom: 1px solid #34495e;
+}
+
+.dark-mode .el-table__body-wrapper tr:hover td {
+  background-color: #34495e;
+}
+
+.dark-mode .el-pagination {
+  color: #ffffff;
+}
+
+.dark-mode .el-pagination__sizes .el-input__inner {
+  background-color: #34495e;
+  border: 1px solid #4a637b;
+  color: #ffffff;
+}
+
+.dark-mode .el-pagination__button {
+  background-color: #34495e;
+  border: 1px solid #4a637b;
+  color: #ffffff;
+}
+
+.dark-mode .el-pagination__button:hover {
+  background-color: #4a637b;
+}
+
+.dark-mode .el-pagination__button--active {
+  background-color: var(--el-color-primary);
+  border: 1px solid var(--el-color-primary);
+}
+
+.dark-mode .el-dialog {
+  background-color: #2c3e50;
+  border: 1px solid #34495e;
+  color: #ffffff;
+}
+
+.dark-mode .el-dialog__header {
+  background-color: #34495e;
+  border-bottom: 1px solid #34495e;
+}
+
+.dark-mode .el-dialog__body {
+  background-color: #2c3e50;
+  color: #ffffff;
+}
+
+.dark-mode .el-upload {
+  border: 1px dashed #4a637b;
+}
+
+.dark-mode .el-upload-dragger {
+  background-color: #34495e;
+  border: 1px dashed #4a637b;
+}
+
+.dark-mode .el-upload-dragger:hover {
+  border-color: var(--el-color-primary);
+}
+
+.dark-mode .avatar-uploader {
+  border: 1px dashed #4a637b;
+  background-color: #34495e;
+}
+
+.dark-mode .avatar-uploader:hover {
+  border-color: var(--el-color-primary);
 }
 
 .header-content {

@@ -111,10 +111,10 @@ public interface ScoreService {
      * @param size 每页大小
      * @param studentNumber 学生学号（可选）
      * @param courseCode 课程代码（可选）
-     * @param semester 学期（可选）
+     * @param courseName 课程名称（可选）
      * @return 成绩分页列表
      */
-    IPage<Score> findScoresByPage(Integer current, Integer size, String studentNumber, String courseCode, String semester);
+    IPage<Score> findScoresByPage(Integer current, Integer size, String studentNumber, String courseCode, String courseName);
 
     /**
      * 根据学生ID计算总分

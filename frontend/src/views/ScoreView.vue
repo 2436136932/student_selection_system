@@ -12,13 +12,17 @@
       <div class="card-body">
         <el-form :model="searchForm" :inline="true" class="search-form">
           <el-form-item label="学生学号">
-            <el-input v-model="searchForm.studentNumber" placeholder="请输入学号"></el-input>
+            <el-input 
+              v-model="searchForm.studentNumber" 
+              placeholder="请输入学号"
+              :disabled="hasRole('student')"
+            ></el-input>
           </el-form-item>
           <el-form-item label="标准代码">
             <el-input v-model="searchForm.courseCode" placeholder="请输入标准代码"></el-input>
           </el-form-item>
-          <el-form-item label="适用学期">
-            <el-input v-model="searchForm.semester" placeholder="请输入适用学期"></el-input>
+          <el-form-item label="课程名称">
+            <el-input v-model="searchForm.courseName" placeholder="请输入课程名称"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -63,16 +67,20 @@
             </template>
             <div class="statistics-body">
               <el-form :model="statisticsForm" :inline="true">
-                <el-form-item label="标准代码">
-                  <el-input v-model="statisticsForm.courseCode" placeholder="请输入标准代码"></el-input>
-                </el-form-item>
-                <el-form-item label="学号">
-                    <el-input v-model="statisticsForm.studentNumber" placeholder="请输入学号"></el-input>
+                  <el-form-item label="标准代码">
+                    <el-input v-model="statisticsForm.courseCode" placeholder="请输入标准代码"></el-input>
                   </el-form-item>
-                <el-form-item>
-                  <el-button type="primary" @click="getStatistics">查询统计</el-button>
-                </el-form-item>
-              </el-form>
+                  <el-form-item label="学号">
+                      <el-input 
+                        v-model="statisticsForm.studentNumber" 
+                        placeholder="请输入学号"
+                        :disabled="hasRole('student')"
+                      ></el-input>
+                    </el-form-item>
+                  <el-form-item>
+                    <el-button type="primary" @click="getStatistics">查询统计</el-button>
+                  </el-form-item>
+                </el-form>
               <div v-if="statistics" style="margin-top: 20px">
                 <p>总课程数: {{ statistics.totalCount }}</p>
                 <p>有效成绩数: {{ statistics.validCount }}</p>
@@ -144,7 +152,16 @@ const getUserInfo = () => {
 // 检查用户是否有指定角色
 const hasRole = (role) => {
   const userInfo = getUserInfo()
-  return userInfo.role === role
+  const userRole = userInfo.role || ''
+  // 支持中文角色名称和多个角色
+  const roleMap = {
+    'admin': ['admin', '管理员'],
+    'teacher': ['teacher', '教师'],
+    'student': ['student', '学生']
+  }
+  
+  const allowedRoles = roleMap[role] || [role]
+  return allowedRoles.includes(userRole)
 }
 
 const scores = ref([])
@@ -158,7 +175,7 @@ const currentScoreId = ref(null)
 const searchForm = reactive({
   studentNumber: '',
   courseCode: '',
-  semester: ''
+  courseName: ''
 })
 
 const form = reactive({
@@ -254,17 +271,26 @@ const calculateGrade = () => {
 
 // 获取成绩列表
 const getScores = () => {
+  // 如果是学生角色，自动填充当前学生学号
+  const userInfo = getUserInfo()
+  if (hasRole('student')) {
+    // 学生只能查看自己的成绩，自动设置学号
+    searchForm.studentNumber = userInfo.studentNumber || ''
+    console.log('学生角色，自动填充学号：', searchForm.studentNumber)
+  }
+  
   axios.get('/api/scores/page', {
     params: {
       current: currentPage.value,
       size: pageSize.value,
       studentNumber: searchForm.studentNumber,
       courseCode: searchForm.courseCode,
-      semester: searchForm.semester
+      courseName: searchForm.courseName
     }
   }).then(response => {
     scores.value = response.data.records
     total.value = response.data.total
+    console.log('获取到成绩列表：', scores.value.length, '条记录')
   }).catch(error => {
     ElMessage.error('获取成绩列表失败')
     console.error('Error fetching scores:', error)
@@ -279,9 +305,18 @@ const handleSearch = () => {
 
 // 重置表单
 const resetForm = () => {
-  searchForm.studentNumber = ''
-  searchForm.courseCode = ''
-  searchForm.semester = ''
+  if (hasRole('student')) {
+    // 学生角色只能查看自己的成绩，不能重置学号
+    searchForm.courseCode = ''
+    searchForm.courseName = ''
+    console.log('学生角色，重置表单，保留学号：', searchForm.studentNumber)
+  } else {
+    // 管理员/教师可以重置所有搜索条件
+    searchForm.studentNumber = ''
+    searchForm.courseCode = ''
+    searchForm.courseName = ''
+    console.log('非学生角色，重置所有搜索条件')
+  }
   currentPage.value = 1
   getScores()
 }
@@ -386,6 +421,13 @@ const handleDelete = (row) => {
 
 // 获取成绩统计
 const getStatistics = () => {
+  // 如果是学生角色，自动填充当前学生学号
+  const userInfo = getUserInfo()
+  if (userInfo.role === 'student') {
+    // 学生只能查看自己的成绩统计，自动设置学号
+    statisticsForm.studentNumber = userInfo.studentNumber || ''
+  }
+  
   axios.get('/api/scores/statistics', {
     params: {
       courseCode: statisticsForm.courseCode,
