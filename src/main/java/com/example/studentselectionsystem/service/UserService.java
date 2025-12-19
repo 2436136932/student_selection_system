@@ -110,4 +110,25 @@ public interface UserService {
      */
     boolean existsByEmail(String email);
 
+    /**
+     * 更新用户头像
+     * @param file 头像文件
+     * @return 更新后的用户信息
+     */
+    User updateAvatar(org.springframework.web.multipart.MultipartFile file);
+
+    /**
+     * 修改用户密码
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
+     * @return 是否修改成功
+     */
+    boolean changePassword(String oldPassword, String newPassword);
+
+    /**
+     * 获取当前登录用户信息
+     * @return 当前登录用户信息
+     */
+    User findCurrentUser();
+
 }

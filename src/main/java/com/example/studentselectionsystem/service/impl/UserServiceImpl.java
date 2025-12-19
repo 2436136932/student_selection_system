@@ -9,12 +9,19 @@ import com.example.studentselectionsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +43,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Value("${file.storage.dir}")
+    private String storageDir;
+
+    @Value("${file.storage.allowed-extensions}")
+    private String allowedExtensions;
+
     @Override
     public User createUser(User user) {
         // 设置创建时间
@@ -55,8 +68,7 @@ public class UserServiceImpl implements UserService {
         if (optionalUser.isPresent()) {
             User existingUser = optionalUser.get();
             // 更新用户信息
-            existingUser.setUsername(user.getUsername());
-            existingUser.setName(user.getName());
+            existingUser.setRealName(user.getRealName());
             existingUser.setEmail(user.getEmail());
             existingUser.setPhone(user.getPhone());
             existingUser.setStatus(user.getStatus());
@@ -108,7 +120,7 @@ public class UserServiceImpl implements UserService {
             logger.info("查询结果: 用户存在，ID={}, 用户名={}, 真实姓名={}, 邮箱={}, 电话={}", 
                     user.getId(), 
                     user.getUsername(), 
-                    user.getName(),
+                    user.getRealName(),
                     user.getEmail(),
                     user.getPhone());
         } else {
@@ -166,6 +178,86 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public User updateAvatar(MultipartFile file) {
+        // 获取当前登录用户
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Optional<User> optionalUser = findUserByUsername(username);
+        
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            
+            try {
+                // 确保存储目录存在
+                File dir = new File(storageDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                
+                // 生成唯一文件名
+                String originalFilename = file.getOriginalFilename();
+                String fileExtension = originalFilename != null ? originalFilename.substring(originalFilename.lastIndexOf(".")) : ".jpg";
+                String fileName = UUID.randomUUID().toString() + fileExtension;
+                
+                // 保存文件
+                File dest = new File(storageDir + File.separator + fileName);
+                file.transferTo(dest);
+                
+                // 更新用户头像URL，使用相对路径或完整URL
+                String avatarUrl = "/uploads/" + fileName;
+                user.setAvatar(avatarUrl);
+                user.setUpdateTime(new Date());
+                
+                // 保存更新后的用户信息
+                userRepository.updateById(user);
+                
+                return user;
+            } catch (IOException e) {
+                logger.error("Failed to upload avatar: {}", e.getMessage());
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public boolean changePassword(String oldPassword, String newPassword) {
+        // 获取当前登录用户
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Optional<User> optionalUser = findUserByUsername(username);
+        
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            
+            // 验证旧密码是否正确
+            if (passwordEncoder.matches(oldPassword, user.getPassword())) {
+                // 加密新密码
+                String encodedNewPassword = passwordEncoder.encode(newPassword);
+                
+                // 更新用户密码
+                user.setPassword(encodedNewPassword);
+                user.setUpdateTime(new Date());
+                userRepository.updateById(user);
+                
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public User findCurrentUser() {
+        // 获取当前登录用户
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Optional<User> optionalUser = findUserByUsername(username);
+        
+        return optionalUser.orElse(null);
     }
 
 }

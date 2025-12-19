@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -43,7 +44,8 @@ public class User implements Serializable {
      * 真实姓名
      */
     @TableField("real_name")
-    private String name;
+    @JsonProperty("real_name")
+    private String realName;
 
     /**
      * 邮箱
@@ -84,6 +86,12 @@ public class User implements Serializable {
     private String role;
 
     /**
+     * 用户头像URL
+     */
+    @TableField("avatar")
+    private String avatar;
+
+    /**
      * 用户角色关联（不映射到数据库）
      */
     @TableField(exist = false)
@@ -122,12 +130,12 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getName() {
-        return name;
+    public String getRealName() {
+        return realName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     public String getEmail() {
@@ -176,6 +184,14 @@ public class User implements Serializable {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public List<Role> getRoles() {

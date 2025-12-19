@@ -161,7 +161,8 @@ const menuMap = {
   '/student-award-applications': '奖项申请',
   '/notices': '通知管理',
   '/users': '用户管理',
-  '/carousel': '轮播图管理'
+  '/carousel': '轮播图管理',
+  '/profile': '个人中心'
 }
 
 // 检查用户登录状态
@@ -247,7 +248,7 @@ const getRoleClass = () => {
 const handleDropdownCommand = (command) => {
   switch (command) {
     case 'profile':
-      ElMessage.info('个人中心功能开发中')
+      router.push('/profile')
       break
     case 'settings':
       ElMessage.info('系统设置功能开发中')

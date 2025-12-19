@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
     real_name VARCHAR(50) NOT NULL COMMENT '真实姓名',
     email VARCHAR(100) COMMENT '邮箱',
     phone VARCHAR(20) COMMENT '手机号',
+    avatar VARCHAR(255) DEFAULT 'https://picsum.photos/id/1005/200/200' COMMENT '用户头像URL，默认头像',
     status TINYINT DEFAULT 1 COMMENT '状态：1-启用，0-禁用',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
@@ -297,8 +298,8 @@ TRUNCATE TABLE users;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- 插入管理员用户 (密码为: password)
-INSERT INTO users (username, password, role, real_name, email, phone, status) VALUES
-('admin', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'admin', '系统管理员', 'admin@example.com', '13800138000', 1);
+INSERT INTO users (username, password, role, real_name, email, phone, avatar, status) VALUES
+('admin', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'admin', '系统管理员', 'admin@example.com', '13800138000', 'https://picsum.photos/id/1005/200/200', 1);
 
 -- 插入示例教师
 INSERT INTO teachers (teacher_number, name, gender, title, department, phone, email) VALUES
@@ -307,10 +308,10 @@ INSERT INTO teachers (teacher_number, name, gender, title, department, phone, em
 ('T003', '王五', '男', '讲师', '物理学院', '13900139003', 'wangwu@example.com');
 
 -- 插入教师用户 (密码为: password)
-INSERT INTO users (username, password, role, real_name, email, phone, status) VALUES
-('teacher1', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'teacher', '张三', 'zhangsan@example.com', '13900139001', 1),
-('teacher2', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'teacher', '李四', 'lisi@example.com', '13900139002', 1),
-('teacher3', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'teacher', '王五', 'wangwu@example.com', '13900139003', 1);
+INSERT INTO users (username, password, role, real_name, email, phone, avatar, status) VALUES
+('teacher1', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'teacher', '张三', 'zhangsan@example.com', '13900139001', 'https://picsum.photos/id/1005/200/200', 1),
+('teacher2', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'teacher', '李四', 'lisi@example.com', '13900139002', 'https://picsum.photos/id/1005/200/200', 1),
+('teacher3', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'teacher', '王五', 'wangwu@example.com', '13900139003', 'https://picsum.photos/id/1005/200/200', 1);
 
 -- 更新教师表中的user_id
 UPDATE teachers SET user_id = (SELECT id FROM users WHERE username = 'teacher1') WHERE teacher_number = 'T001';
@@ -338,10 +339,10 @@ INSERT INTO students (student_number, name, gender, birth_date, major, class_nam
 ('S003', '孙同学', '男', '2002-03-03', '物理学', '物理2001', 2020, '13800138003', 'sunstudent@example.com', 1);
 
 -- 注意：这里不需要TRUNCATE TABLE users，因为我们已经在前面清空过了
-INSERT INTO users (username, password, role, real_name, email, phone, status) VALUES
-('student1', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '赵同学', 'zhaostudent@example.com', '13800138001', 1),
-('student2', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '钱同学', 'qianstudent@example.com', '13800138002', 1),
-('student3', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '孙同学', 'sunstudent@example.com', '13800138003', 1);
+INSERT INTO users (username, password, role, real_name, email, phone, avatar, status) VALUES
+('student1', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '赵同学', 'zhaostudent@example.com', '13800138001', 'https://picsum.photos/id/1005/200/200', 1),
+('student2', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '钱同学', 'qianstudent@example.com', '13800138002', 'https://picsum.photos/id/1005/200/200', 1),
+('student3', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '孙同学', 'sunstudent@example.com', '13800138003', 'https://picsum.photos/id/1005/200/200', 1);
 
 -- 更新学生表中的user_id
 UPDATE students SET user_id = (SELECT id FROM users WHERE username = 'student1') WHERE student_number = 'S001';
@@ -352,11 +353,11 @@ UPDATE students SET user_id = (SELECT id FROM users WHERE username = 'student3')
 
 -- 插入示例通知数据
 INSERT INTO notices (title, content, publisher_id, publisher_name, publish_time, status, type) VALUES
-('2025年校级奖学金评选开始通知', '各位同学：2025年校级奖学金评选工作已经开始，请符合条件的同学及时申请。申请截止时间：2025年9月15日。', 1, '系统管理员', '2025-09-01 09:00:00', 1, 'info'),
-('关于规范学生评优材料提交的通知', '为确保评优工作的公平公正，现将评优材料提交要求进行规范，请各位同学认真阅读并按照要求提交材料。', 1, '系统管理员', '2025-09-02 10:30:00', 1, 'warning'),
-('2024年度奖学金发放通知', '2024年度奖学金已经发放，请各位获奖同学及时查收。如有疑问，请联系学生工作处。', 1, '系统管理员', '2025-01-10 14:00:00', 1, 'info'),
-('评优系统使用说明', '为方便各位同学使用评优系统，现将系统使用方法和注意事项进行说明，请大家仔细阅读。', 1, '系统管理员', '2025-08-20 09:00:00', 1, 'info'),
-('关于推迟科技创新大赛申报截止时间的通知', '由于部分同学反映准备时间不足，经研究决定，将科技创新大赛申报截止时间推迟至2025年4月25日。', 1, '系统管理员', '2025-04-10 16:00:00', 1, 'warning');
+('2025年校级奖学金评选开始通知', '各位同学：2025年校级奖学金评选工作已经开始，请符合条件的同学及时申请。申请截止时间：2025年9月15日。', 1, '系统管理员', '2025-11-30 09:00:00', 1, 'info'),
+('关于规范学生评优材料提交的通知', '为确保评优工作的公平公正，现将评优材料提交要求进行规范，请各位同学认真阅读并按照要求提交材料。', 1, '系统管理员', '2025-12-02 10:30:00', 1, 'warning'),
+('2024年度奖学金发放通知', '2024年度奖学金已经发放，请各位获奖同学及时查收。如有疑问，请联系学生工作处。', 1, '系统管理员', '2025-12-10 14:00:00', 1, 'info'),
+('评优系统使用说明', '为方便各位同学使用评优系统，现将系统使用方法和注意事项进行说明，请大家仔细阅读。', 1, '系统管理员', '2025-12-20 09:00:00', 1, 'info'),
+('关于推迟科技创新大赛申报截止时间的通知', '由于部分同学反映准备时间不足，经研究决定，将科技创新大赛申报截止时间推迟至2025年4月25日。', 1, '系统管理员', '2025-12-10 16:00:00', 1, 'warning');
 
 -- 为学生添加选课记录
 INSERT INTO selections (student_id, course_id, selection_time, status) VALUES

@@ -98,7 +98,7 @@ public class AuthController {
             Map<String, Object> userInfo = new HashMap<>();
             userInfo.put("id", user.getId());
             userInfo.put("username", user.getUsername());
-            userInfo.put("name", user.getName());
+            userInfo.put("name", user.getRealName());
             userInfo.put("email", user.getEmail());
             userInfo.put("phone", user.getPhone());
             userInfo.put("role", user.getRole()); // 返回用户的实际角色信息
@@ -184,7 +184,7 @@ public class AuthController {
         user.setUsername(registerRequest.getUsername());
         // 加密密码
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        user.setName(registerRequest.getName());
+        user.setRealName(registerRequest.getName());
         user.setEmail(registerRequest.getEmail());
         user.setPhone(registerRequest.getPhone());
         user.setStatus(1); // 默认启用状态
@@ -306,7 +306,7 @@ public class AuthController {
                 Map<String, Object> userInfo = new HashMap<>();
                 userInfo.put("id", user.getId());
                 userInfo.put("username", user.getUsername());
-                userInfo.put("name", user.getName());
+                userInfo.put("name", user.getRealName());
                 userInfo.put("email", user.getEmail());
                 userInfo.put("phone", user.getPhone());
                 userInfo.put("role", user.getRole());

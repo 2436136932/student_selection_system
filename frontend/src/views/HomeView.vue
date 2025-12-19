@@ -84,7 +84,12 @@
           </div>
         </template>
         <el-list>
-          <el-list-item v-for="notice in recentNotices" :key="notice.id">
+          <el-list-item 
+            v-for="notice in recentNotices" 
+            :key="notice.id"
+            class="notice-item"
+            @click="handleNoticeClick(notice)"
+          >
             <template #prefix>
               <el-icon>
                 <InfoFilled v-if="notice.type === 'info'" />
@@ -101,6 +106,33 @@
         </el-list>
       </el-card>
     </div>
+    
+    <!-- 通知详情弹窗 -->
+    <el-dialog
+      v-model="noticeDialogVisible"
+      :title="'通知详情 - ' + currentNotice.title"
+      width="60%"
+      top="10vh"
+      destroy-on-close
+      @close="handleNoticeDialogClose"
+    >
+      <div class="notice-detail">
+        <div class="notice-detail-header">
+          <el-icon class="notice-detail-icon">
+            <InfoFilled v-if="currentNotice.type === 'info'" />
+            <Warning v-else-if="currentNotice.type === 'warning'" />
+            <Notification v-else />
+          </el-icon>
+          <div class="notice-detail-meta">
+            <div class="notice-detail-publisher">发布人：{{ currentNotice.publisherName }}</div>
+            <div class="notice-detail-time">{{ formatTime(currentNotice.publishTime) }}</div>
+          </div>
+        </div>
+        <div class="notice-detail-content">
+          {{ currentNotice.content }}
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -124,6 +156,23 @@ const recentEvents = ref([])
 
 // 最近通知
 const recentNotices = ref([])
+
+// 通知详情弹窗相关
+const noticeDialogVisible = ref(false)
+const currentNotice = ref({})
+
+// 通知项点击事件处理
+const handleNoticeClick = (notice) => {
+  currentNotice.value = { ...notice }
+  noticeDialogVisible.value = true
+}
+
+// 通知详情弹窗关闭处理
+const handleNoticeDialogClose = () => {
+  noticeDialogVisible.value = false
+  // 清空详情数据
+  currentNotice.value = {}
+}
 
 // 获取统计数据
 const getStatistics = async () => {
@@ -365,11 +414,70 @@ onMounted(() => {
   font-size: 14px;
   color: #666;
   margin-bottom: 5px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .notice-time {
   font-size: 12px;
   color: #999;
   text-align: right;
+}
+
+/* 通知项样式 */
+.notice-item {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.notice-item:hover {
+  background-color: #f5f7fa;
+  transform: translateX(5px);
+}
+
+/* 通知详情弹窗样式 */
+.notice-detail {
+  padding: 10px 0;
+}
+
+.notice-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ebeef5;
+  margin-bottom: 15px;
+}
+
+.notice-detail-icon {
+  font-size: 40px;
+  color: #409eff;
+}
+
+.notice-detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.notice-detail-publisher {
+  font-size: 14px;
+  color: #606266;
+}
+
+.notice-detail-time {
+  font-size: 12px;
+  color: #909399;
+}
+
+.notice-detail-content {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #303133;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 </style>

@@ -67,6 +67,7 @@ com\example\studentselectionsystem\mapper\CompetitionMapper.class
 com\example\studentselectionsystem\mapper\StudentCompetitionMapper.class
 com\example\studentselectionsystem\mapper\RoleMapper.class
 com\example\studentselectionsystem\repository\StudentRepository.class
+com\example\studentselectionsystem\controller\UserController$PasswordChangeRequest.class
 com\example\studentselectionsystem\mapper\PermissionMapper.class
 com\example\studentselectionsystem\entity\Permission.class
 com\example\studentselectionsystem\service\impl\UserServiceImpl.class

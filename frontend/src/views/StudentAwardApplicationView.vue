@@ -55,6 +55,11 @@
           <el-table-column prop="applicationTime" label="申请日期" width="150">
             <template #default="scope">{{ scope.row.applicationTime ? new Date(scope.row.applicationTime).toLocaleString() : '-' }}</template>
           </el-table-column>
+          <el-table-column prop="description" label="申请理由" min-width="200" :show-overflow-tooltip="true">
+            <template #default="scope">
+              {{ scope.row.description || '-' }}
+            </template>
+          </el-table-column>
           <el-table-column prop="approvalStatus" label="审批状态" width="120">
             <template #default="scope">
               <el-tag

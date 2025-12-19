@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -150,6 +151,69 @@ public class UserController {
     public ResponseEntity<Boolean> checkEmailExists(@PathVariable String email) {
         boolean exists = userService.existsByEmail(email);
         return new ResponseEntity<>(exists, HttpStatus.OK);
+    }
+
+    /**
+     * 更新用户头像
+     */
+    @PostMapping("/avatar")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
+    public ResponseEntity<User> updateAvatar(@RequestParam("file") MultipartFile file) {
+        User updatedUser = userService.updateAvatar(file);
+        if (updatedUser != null) {
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * 修改用户密码
+     */
+    @PutMapping("/change-password")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
+    public ResponseEntity<?> changePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
+        boolean success = userService.changePassword(passwordChangeRequest.getOldPassword(), passwordChangeRequest.getNewPassword());
+        if (success) {
+            return ResponseEntity.ok("密码修改成功");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("旧密码错误");
+    }
+
+    /**
+     * 获取当前登录用户信息
+     */
+    @GetMapping("/current")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
+    public ResponseEntity<User> getCurrentUser() {
+        User currentUser = userService.findCurrentUser();
+        if (currentUser != null) {
+            return new ResponseEntity<>(currentUser, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * 密码修改请求DTO
+     */
+    public static class PasswordChangeRequest {
+        private String oldPassword;
+        private String newPassword;
+
+        public String getOldPassword() {
+            return oldPassword;
+        }
+
+        public void setOldPassword(String oldPassword) {
+            this.oldPassword = oldPassword;
+        }
+
+        public String getNewPassword() {
+            return newPassword;
+        }
+
+        public void setNewPassword(String newPassword) {
+            this.newPassword = newPassword;
+        }
     }
 
 }
