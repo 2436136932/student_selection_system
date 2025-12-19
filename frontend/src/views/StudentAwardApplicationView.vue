@@ -210,24 +210,50 @@
           <el-input v-model="form.description" type="textarea" placeholder="请输入申请理由" rows="4"></el-input>
         </el-form-item>
         <el-form-item label="申请材料" prop="material">
-          <el-upload
-            ref="uploadRef"
-            :action="uploadUrl"
-            :before-upload="beforeUpload"
-            :on-success="handleUploadSuccess"
-            :on-error="handleUploadError"
-            :file-list="fileList"
-            :auto-upload="false"
-            accept=".doc,.docx,.pdf,.ppt,.pptx,.png,.jpg,.jpeg"
-            class="upload-demo"
-          >
-            <el-button type="primary" slot="trigger">
-              <el-icon><Upload /></el-icon> 选择文件
+          <div class="custom-upload-container">
+            <!-- 使用原生input file配合Element Plus按钮 -->
+            <input
+              ref="fileInputRef"
+              type="file"
+              accept=".doc,.docx,.pdf,.ppt,.pptx,.png,.jpg,.jpeg"
+              style="display: none;"
+              @change="handleFileSelect"
+            />
+            <el-button 
+              type="primary" 
+              @click="triggerFileSelect"
+              :disabled="uploading"
+            >
+              <el-icon><Upload /></el-icon> {{ selectedFileName || '选择文件' }}
             </el-button>
-            <template #tip>
-              <div class="el-upload__tip">支持上传 Word、PDF、PPT、PNG、JPG 格式的文件，最大10MB</div>
-            </template>
-          </el-upload>
+            
+            <!-- 显示上传进度条 -->
+            <el-progress 
+              v-if="uploadProgress > 0 && uploadProgress < 100" 
+              :percentage="uploadProgress" 
+              :stroke-width="2" 
+              style="margin-top: 10px;"
+            />
+            
+            <!-- 文件信息显示 -->
+            <div v-if="selectedFileName" class="selected-file-info" style="margin-top: 10px;">
+              <span style="color: #606266;">{{ selectedFileName }}</span>
+              <el-button 
+                size="small" 
+                type="danger" 
+                plain 
+                @click="clearFileSelect"
+                style="margin-left: 10px;"
+              >
+                移除
+              </el-button>
+            </div>
+            
+            <!-- 上传提示 -->
+            <div class="el-upload__tip" style="margin-top: 10px;">
+              支持上传 Word、PDF、PPT、PNG、JPG 格式的文件，最大10MB
+            </div>
+          </div>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -285,15 +311,19 @@ const pageSize = ref(10)
 const dialogVisible = ref(false)
 const loading = ref(false)
 // 文件上传相关
-const uploadRef = ref(null)
+const fileInputRef = ref(null)
 const uploadUrl = '/api/student-award-applications/upload'
-const fileList = ref([])
+const selectedFile = ref(null)
+const selectedFileName = ref('')
+const uploading = ref(false)
 const materialInfo = reactive({
   materialPath: '',
   materialName: '',
   materialSize: 0,
   materialType: ''
 })
+// 添加上传进度显示
+const uploadProgress = ref(0)
 
 // 材料预览相关
 const materialPreviewVisible = ref(false)
@@ -323,8 +353,13 @@ const formatDate = (row, column, cellValue) => {
   return ''
 }
 
-// 文件上传前校验
-const beforeUpload = (file) => {
+// 触发文件选择对话框
+const triggerFileSelect = () => {
+  fileInputRef.value?.click()
+}
+
+// 验证文件类型和大小
+const validateFile = (file) => {
   const allowedTypes = ['.doc', '.docx', '.pdf', '.ppt', '.pptx', '.png', '.jpg', '.jpeg']
   const fileExtension = `.${file.name.split('.').pop().toLowerCase()}`
   const isTypeAllowed = allowedTypes.includes(fileExtension)
@@ -341,24 +376,45 @@ const beforeUpload = (file) => {
   return true
 }
 
-// 文件上传成功处理
-const handleUploadSuccess = (response) => {
-  console.log('文件上传成功:', response)
-  if (response.success) {
-    materialInfo.materialPath = response.materialPath
-    materialInfo.materialName = response.materialName
-    materialInfo.materialSize = response.materialSize
-    materialInfo.materialType = response.materialType
-    ElMessage.success('文件上传成功')
-  } else {
-    ElMessage.error('文件上传失败: ' + (response.message || '未知错误'))
+// 处理文件选择
+const handleFileSelect = (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+
+  // 验证文件
+  if (!validateFile(file)) {
+    // 清除选择的文件
+    event.target.value = ''
+    return
   }
+
+  // 保存选择的文件
+  selectedFile.value = file
+  selectedFileName.value = file.name
+  
+  // 重置材料信息
+  materialInfo.materialPath = ''
+  materialInfo.materialName = ''
+  materialInfo.materialSize = 0
+  materialInfo.materialType = ''
 }
 
-// 文件上传失败处理
-const handleUploadError = (error) => {
-  console.error('文件上传失败:', error)
-  ElMessage.error('文件上传失败，请重试')
+// 清除已选择的文件
+const clearFileSelect = () => {
+  selectedFile.value = null
+  selectedFileName.value = ''
+  uploadProgress.value = 0
+  
+  // 重置文件输入
+  if (fileInputRef.value) {
+    fileInputRef.value.value = ''
+  }
+  
+  // 重置材料信息
+  materialInfo.materialPath = ''
+  materialInfo.materialName = ''
+  materialInfo.materialSize = 0
+  materialInfo.materialType = ''
 }
 
 // 获取状态文本
@@ -512,28 +568,48 @@ const handleSubmit = () => {
     }
     
     // 先上传文件（如果有选择文件）
-    const uploadFilePromise = fileList.value.length > 0 ? uploadFile() : Promise.resolve()
+    const uploadFilePromise = selectedFile.value ? uploadFile() : Promise.resolve()
     
     uploadFilePromise.then(() => {
+      // 打印材料信息，确保它们被正确设置
+      console.log('Current materialInfo before submission:', materialInfo)
+      
+      // 严格验证材料信息完整性，特别是材料路径
+      if (selectedFile.value) {
+        if (!materialInfo.materialPath || materialInfo.materialPath === '') {
+          console.error('Material path is empty after upload, cannot submit application')
+          ElMessage.error('材料上传失败，请重新选择文件并上传')
+          return
+        }
+        if (!materialInfo.materialName || materialInfo.materialName === '') {
+          console.error('Material name is empty after upload, cannot submit application')
+          ElMessage.error('材料上传失败，请重新选择文件并上传')
+          return
+        }
+      }
+      
       // 准备提交的申请数据
       const applicationData = {
         awardId: form.awardId,
         description: form.description,
-        // 包含材料信息
-        materialPath: materialInfo.materialPath,
-        materialName: materialInfo.materialName,
-        materialSize: materialInfo.materialSize,
-        materialType: materialInfo.materialType
+        // 包含材料信息，确保每个字段都有值
+        materialPath: materialInfo.materialPath || '',
+        materialName: materialInfo.materialName || '',
+        materialSize: materialInfo.materialSize || 0,
+        materialType: materialInfo.materialType || ''
       }
       
-      console.log('Submitting application with data:', applicationData)
+      console.log('Submitting application with complete data:', applicationData)
       
       // 提交申请
       axios.post('/api/student-award-applications', applicationData).then(response => {
         console.log('Application submission successful:', response.data)
         ElMessage.success('申请奖项成功')
         dialogVisible.value = false
+        
+        // 刷新申请列表，查看最新数据
         getApplications()
+        
         // 重置表单
         resetApplicationForm()
       }).catch(error => {
@@ -555,30 +631,118 @@ const handleSubmit = () => {
   })
 }
 
-// 上传文件方法
+// 上传文件方法（使用axios直接上传，完全控制流程）
 const uploadFile = () => {
   return new Promise((resolve, reject) => {
-    if (uploadRef.value && fileList.value.length > 0) {
-      uploadRef.value.submit().then(() => {
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    } else {
+    console.log('Starting file upload with selected file:', selectedFile.value)
+    
+    // 如果没有选择文件，直接resolve
+    if (!selectedFile.value) {
+      console.log('No file selected, resolving...')
       resolve()
+      return
+    }
+    
+    try {
+      uploading.value = true
+      uploadProgress.value = 0
+      
+      // 清空之前的materialInfo
+      materialInfo.materialPath = ''
+      materialInfo.materialName = ''
+      materialInfo.materialSize = 0
+      materialInfo.materialType = ''
+      
+      // 创建FormData对象
+      const formData = new FormData()
+      formData.append('file', selectedFile.value)
+      
+      // 使用axios直接上传文件
+      axios.post(uploadUrl, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        // 添加上传进度监听
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            uploadProgress.value = percent
+            console.log(`文件上传进度: ${percent}%`)
+          }
+        }
+      }).then(response => {
+        console.log('File upload response:', response)
+        
+        // 检查响应数据
+        const result = response.data
+        if (result.success) {
+          // 保存材料信息到materialInfo对象
+          materialInfo.materialPath = result.materialPath || ''
+          materialInfo.materialName = result.materialName || ''
+          materialInfo.materialSize = result.materialSize || 0
+          materialInfo.materialType = result.materialType || ''
+          
+          console.log('Material info updated:', materialInfo)
+          
+          ElMessage.success('文件上传成功')
+          resolve()
+        } else {
+          const errorMsg = result.message || '文件上传失败'
+          console.error('File upload failed:', errorMsg)
+          ElMessage.error(errorMsg)
+          reject(new Error(errorMsg))
+        }
+      }).catch(error => {
+        console.error('Error during file upload:', error)
+        let errorMsg = '文件上传失败，请重试'
+        if (error.response && error.response.data && error.response.data.message) {
+          errorMsg = error.response.data.message
+        }
+        ElMessage.error(errorMsg)
+        reject(error)
+      }).finally(() => {
+        uploading.value = false
+        // 延迟重置进度，让用户看到完成状态
+        setTimeout(() => {
+          uploadProgress.value = 0
+        }, 500)
+      })
+    } catch (error) {
+      console.error('Unexpected error during file upload:', error)
+      uploading.value = false
+      uploadProgress.value = 0
+      ElMessage.error('文件上传失败，请重试')
+      reject(error)
     }
   })
 }
 
 // 重置申请表单
 const resetApplicationForm = () => {
+  console.log('Resetting application form...')
+  
+  // 重置表单字段
   form.awardId = ''
   form.description = ''
-  fileList.value = []
+  
+  // 重置文件选择状态
+  selectedFile.value = null
+  selectedFileName.value = ''
+  uploading.value = false
+  uploadProgress.value = 0
+  
+  // 重置文件输入
+  if (fileInputRef.value) {
+    fileInputRef.value.value = ''
+  }
+  
+  // 重置材料信息
   materialInfo.materialPath = ''
   materialInfo.materialName = ''
   materialInfo.materialSize = 0
   materialInfo.materialType = ''
+  
+  console.log('Form reset completed, materialInfo:', materialInfo)
 }
 
 // 检查是否已申请该奖项

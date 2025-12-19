@@ -50,7 +50,7 @@ spring:
 # File Storage Configuration
 file:
   storage:
-    dir: uploads/  # 文件存储目录
+    dir: G:/javacode/student-selection-system/uploads/  # 文件存储目录（使用绝对路径）
     allowed-extensions: docx,doc,pdf,pptx,ppt,png,jpg,jpeg  # 允许的文件扩展名
 
 # Server Configuration

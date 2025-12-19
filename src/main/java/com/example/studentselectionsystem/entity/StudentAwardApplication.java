@@ -24,7 +24,7 @@ public class StudentAwardApplication implements Serializable {
      * 申请ID
      */
     @TableId(type = IdType.AUTO, value = "application_id")
-    private Integer id;
+    private Long id;
 
     /**
      * 学生ID
@@ -64,13 +64,13 @@ public class StudentAwardApplication implements Serializable {
     private String description;
 
     /**
-     * 状态（0-待审核，1-通过，2-未通过）- 最终状态
+     * 状态：0-待审核, 1-教师审核通过，待管理员审批, 2-教师审核拒绝, 3-管理员审批通过, 4-管理员审批拒绝
      */
     @TableField("status")
     private Integer status;
 
     /**
-     * 教师审批状态（0-待审核，1-通过，2-不通过）
+     * 教师审批状态：0-待审核, 1-通过, 2-不通过
      */
     @TableField("teacher_approval_status")
     private Integer teacherApprovalStatus;
@@ -89,7 +89,7 @@ public class StudentAwardApplication implements Serializable {
     private String teacherApprovalComments;
 
     /**
-     * 管理员审批状态（0-待审核，1-通过，2-不通过）
+     * 管理员审批状态：0-待审核, 1-通过, 2-不通过
      */
     @TableField("admin_approval_status")
     private Integer adminApprovalStatus;
@@ -144,166 +144,4 @@ public class StudentAwardApplication implements Serializable {
      */
     @TableField("material_type")
     private String materialType;
-
-    // Getter methods
-    public Integer getId() {
-        return id;
-    }
-
-    public Long getStudentId() {
-        return studentId;
-    }
-
-    public Student getStudent() {
-        return student;
-    }
-
-    public Long getAwardId() {
-        return awardId;
-    }
-
-    public Award getAward() {
-        return award;
-    }
-
-    public Date getApplicationTime() {
-        return applicationTime;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public Integer getTeacherApprovalStatus() {
-        return teacherApprovalStatus;
-    }
-
-    public Date getTeacherApprovalTime() {
-        return teacherApprovalTime;
-    }
-
-    public String getTeacherApprovalComments() {
-        return teacherApprovalComments;
-    }
-
-    public Integer getAdminApprovalStatus() {
-        return adminApprovalStatus;
-    }
-
-    public Date getAdminApprovalTime() {
-        return adminApprovalTime;
-    }
-
-    public String getAdminApprovalComments() {
-        return adminApprovalComments;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public String getMaterialPath() {
-        return materialPath;
-    }
-
-    public String getMaterialName() {
-        return materialName;
-    }
-
-    public Long getMaterialSize() {
-        return materialSize;
-    }
-
-    public String getMaterialType() {
-        return materialType;
-    }
-
-    // Setter methods
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public void setStudentId(Long studentId) {
-        this.studentId = studentId;
-    }
-
-    public void setStudent(Student student) {
-        this.student = student;
-    }
-
-    public void setAwardId(Long awardId) {
-        this.awardId = awardId;
-    }
-
-    public void setAward(Award award) {
-        this.award = award;
-    }
-
-    public void setApplicationTime(Date applicationTime) {
-        this.applicationTime = applicationTime;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public void setTeacherApprovalStatus(Integer teacherApprovalStatus) {
-        this.teacherApprovalStatus = teacherApprovalStatus;
-    }
-
-    public void setTeacherApprovalTime(Date teacherApprovalTime) {
-        this.teacherApprovalTime = teacherApprovalTime;
-    }
-
-    public void setTeacherApprovalComments(String teacherApprovalComments) {
-        this.teacherApprovalComments = teacherApprovalComments;
-    }
-
-    public void setAdminApprovalStatus(Integer adminApprovalStatus) {
-        this.adminApprovalStatus = adminApprovalStatus;
-    }
-
-    public void setAdminApprovalTime(Date adminApprovalTime) {
-        this.adminApprovalTime = adminApprovalTime;
-    }
-
-    public void setAdminApprovalComments(String adminApprovalComments) {
-        this.adminApprovalComments = adminApprovalComments;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public void setMaterialPath(String materialPath) {
-        this.materialPath = materialPath;
-    }
-
-    public void setMaterialName(String materialName) {
-        this.materialName = materialName;
-    }
-
-    public void setMaterialSize(Long materialSize) {
-        this.materialSize = materialSize;
-    }
-
-    public void setMaterialType(String materialType) {
-        this.materialType = materialType;
-    }
 }

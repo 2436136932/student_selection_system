@@ -119,11 +119,32 @@ public class StudentAwardApplicationController {
             String uniqueFilename = UUID.randomUUID().toString() + "." + fileExtension;
             Path filePath = Paths.get(STORAGE_DIR, uniqueFilename);
             
-            // 确保存储目录存在
-            Files.createDirectories(filePath.getParent());
+            // 添加日志，打印实际的存储路径，便于调试
+            logger.info("当前STORAGE_DIR: {}", STORAGE_DIR);
+            logger.info("即将创建的文件路径: {}", filePath);
+            logger.info("父目录路径: {}", filePath.getParent());
+            
+            // 确保存储目录存在，添加更可靠的错误处理
+            try {
+                Path parentDir = filePath.getParent();
+                if (parentDir != null && !Files.exists(parentDir)) {
+                    logger.info("父目录不存在，正在创建: {}", parentDir);
+                    Files.createDirectories(parentDir);
+                    logger.info("父目录创建成功: {}", parentDir);
+                } else {
+                    logger.info("父目录已存在: {}", parentDir);
+                }
+            } catch (Exception e) {
+                logger.error("创建目录失败: {}", e.getMessage(), e);
+                response.put("success", false);
+                response.put("message", "文件上传失败: 创建存储目录失败 - " + e.getMessage());
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
             
             // 5. 保存文件
+            logger.info("开始保存文件到: {}", filePath);
             file.transferTo(filePath.toFile());
+            logger.info("文件保存成功: {}", filePath);
             
             // 6. 返回成功信息
             response.put("success", true);
@@ -148,7 +169,7 @@ public class StudentAwardApplicationController {
      */
     @GetMapping("/download/{applicationId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
-    public ResponseEntity<Resource> downloadMaterial(@PathVariable Integer applicationId, Principal principal) {
+    public ResponseEntity<Resource> downloadMaterial(@PathVariable Long applicationId, Principal principal) {
         try {
             // 1. 查找申请
             Optional<StudentAwardApplication> optionalApplication = studentAwardApplicationService.findApplicationById(applicationId);
@@ -195,7 +216,7 @@ public class StudentAwardApplicationController {
      */
     @GetMapping("/preview/{applicationId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
-    public ResponseEntity<Resource> previewMaterial(@PathVariable Integer applicationId, Principal principal) {
+    public ResponseEntity<Resource> previewMaterial(@PathVariable Long applicationId, Principal principal) {
         try {
             // 1. 查找申请
             Optional<StudentAwardApplication> optionalApplication = studentAwardApplicationService.findApplicationById(applicationId);
@@ -273,7 +294,7 @@ public class StudentAwardApplicationController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<StudentAwardApplication> updateApplication(
-            @PathVariable Integer id, 
+            @PathVariable Long id, 
             @RequestBody StudentAwardApplication application, 
             Principal principal) {
         try {
@@ -367,7 +388,7 @@ public class StudentAwardApplicationController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('STUDENT')")
-    public ResponseEntity<Void> deleteApplication(@PathVariable Integer id, Principal principal) {
+    public ResponseEntity<Void> deleteApplication(@PathVariable Long id, Principal principal) {
         Optional<StudentAwardApplication> optionalApplication = studentAwardApplicationService.findApplicationById(id);
         if (optionalApplication.isPresent()) {
             StudentAwardApplication application = optionalApplication.get();
@@ -392,7 +413,7 @@ public class StudentAwardApplicationController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
-    public ResponseEntity<StudentAwardApplication> findApplicationById(@PathVariable Integer id, Principal principal) {
+    public ResponseEntity<StudentAwardApplication> findApplicationById(@PathVariable Long id, Principal principal) {
         Optional<StudentAwardApplication> optionalApplication = studentAwardApplicationService.findApplicationById(id);
         if (optionalApplication.isPresent()) {
             StudentAwardApplication application = optionalApplication.get();

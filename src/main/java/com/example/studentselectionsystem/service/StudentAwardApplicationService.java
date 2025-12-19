@@ -56,14 +56,14 @@ public interface StudentAwardApplicationService {
      * 删除申请
      * @param id 申请ID
      */
-    void deleteApplication(Integer id);
+    void deleteApplication(Long id);
 
     /**
      * 根据ID查找申请
      * @param id 申请ID
      * @return 申请信息
      */
-    Optional<StudentAwardApplication> findApplicationById(Integer id);
+    Optional<StudentAwardApplication> findApplicationById(Long id);
 
     /**
      * 根据学生ID查找申请

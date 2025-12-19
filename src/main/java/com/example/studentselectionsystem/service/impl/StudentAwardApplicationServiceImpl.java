@@ -10,6 +10,10 @@ import com.example.studentselectionsystem.mapper.AwardMapper;
 import com.example.studentselectionsystem.service.StudentAwardApplicationService;
 import com.example.studentselectionsystem.service.StudentService;
 import com.example.studentselectionsystem.service.AwardService;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +31,7 @@ import java.util.Optional;
 @Service
 @Transactional
 public class StudentAwardApplicationServiceImpl implements StudentAwardApplicationService {
+    private static final Logger logger = LoggerFactory.getLogger(StudentAwardApplicationServiceImpl.class);
 
     @Autowired
     private StudentAwardApplicationMapper studentAwardApplicationMapper;
@@ -39,6 +44,9 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     
     @Autowired
     private AwardMapper awardMapper;
+    
+    @Autowired
+    private SqlSessionFactory sqlSessionFactory;
 
     @Override
     public StudentAwardApplication createApplication(StudentAwardApplication application) {
@@ -82,19 +90,95 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "该奖项当前不在申请时间范围内");
         }
         
+        // 打印接收到的原始申请对象，用于调试
+        logger.info("Received application for creation: awardId='{}', studentId='{}', description='{}', hasMaterialPath='{}', materialName='{}', materialSize='{}', materialType='{}'",
+                application.getAwardId(),
+                application.getStudentId(),
+                application.getDescription(),
+                application.getMaterialPath() != null,
+                application.getMaterialName(),
+                application.getMaterialSize(),
+                application.getMaterialType());
+        
+        // 确保所有材料字段都有值（如果为null，设置默认值）
+        if (application.getMaterialPath() == null) {
+            application.setMaterialPath("");
+            logger.warn("MaterialPath was null, setting to empty string");
+        }
+        if (application.getMaterialName() == null) {
+            application.setMaterialName("");
+            logger.warn("MaterialName was null, setting to empty string");
+        }
+        if (application.getMaterialSize() == null) {
+            application.setMaterialSize(0L);
+            logger.warn("MaterialSize was null, setting to 0");
+        }
+        if (application.getMaterialType() == null) {
+            application.setMaterialType("");
+            logger.warn("MaterialType was null, setting to empty string");
+        }
+        if (application.getTeacherApprovalStatus() == null) {
+            application.setTeacherApprovalStatus(0);
+        }
+        if (application.getAdminApprovalStatus() == null) {
+            application.setAdminApprovalStatus(0);
+        }
+        
         // 设置申请时间和创建时间
-        application.setApplicationTime(new Date());
-        application.setCreateTime(new Date());
-        application.setUpdateTime(new Date());
+        Date now = new Date();
+        application.setApplicationTime(now);
+        application.setCreateTime(now);
+        application.setUpdateTime(now);
         application.setStatus(0); // 初始状态为待审核
-        studentAwardApplicationMapper.insert(application);
-        return application;
+        
+        // 打印处理后的申请对象，确保所有字段都有值
+        logger.info("Processed application ready for insertion - materialPath: '{}', materialName: '{}', materialSize: '{}', materialType: '{}'", 
+                application.getMaterialPath(),
+                application.getMaterialName(),
+                application.getMaterialSize(),
+                application.getMaterialType());
+        
+        // 打印完整的申请对象，用于调试
+        logger.debug("Full processed application object: {}", application);
+        
+        // 直接使用MyBatis Plus的insert方法，确保所有字段都被正确设置
+        int insertResult = studentAwardApplicationMapper.insert(application);
+        
+        if (insertResult > 0) {
+            logger.info("Application created successfully with ID: {}, inserted {} rows", application.getId(), insertResult);
+            
+            // 重新查询数据库，获取最新数据
+            StudentAwardApplication insertedApplication = studentAwardApplicationMapper.selectById(application.getId());
+            
+            if (insertedApplication != null) {
+                logger.info("Retrieved inserted application with ID: {}", insertedApplication.getId());
+                logger.info("Inserted application material info from DB: materialPath='{}', materialName='{}', materialSize='{}', materialType='{}'",
+                        insertedApplication.getMaterialPath(),
+                        insertedApplication.getMaterialName(),
+                        insertedApplication.getMaterialSize(),
+                        insertedApplication.getMaterialType());
+                
+                // 检查材料字段是否被正确保存
+                if (insertedApplication.getMaterialPath() == null || insertedApplication.getMaterialPath().isEmpty()) {
+                    logger.error("MaterialPath was NOT saved correctly, it's still null or empty");
+                } else {
+                    logger.info("MaterialPath was saved correctly: '{}'", insertedApplication.getMaterialPath());
+                }
+            } else {
+                logger.error("Failed to retrieve inserted application");
+            }
+            
+            return insertedApplication;
+        } else {
+            logger.error("Failed to insert application, no rows inserted");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "创建申请失败");
+        }
     }
 
     @Override
     public StudentAwardApplication updateApplication(StudentAwardApplication application) {
         // 检查申请是否存在
-        Integer applicationId = application.getId();
+        Long applicationId = application.getId();
         if (applicationId == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "申请ID不能为空");
         }
@@ -103,6 +187,19 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
         if (existingApplication == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "申请不存在");
         }
+        
+        // 打印更新前后的材料信息对比
+        logger.info("Updating application {} with material info - ", applicationId);
+        logger.info("Old material info: materialPath='{}', materialName='{}', materialSize='{}', materialType='{}'",
+                existingApplication.getMaterialPath() != null ? existingApplication.getMaterialPath() : "null",
+                existingApplication.getMaterialName() != null ? existingApplication.getMaterialName() : "null",
+                existingApplication.getMaterialSize() != null ? existingApplication.getMaterialSize() : "null",
+                existingApplication.getMaterialType() != null ? existingApplication.getMaterialType() : "null");
+        logger.info("New material info: materialPath='{}', materialName='{}', materialSize='{}', materialType='{}'",
+                application.getMaterialPath() != null ? application.getMaterialPath() : "null",
+                application.getMaterialName() != null ? application.getMaterialName() : "null",
+                application.getMaterialSize() != null ? application.getMaterialSize() : "null",
+                application.getMaterialType() != null ? application.getMaterialType() : "null");
         
         // 检查申请是否处于可编辑状态
         if (existingApplication.getStatus() != 0) { // 只有待审核状态可以编辑
@@ -176,7 +273,7 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     }
 
     @Override
-    public void deleteApplication(Integer id) {
+    public void deleteApplication(Long id) {
         StudentAwardApplication application = studentAwardApplicationMapper.selectById(id);
         if (application != null) {
             // 只有未被教师审批的申请才能被删除
@@ -189,7 +286,7 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     }
 
     @Override
-    public Optional<StudentAwardApplication> findApplicationById(Integer id) {
+    public Optional<StudentAwardApplication> findApplicationById(Long id) {
         StudentAwardApplication application = studentAwardApplicationMapper.selectById(id);
         return Optional.ofNullable(application);
     }
