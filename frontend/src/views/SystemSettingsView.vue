@@ -76,40 +76,42 @@
           </div>
         </el-card>
 
-        <!-- 通知设置 -->
+        <!-- 电脑信息 -->
         <el-card class="setting-item-card" shadow="hover" style="margin-top: 20px;">
           <template #header>
             <div class="card-header">
-              <el-icon><Bell /></el-icon>
-              <span>通知设置</span>
+              <el-icon><Monitor /></el-icon>
+              <span>电脑信息</span>
             </div>
           </template>
 
-          <div class="notification-settings-section">
-            <el-form :model="notificationSettings" label-position="top" class="notification-form">
-              <el-row :gutter="20">
-                <el-col :span="12">
-                  <el-form-item label="成绩通知">
-                    <el-switch v-model="notificationSettings.scoreNotification" />
-                    <span class="setting-desc">成绩更新时通知</span>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item label="课程通知">
-                    <el-switch v-model="notificationSettings.courseNotification" />
-                    <span class="setting-desc">课程变化时通知</span>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row :gutter="20">
-                <el-col :span="12">
-                  <el-form-item label="系统通知">
-                    <el-switch v-model="notificationSettings.systemNotification" />
-                    <span class="setting-desc">系统更新时通知</span>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-            </el-form>
+          <div class="computer-info-section">
+            <el-descriptions :column="2" border>
+              <el-descriptions-item label="操作系统">{{ computerInfo.os }}</el-descriptions-item>
+              <el-descriptions-item label="浏览器">{{ computerInfo.browser }}</el-descriptions-item>
+              <el-descriptions-item label="屏幕分辨率">{{ computerInfo.screen }}</el-descriptions-item>
+              <el-descriptions-item label="语言">{{ computerInfo.language }}</el-descriptions-item>
+              <el-descriptions-item label="网络状态">{{ computerInfo.online ? '在线' : '离线' }}</el-descriptions-item>
+            </el-descriptions>
+          </div>
+        </el-card>
+
+        <!-- 登录信息 -->
+        <el-card class="setting-item-card" shadow="hover" style="margin-top: 20px;">
+          <template #header>
+            <div class="card-header">
+              <el-icon><User /></el-icon>
+              <span>登录信息</span>
+            </div>
+          </template>
+
+          <div class="login-info-section">
+            <el-descriptions :column="2" border>
+              <el-descriptions-item label="用户名">{{ userInfo.username }}</el-descriptions-item>
+              <el-descriptions-item label="角色">{{ userInfo.role || '-' }}</el-descriptions-item>
+              <el-descriptions-item label="登录时间">{{ loginInfo.loginTime }}</el-descriptions-item>
+              <el-descriptions-item label="上次登录">{{ loginInfo.lastLoginTime }}</el-descriptions-item>
+            </el-descriptions>
           </div>
         </el-card>
 
@@ -126,7 +128,8 @@
 <script setup>
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Setting, Brush, Monitor, Bell } from '@element-plus/icons-vue'
+import { Setting, Brush, Monitor, User } from '@element-plus/icons-vue'
+import { getUserInfo } from '../utils/role'
 
 // 主题选项
 const themeOptions = ref([
@@ -135,8 +138,26 @@ const themeOptions = ref([
   { name: 'purple', label: '紫色', color: '#909399' },
   { name: 'red', label: '红色', color: '#f56c6c' },
   { name: 'orange', label: '橙色', color: '#e6a23c' },
-  { name: 'cyan', label: '青色', color: '#13c2c2' }
+  { name: 'teal', label: '青色', color: '#409eff' }
 ])
+
+// 用户信息
+const userInfo = ref({})
+
+// 电脑信息
+const computerInfo = ref({
+  browser: navigator.userAgent,
+  os: navigator.platform,
+  screen: `${window.screen.width}x${window.screen.height}`,
+  language: navigator.language,
+  online: navigator.onLine
+})
+
+// 登录信息
+const loginInfo = ref({
+  loginTime: localStorage.getItem('loginTime') || '未知',
+  lastLoginTime: localStorage.getItem('lastLoginTime') || '未知'
+})
 
 // 选中的主题
 const selectedTheme = ref('default')
@@ -155,12 +176,7 @@ const displaySettings = reactive({
   darkMode: false
 })
 
-// 通知设置
-const notificationSettings = reactive({
-  scoreNotification: true,
-  courseNotification: true,
-  systemNotification: true
-})
+
 
 // 处理主题变化
 const handleThemeChange = () => {
@@ -184,9 +200,6 @@ const saveSettings = () => {
   // 保存显示设置
   localStorage.setItem('displaySettings', JSON.stringify(displaySettings))
   
-  // 保存通知设置
-  localStorage.setItem('notificationSettings', JSON.stringify(notificationSettings))
-  
   ElMessage.success('设置已保存')
 }
 
@@ -200,13 +213,6 @@ const resetSettings = () => {
   Object.assign(displaySettings, {
     compactMode: false,
     darkMode: false
-  })
-  
-  // 恢复默认通知设置
-  Object.assign(notificationSettings, {
-    scoreNotification: true,
-    courseNotification: true,
-    systemNotification: true
   })
   
   ElMessage.info('已恢复默认设置')
@@ -229,12 +235,6 @@ const initSettings = () => {
   if (savedDisplaySettings) {
     Object.assign(displaySettings, JSON.parse(savedDisplaySettings))
   }
-  
-  // 加载通知设置
-  const savedNotificationSettings = localStorage.getItem('notificationSettings')
-  if (savedNotificationSettings) {
-    Object.assign(notificationSettings, JSON.parse(savedNotificationSettings))
-  }
 }
 
 // 监听显示设置变化，实时保存到localStorage
@@ -246,14 +246,11 @@ watch(displaySettings, (newSettings) => {
   window.dispatchEvent(new Event('storage'))
 }, { deep: true })
 
-// 监听通知设置变化，实时保存到localStorage
-watch(notificationSettings, (newSettings) => {
-  localStorage.setItem('notificationSettings', JSON.stringify(newSettings))
-}, { deep: true })
-
 // 组件挂载时初始化
 onMounted(() => {
   initSettings()
+  // 获取用户信息
+  userInfo.value = getUserInfo()
 })
 </script>
 
@@ -367,13 +364,27 @@ onMounted(() => {
 
 /* 设置项通用样式 */
 .display-settings-section,
-.notification-settings-section {
+.computer-info-section,
+.login-info-section {
   padding: 20px 0;
 }
 
-.display-form,
-.notification-form {
+.display-form {
   padding: 10px 0;
+}
+
+/* 描述列表样式 */
+.el-descriptions {
+  margin-top: 10px;
+}
+
+.el-descriptions__label {
+  font-weight: 500;
+  background-color: #f5f7fa;
+}
+
+.el-descriptions__content {
+  word-break: break-all;
 }
 
 .setting-desc {

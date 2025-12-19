@@ -286,6 +286,10 @@ const handleLogin = () => {
             return // 角色不匹配，禁止登录
           }
           ElMessage.success('登录成功')
+          // 获取当前时间
+          const currentTime = new Date().toLocaleString('zh-CN')
+          // 获取上次登录时间（如果有）
+          const lastLoginTime = localStorage.getItem('loginTime') || '未知'
           // 存储用户信息和token到本地存储
           localStorage.setItem('userInfo', JSON.stringify({
             username: response.data.user.username,
@@ -293,6 +297,10 @@ const handleLogin = () => {
             name: response.data.user.name || response.data.user.username,
             id: response.data.user.id
           }))
+          // 存储登录时间
+          localStorage.setItem('loginTime', currentTime)
+          // 存储上次登录时间
+          localStorage.setItem('lastLoginTime', lastLoginTime)
           // 存储token
           localStorage.setItem('token', response.data.token)
           // 跳转到系统主页
