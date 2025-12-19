@@ -53,7 +53,13 @@
                 </span>
                 <el-dropdown trigger="click" @command="handleDropdownCommand">
                   <div class="user-info">
-                    <el-avatar size="small" :icon="userInfo.avatar || 'el-icon-user'"></el-avatar>
+                    <el-avatar 
+                      size="small" 
+                      :src="getFullAvatarUrl(userInfo.avatar)"
+                      @error="handleAvatarError"
+                    >
+                      <el-icon v-if="!userInfo.avatar"><UserFilled /></el-icon>
+                    </el-avatar>
                     <span class="user-name">{{ userInfo.name || userInfo.username }}</span>
                     <el-icon class="el-icon--right"><arrow-down /></el-icon>
                   </div>
@@ -226,6 +232,22 @@ const getRoleName = () => {
     'student': '学生'
   }
   return roleMap[userInfo.value.role] || '用户'
+}
+
+// 获取完整的头像URL
+const getFullAvatarUrl = (avatar) => {
+  if (!avatar) return null
+  // 如果是相对路径，添加后端域名和端口
+  if (avatar.startsWith('/')) {
+    return `http://localhost:8080${avatar}`
+  }
+  return avatar
+}
+
+// 处理头像加载错误
+const handleAvatarError = (error) => {
+  console.error('右上角头像加载失败：', error)
+  // 头像加载失败时，不做特殊处理，让组件显示默认图标
 }
 
 // 获取可见菜单

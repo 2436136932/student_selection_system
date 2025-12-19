@@ -14,9 +14,10 @@
           <div class="avatar-section">
             <el-avatar
               :size="120"
-              :src="userInfo.avatar || defaultAvatar"
+              :src="userInfo.avatar"
               class="user-avatar"
               @click="showAvatarUpload = true"
+              @error="handleAvatarError"
             >
               <el-icon v-if="!userInfo.avatar"><UserFilled /></el-icon>
             </el-avatar>
@@ -140,12 +141,13 @@
     <!-- 头像上传对话框 -->
     <el-dialog v-model="showAvatarUpload" title="更换头像" width="400px">
       <div class="avatar-upload-container">
-        <!-- 自定义上传，不使用action -->
+        <!-- 自定义上传 -->
         <el-upload
           action=""
           :http-request="handleAvatarUpload"
           :show-file-list="false"
-          :before-upload="beforeAvatarUpload"
+          :auto-upload="false"
+          @change="handleFileChange"
           class="avatar-uploader"
         >
           <img v-if="previewImage" :src="previewImage" class="avatar-preview" />
@@ -169,8 +171,8 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { User, EditPen, Lock, UserFilled, Edit, Plus } from '@element-plus/icons-vue'
 import axios from 'axios'
 
-// 默认头像
-const defaultAvatar = 'https://picsum.photos/id/1005/200/200'
+// 默认头像 - 使用Element Plus内置默认头像，不再依赖外部链接
+const defaultAvatar = ''
 
 // 用户信息
 const userInfo = ref({
@@ -181,7 +183,7 @@ const userInfo = ref({
   phone: '',
   role: '',
   status: 1,
-  avatar: ''
+  avatar: null
 })
 
 // 表单数据
@@ -237,6 +239,17 @@ const showAvatarUpload = ref(false)
 const previewImage = ref('')
 const uploadedAvatarFile = ref(null)
 
+// 头像加载错误处理
+const handleAvatarError = (error) => {
+  console.error('=== 头像加载失败详情 ===')
+  console.error('错误事件：', error)
+  console.error('当前头像URL：', userInfo.value.avatar)
+  console.error('浏览器完整URL：', window.location.href)
+  
+  // 仅显示警告，不再将头像URL设为null，便于调试
+  ElMessage.warning('头像加载失败，显示默认头像')
+}
+
 // 角色类型颜色
 const roleType = computed(() => {
   const roleMap = {
@@ -252,7 +265,14 @@ const getUserInfo = async () => {
   try {
     // 获取当前用户信息
     const response = await axios.get('/api/users/current')
-    userInfo.value = response.data
+    const userData = response.data
+    
+    // 转换头像URL为完整URL
+    if (userData.avatar && userData.avatar.startsWith('/')) {
+      userData.avatar = `http://localhost:8080${userData.avatar}`
+    }
+    
+    userInfo.value = userData
     
     // 初始化表单数据
     form.email = userInfo.value.email || ''
@@ -262,8 +282,12 @@ const getUserInfo = async () => {
     if (userInfo.value.avatar) {
       previewImage.value = userInfo.value.avatar
     }
+    
+    // 调试信息
+    console.log('获取用户信息成功，头像URL：', userInfo.value.avatar)
   } catch (error) {
     ElMessage.error('获取用户信息失败：' + error.message)
+    console.error('获取用户信息失败：', error)
   }
 }
 
@@ -335,34 +359,37 @@ const resetPasswordForm = () => {
   passwordForm.confirmPassword = ''
 }
 
-// 头像上传前校验
-const beforeAvatarUpload = (file) => {
-  const isImage = file.type.startsWith('image/')
-  const isLt10M = file.size / 1024 / 1024 < 10
-  
-  if (!isImage) {
-    ElMessage.error('请上传图片文件')
-    return false
+// 处理文件选择变化
+const handleFileChange = (file) => {
+  const rawFile = file.raw
+  if (rawFile) {
+    // 验证文件类型和大小
+    const isImage = rawFile.type.startsWith('image/')
+    const isLt10M = rawFile.size / 1024 / 1024 < 10
+    
+    if (!isImage) {
+      ElMessage.error('请上传图片文件')
+      return
+    }
+    if (!isLt10M) {
+      ElMessage.error('图片大小不能超过 10MB')
+      return
+    }
+    
+    // 生成预览图
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      previewImage.value = e.target.result
+    }
+    reader.readAsDataURL(rawFile)
+    
+    uploadedAvatarFile.value = rawFile
   }
-  if (!isLt10M) {
-    ElMessage.error('图片大小不能超过 10MB')
-    return false
-  }
-  
-  // 生成预览图
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    previewImage.value = e.target.result
-  }
-  reader.readAsDataURL(file)
-  
-  uploadedAvatarFile.value = file
-  return false  // 返回false，使用自定义上传
 }
 
-// 处理头像上传
+// 处理头像上传（仅为满足接口要求）
 const handleAvatarUpload = (file) => {
-  // 自定义上传已在beforeAvatarUpload中处理，此函数仅为满足接口要求
+  // 自定义上传已在handleFileChange中处理，此函数仅为满足接口要求
 }
 
 // 确认头像上传
@@ -383,12 +410,49 @@ const confirmAvatarUpload = async () => {
       }
     })
     
+    // 获取头像URL
+    let avatarUrl = response.data.avatar
+    
+    // 转换为完整URL（添加后端域名和端口）
+    if (avatarUrl && avatarUrl.startsWith('/')) {
+      // 后端服务运行在8080端口
+      avatarUrl = `http://localhost:8080${avatarUrl}`
+    }
+    
     // 更新用户头像
-    userInfo.value.avatar = response.data.avatar
+    userInfo.value.avatar = avatarUrl
+    
+    // 同步更新预览图
+    previewImage.value = avatarUrl
+    
+    // 同步更新localStorage中的用户信息，确保右上角头像同步显示
+    const currentUserInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+    localStorage.setItem('userInfo', JSON.stringify({
+      ...currentUserInfo,
+      avatar: avatarUrl
+    }))
+    
     showAvatarUpload.value = false
     ElMessage.success('头像上传成功')
+    
+    // 增强调试信息
+    console.log('上传成功，原始头像URL：', response.data.avatar)
+    console.log('转换后完整头像URL：', avatarUrl)
+    console.log('头像访问测试：', avatarUrl)
+    
+    // 验证头像URL是否可访问
+    try {
+      const img = new Image()
+      img.onload = () => console.log('头像URL访问成功')
+      img.onerror = () => console.error('头像URL访问失败')
+      img.src = avatarUrl
+    } catch (imgError) {
+      console.error('头像URL验证失败：', imgError)
+    }
   } catch (error) {
     ElMessage.error('头像上传失败：' + error.message)
+    console.error('头像上传失败：', error)
+    console.error('错误详情：', error.response?.data || error.message)
   }
 }
 
