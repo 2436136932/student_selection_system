@@ -211,21 +211,48 @@
         </el-form-item>
         <el-form-item label="申请材料" prop="material">
           <div class="custom-upload-container">
-            <!-- 使用原生input file配合Element Plus按钮 -->
-            <input
-              ref="fileInputRef"
-              type="file"
+            <!-- 使用Element Plus Upload组件 -->
+            <el-upload
+              ref="uploadRef"
+              class="custom-upload"
+              :auto-upload="false"
+              :before-upload="beforeUpload"
+              :http-request="customUpload"
+              :file-list="fileList"
+              :limit="1"
+              :on-exceed="handleExceed"
+              :on-change="handleFileChange"
               accept=".doc,.docx,.pdf,.ppt,.pptx,.png,.jpg,.jpeg"
-              style="display: none;"
-              @change="handleFileSelect"
-            />
-            <el-button 
-              type="primary" 
-              @click="triggerFileSelect"
-              :disabled="uploading"
             >
-              <el-icon><Upload /></el-icon> {{ selectedFileName || '选择文件' }}
-            </el-button>
+              <template #trigger>
+                <el-button type="primary" :disabled="uploading">
+                  <el-icon><Upload /></el-icon> {{ fileList.length > 0 ? fileList[0].name : '选择文件' }}
+                </el-button>
+              </template>
+              
+              <!-- 文件列表显示 -->
+              <template #file-list="{ files }">
+                <div v-if="files.length > 0" class="selected-file-info" style="margin-top: 10px;">
+                  <span style="color: #606266;">{{ files[0].name }}</span>
+                  <el-button 
+                    size="small" 
+                    type="danger" 
+                    plain 
+                    @click="clearFileSelect"
+                    style="margin-left: 10px;"
+                  >
+                    移除
+                  </el-button>
+                </div>
+              </template>
+              
+              <!-- 上传提示 -->
+              <template #tip>
+                <div class="el-upload__tip">
+                  支持上传 Word、PDF、PPT、PNG、JPG 格式的文件，最大10MB
+                </div>
+              </template>
+            </el-upload>
             
             <!-- 显示上传进度条 -->
             <el-progress 
@@ -234,25 +261,6 @@
               :stroke-width="2" 
               style="margin-top: 10px;"
             />
-            
-            <!-- 文件信息显示 -->
-            <div v-if="selectedFileName" class="selected-file-info" style="margin-top: 10px;">
-              <span style="color: #606266;">{{ selectedFileName }}</span>
-              <el-button 
-                size="small" 
-                type="danger" 
-                plain 
-                @click="clearFileSelect"
-                style="margin-left: 10px;"
-              >
-                移除
-              </el-button>
-            </div>
-            
-            <!-- 上传提示 -->
-            <div class="el-upload__tip" style="margin-top: 10px;">
-              支持上传 Word、PDF、PPT、PNG、JPG 格式的文件，最大10MB
-            </div>
           </div>
         </el-form-item>
       </el-form>
@@ -311,10 +319,9 @@ const pageSize = ref(10)
 const dialogVisible = ref(false)
 const loading = ref(false)
 // 文件上传相关
-const fileInputRef = ref(null)
+const uploadRef = ref(null)
 const uploadUrl = '/api/student-award-applications/upload'
 const selectedFile = ref(null)
-const selectedFileName = ref('')
 const uploading = ref(false)
 const materialInfo = reactive({
   materialPath: '',
@@ -324,6 +331,8 @@ const materialInfo = reactive({
 })
 // 添加上传进度显示
 const uploadProgress = ref(0)
+// Element Plus Upload组件相关
+const fileList = ref([])
 
 // 材料预览相关
 const materialPreviewVisible = ref(false)
@@ -353,11 +362,6 @@ const formatDate = (row, column, cellValue) => {
   return ''
 }
 
-// 触发文件选择对话框
-const triggerFileSelect = () => {
-  fileInputRef.value?.click()
-}
-
 // 验证文件类型和大小
 const validateFile = (file) => {
   const allowedTypes = ['.doc', '.docx', '.pdf', '.ppt', '.pptx', '.png', '.jpg', '.jpeg']
@@ -376,21 +380,20 @@ const validateFile = (file) => {
   return true
 }
 
-// 处理文件选择
-const handleFileSelect = (event) => {
-  const file = event.target.files[0]
-  if (!file) return
+// Element Plus Upload组件钩子函数
+// 上传前验证
+const beforeUpload = (file) => {
+  return validateFile(file)
+}
 
-  // 验证文件
-  if (!validateFile(file)) {
-    // 清除选择的文件
-    event.target.value = ''
-    return
+// 文件选择变化处理
+const handleFileChange = (file, newFileList) => {
+  fileList.value = newFileList
+  if (newFileList.length > 0) {
+    selectedFile.value = newFileList[0].raw
+  } else {
+    selectedFile.value = null
   }
-
-  // 保存选择的文件
-  selectedFile.value = file
-  selectedFileName.value = file.name
   
   // 重置材料信息
   materialInfo.materialPath = ''
@@ -399,16 +402,81 @@ const handleFileSelect = (event) => {
   materialInfo.materialType = ''
 }
 
+// 文件超出限制处理
+const handleExceed = () => {
+  ElMessage.error('只能上传一个文件')
+}
+
+// 自定义上传方法
+const customUpload = (options) => {
+  return new Promise((resolve, reject) => {
+    console.log('Starting custom file upload with file:', options.file)
+    
+    uploading.value = true
+    uploadProgress.value = 0
+    
+    // 创建FormData对象
+    const formData = new FormData()
+    formData.append('file', options.file)
+    
+    // 使用axios直接上传文件
+    axios.post(uploadUrl, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      // 添加上传进度监听
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total) {
+          const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          uploadProgress.value = percent
+          console.log(`文件上传进度: ${percent}%`)
+        }
+      }
+    }).then(response => {
+      console.log('File upload response:', response)
+      
+      // 检查响应数据
+      const result = response.data
+      if (result.success) {
+        // 保存材料信息到materialInfo对象
+        materialInfo.materialPath = result.materialPath || ''
+        materialInfo.materialName = result.materialName || ''
+        materialInfo.materialSize = result.materialSize || 0
+        materialInfo.materialType = result.materialType || ''
+        
+        console.log('Material info updated:', materialInfo)
+        
+        ElMessage.success('文件上传成功')
+        resolve(result)
+      } else {
+        const errorMsg = result.message || '文件上传失败'
+        console.error('File upload failed:', errorMsg)
+        ElMessage.error(errorMsg)
+        reject(new Error(errorMsg))
+      }
+    }).catch(error => {
+      console.error('Error during file upload:', error)
+      let errorMsg = '文件上传失败，请重试'
+      if (error.response && error.response.data && error.response.data.message) {
+        errorMsg = error.response.data.message
+      }
+      ElMessage.error(errorMsg)
+      reject(error)
+    }).finally(() => {
+      uploading.value = false
+      // 延迟重置进度，让用户看到完成状态
+      setTimeout(() => {
+        uploadProgress.value = 0
+      }, 500)
+    })
+  })
+}
+
 // 清除已选择的文件
 const clearFileSelect = () => {
   selectedFile.value = null
-  selectedFileName.value = ''
+  fileList.value = []
   uploadProgress.value = 0
-  
-  // 重置文件输入
-  if (fileInputRef.value) {
-    fileInputRef.value.value = ''
-  }
   
   // 重置材料信息
   materialInfo.materialPath = ''
@@ -631,82 +699,27 @@ const handleSubmit = () => {
   })
 }
 
-// 上传文件方法（使用axios直接上传，完全控制流程）
+// 上传文件方法（调用Element Plus Upload组件的自定义上传功能）
 const uploadFile = () => {
   return new Promise((resolve, reject) => {
     console.log('Starting file upload with selected file:', selectedFile.value)
     
     // 如果没有选择文件，直接resolve
-    if (!selectedFile.value) {
+    if (!selectedFile.value || fileList.value.length === 0) {
       console.log('No file selected, resolving...')
       resolve()
       return
     }
     
     try {
-      uploading.value = true
-      uploadProgress.value = 0
-      
-      // 清空之前的materialInfo
-      materialInfo.materialPath = ''
-      materialInfo.materialName = ''
-      materialInfo.materialSize = 0
-      materialInfo.materialType = ''
-      
-      // 创建FormData对象
-      const formData = new FormData()
-      formData.append('file', selectedFile.value)
-      
-      // 使用axios直接上传文件
-      axios.post(uploadUrl, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-        // 添加上传进度监听
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
-            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-            uploadProgress.value = percent
-            console.log(`文件上传进度: ${percent}%`)
-          }
-        }
-      }).then(response => {
-        console.log('File upload response:', response)
-        
-        // 检查响应数据
-        const result = response.data
-        if (result.success) {
-          // 保存材料信息到materialInfo对象
-          materialInfo.materialPath = result.materialPath || ''
-          materialInfo.materialName = result.materialName || ''
-          materialInfo.materialSize = result.materialSize || 0
-          materialInfo.materialType = result.materialType || ''
-          
-          console.log('Material info updated:', materialInfo)
-          
-          ElMessage.success('文件上传成功')
-          resolve()
-        } else {
-          const errorMsg = result.message || '文件上传失败'
-          console.error('File upload failed:', errorMsg)
-          ElMessage.error(errorMsg)
-          reject(new Error(errorMsg))
-        }
-      }).catch(error => {
-        console.error('Error during file upload:', error)
-        let errorMsg = '文件上传失败，请重试'
-        if (error.response && error.response.data && error.response.data.message) {
-          errorMsg = error.response.data.message
-        }
-        ElMessage.error(errorMsg)
-        reject(error)
-      }).finally(() => {
-        uploading.value = false
-        // 延迟重置进度，让用户看到完成状态
-        setTimeout(() => {
-          uploadProgress.value = 0
-        }, 500)
-      })
+      // 使用自定义上传方法
+      customUpload({ file: selectedFile.value })
+        .then(result => {
+          resolve(result)
+        })
+        .catch(error => {
+          reject(error)
+        })
     } catch (error) {
       console.error('Unexpected error during file upload:', error)
       uploading.value = false
@@ -727,14 +740,9 @@ const resetApplicationForm = () => {
   
   // 重置文件选择状态
   selectedFile.value = null
-  selectedFileName.value = ''
+  fileList.value = []
   uploading.value = false
   uploadProgress.value = 0
-  
-  // 重置文件输入
-  if (fileInputRef.value) {
-    fileInputRef.value.value = ''
-  }
   
   // 重置材料信息
   materialInfo.materialPath = ''
@@ -804,9 +812,21 @@ const previewMaterial = (row) => {
   }
   
   try {
-    // 设置预览URL和下载URL
-    previewUrl.value = `/api/student-award-applications/preview/${row.id}`
-    downloadUrl.value = `/api/student-award-applications/download/${row.id}`
+    // 生成完整的后端URL
+    const baseUrl = 'http://localhost:8080'
+    const previewPath = `/api/student-award-applications/preview/${row.id}`
+    const downloadPath = `/api/student-award-applications/download/${row.id}`
+    
+    // 使用完整的后端URL
+    const fullPreviewUrl = `${baseUrl}${previewPath}`
+    const fullDownloadUrl = `${baseUrl}${downloadPath}`
+    
+    // 添加调试日志，查看生成的URL
+    console.log('生成的预览URL:', fullPreviewUrl)
+    console.log('生成的下载URL:', fullDownloadUrl)
+    
+    previewUrl.value = fullPreviewUrl
+    downloadUrl.value = fullDownloadUrl
     currentMaterialName.value = row.materialName || 'application_material'
     currentMaterialSize.value = row.materialSize || 0
     

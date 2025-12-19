@@ -9,10 +9,28 @@
       @close="handleClose"
     >
       <div class="preview-content">
+        <!-- 加载状态 -->
+        <div v-if="loading" class="loading-preview">
+          <el-spinner type="ring" size="64px" />
+          <div>正在加载预览文件...</div>
+        </div>
+        
+        <!-- 加载失败状态 -->
+        <div v-else-if="loadError" class="load-error-preview">
+          <el-icon class="error-icon"><DocumentRemove /></el-icon>
+          <div class="error-message">
+            <h3>文件加载失败</h3>
+            <p>{{ errorMessage }}</p>
+            <el-button type="primary" @click="retryLoadFile">
+              <el-icon><RefreshRight /></el-icon> 重试
+            </el-button>
+          </div>
+        </div>
+        
         <!-- 图片预览 -->
-        <div v-if="fileType === 'image'" class="image-preview">
+        <div v-else-if="fileType === 'image' && blobUrl" class="image-preview">
           <el-image
-            :src="previewUrl"
+            :src="blobUrl"
             fit="contain"
             style="max-height: 70vh;"
             @error="handleImageError"
@@ -27,16 +45,26 @@
         </div>
         
         <!-- PDF预览 -->
-        <div v-else-if="fileType === 'pdf'" class="pdf-preview">
+        <div v-else-if="fileType === 'pdf' && blobUrl" class="pdf-preview">
           <iframe
-            :src="previewUrl"
+            :src="blobUrl"
             frameborder="0"
+            sandbox="allow-same-origin allow-scripts allow-popups allow-downloads"
             style="width: 100%; height: 70vh;"
+            @error="handleIframeError"
+            @load="handleIframeLoad"
           ></iframe>
+          <div v-if="pdfLoadError" class="pdf-error">
+            <el-icon><Document /></el-icon>
+            <div>
+              <h3>PDF加载失败</h3>
+              <p>请尝试下载后查看</p>
+            </div>
+          </div>
         </div>
         
         <!-- 文档预览 -->
-        <div v-else-if="fileType === 'doc' || fileType === 'docx'" class="doc-preview">
+        <div v-else-if="(fileType === 'doc' || fileType === 'docx')" class="doc-preview">
           <div class="doc-info">
             <el-icon><Document /></el-icon>
             <div>
@@ -56,7 +84,7 @@
         </div>
         
         <!-- PPT预览 -->
-        <div v-else-if="fileType === 'ppt' || fileType === 'pptx'" class="ppt-preview">
+        <div v-else-if="(fileType === 'ppt' || fileType === 'pptx')" class="ppt-preview">
           <div class="ppt-info">
             <el-icon><Document /></el-icon>
             <div>
@@ -106,9 +134,9 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Picture, Document, Download, Link } from '@element-plus/icons-vue'
+import { Picture, Document, Download, Link, DocumentRemove, RefreshRight } from '@element-plus/icons-vue'
 import axios from 'axios'
 
 // Props
@@ -145,10 +173,28 @@ const emit = defineEmits(['update:visible', 'close'])
 
 // Dialog visible
 const dialogVisible = ref(props.visible)
+// PDF加载错误状态
+const pdfLoadError = ref(false)
+// 加载状态
+const loading = ref(false)
+// Blob URL，用于存储从服务器获取的文件内容
+const blobUrl = ref('')
+// 加载错误状态
+const loadError = ref(false)
+// 错误信息
+const errorMessage = ref('')
 
 // Watch for visible prop changes
 watch(() => props.visible, (newVal) => {
   dialogVisible.value = newVal
+  // 重置状态
+  if (newVal) {
+    resetPreviewState()
+    loadFileContent()
+  } else {
+    // 清理Blob URL
+    cleanupBlobUrl()
+  }
 })
 
 // Watch for dialog visible changes
@@ -177,9 +223,87 @@ const previewTitle = computed(() => {
   return `预览 - ${props.fileName}`
 })
 
-// 预览URL
-const previewUrl = computed(() => {
-  return props.url
+// 重置预览状态
+const resetPreviewState = () => {
+  pdfLoadError.value = false
+  loadError.value = false
+  errorMessage.value = ''
+  blobUrl.value = ''
+}
+
+// 加载文件内容
+const loadFileContent = async () => {
+  loading.value = true
+  loadError.value = false
+  errorMessage.value = ''
+  try {
+    // 添加调试日志，查看完整的请求URL和axios配置
+    console.log('开始加载文件内容，props.url:', props.url)
+    console.log('axios.defaults.baseURL:', axios.defaults.baseURL)
+    
+    // 确保请求路径正确，使用完整的后端URL
+    let requestUrl = props.url
+    // 如果是相对路径，确保使用axios的baseURL或者直接使用完整URL
+    if (requestUrl.startsWith('/api')) {
+      // 使用完整的后端URL
+      requestUrl = `http://localhost:8080${requestUrl}`
+    }
+    
+    // 添加调试日志，查看最终请求URL
+    console.log('最终请求URL:', requestUrl)
+    
+    // 使用axios获取文件内容，设置responseType为blob
+    const response = await axios.get(requestUrl, {
+      responseType: 'blob',
+      headers: {
+        // 显式添加Authorization头，确保认证信息被正确携带
+        Authorization: localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : ''
+      }
+    })
+    
+    console.log('文件内容加载成功，状态码:', response.status)
+    console.log('响应头:', response.headers)
+    
+    // 创建Blob URL
+    const blob = new Blob([response.data], { type: response.headers['content-type'] })
+    blobUrl.value = URL.createObjectURL(blob)
+    
+    loading.value = false
+  } catch (error) {
+    console.error('加载文件内容失败:', error)
+    console.error('错误详情:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      config: error.response?.config
+    })
+    
+    // 设置错误状态
+    loading.value = false
+    loadError.value = true
+    errorMessage.value = `加载失败: ${error.response?.status || '未知错误'} - ${error.response?.statusText || '请求失败'}`
+    
+    // 清理Blob URL
+    cleanupBlobUrl()
+  }
+}
+
+// 重试加载文件
+const retryLoadFile = () => {
+  loadFileContent()
+}
+
+// 清理Blob URL
+const cleanupBlobUrl = () => {
+  if (blobUrl.value) {
+    URL.revokeObjectURL(blobUrl.value)
+    blobUrl.value = ''
+  }
+}
+
+// 组件卸载时清理Blob URL
+onUnmounted(() => {
+  cleanupBlobUrl()
 })
 
 // 格式化文件大小
@@ -199,8 +323,14 @@ const handleClose = () => {
 // 处理下载
 const handleDownload = () => {
   try {
+    // 确保下载URL使用完整的后端URL
+    let downloadUrl = props.downloadUrl
+    if (downloadUrl.startsWith('/api')) {
+      downloadUrl = `http://localhost:8080${downloadUrl}`
+    }
+    
     const link = document.createElement('a')
-    link.href = props.downloadUrl
+    link.href = downloadUrl
     link.download = props.fileName
     link.target = '_blank'
     document.body.appendChild(link)
@@ -215,12 +345,33 @@ const handleDownload = () => {
 
 // 在新标签页打开
 const openInNewTab = () => {
-  window.open(props.url, '_blank')
+  // 确保URL使用完整的后端URL
+  let openUrl = props.url
+  if (openUrl.startsWith('/api')) {
+    openUrl = `http://localhost:8080${openUrl}`
+  }
+  window.open(openUrl, '_blank')
 }
 
 // 处理图片加载失败
 const handleImageError = () => {
   ElMessage.error('图片加载失败，可能是网络问题或图片格式不支持')
+  // 显示加载失败状态
+  loadError.value = true
+  errorMessage.value = '图片加载失败，可能是网络问题或图片格式不支持'
+}
+
+// 处理iframe加载失败
+const handleIframeError = () => {
+  console.error('PDF加载失败，URL:', blobUrl.value)
+  pdfLoadError.value = true
+  ElMessage.error('PDF预览失败，请尝试下载后查看')
+}
+
+// 处理iframe加载成功
+const handleIframeLoad = () => {
+  pdfLoadError.value = false
+  console.log('PDF加载成功，URL:', blobUrl.value)
 }
 </script>
 
@@ -233,6 +384,49 @@ const handleImageError = () => {
     justify-content: center;
     min-height: 50vh;
     padding: 20px;
+    
+    .loading-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 50vh;
+      color: #409eff;
+      font-size: 16px;
+      
+      .el-spinner {
+        margin-bottom: 20px;
+      }
+    }
+    
+    .load-error-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 50vh;
+      color: #f56c6c;
+      text-align: center;
+      
+      .error-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+      }
+      
+      .error-message {
+        h3 {
+          margin: 0 0 10px 0;
+          font-size: 18px;
+          color: #303133;
+        }
+        
+        p {
+          margin: 10px 0 20px 0;
+          color: #606266;
+          font-size: 14px;
+        }
+      }
+    }
     
     .image-preview {
       display: flex;
@@ -267,6 +461,39 @@ const handleImageError = () => {
       border: 1px solid #ebeef5;
       border-radius: 4px;
       overflow: hidden;
+      position: relative;
+    }
+    
+    .pdf-error {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(255, 255, 255, 0.9);
+      z-index: 10;
+      
+      .el-icon {
+        font-size: 64px;
+        color: #f56c6c;
+        margin-bottom: 20px;
+      }
+      
+      h3 {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+        color: #303133;
+      }
+      
+      p {
+        margin: 5px 0;
+        color: #606266;
+        font-size: 14px;
+      }
     }
     
     .doc-preview,

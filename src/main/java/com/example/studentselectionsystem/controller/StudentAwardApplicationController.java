@@ -44,6 +44,7 @@ import java.util.UUID;
  */
 @RestController
 @RequestMapping("/api/student-award-applications")
+@CrossOrigin(origins = "http://localhost:5173") // 允许来自前端的跨域请求
 public class StudentAwardApplicationController {
 
     private static final Logger logger = LoggerFactory.getLogger(StudentAwardApplicationController.class);
@@ -174,6 +175,7 @@ public class StudentAwardApplicationController {
             // 1. 查找申请
             Optional<StudentAwardApplication> optionalApplication = studentAwardApplicationService.findApplicationById(applicationId);
             if (!optionalApplication.isPresent()) {
+                logger.error("申请不存在，ID: {}", applicationId);
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             
@@ -182,27 +184,53 @@ public class StudentAwardApplicationController {
             // 2. 验证用户权限（复用findApplicationById方法的权限逻辑）
             ResponseEntity<StudentAwardApplication> permissionCheck = findApplicationById(applicationId, principal);
             if (permissionCheck.getStatusCode() != HttpStatus.OK) {
+                logger.error("用户权限不足，无法下载申请ID: {}", applicationId);
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
             
             // 3. 检查是否有材料
             if (application.getMaterialPath() == null) {
+                logger.error("申请ID: {} 未上传材料", applicationId);
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             
-            // 4. 构建文件路径
+            // 4. 构建文件路径，添加详细日志
+            logger.info("下载材料 - STORAGE_DIR: {}", STORAGE_DIR);
+            logger.info("下载材料 - 数据库中的材料路径: {}", application.getMaterialPath());
+            
             Path filePath = Paths.get(STORAGE_DIR, application.getMaterialPath());
+            logger.info("下载材料 - 完整文件路径: {}", filePath);
+            
             Resource resource = new UrlResource(filePath.toUri());
             
-            if (!resource.exists() || !resource.isReadable()) {
+            // 增强文件存在性检查
+            if (!resource.exists()) {
+                logger.error("文件不存在: {}", filePath);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            if (!resource.isReadable()) {
+                logger.error("文件不可读: {}", filePath);
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             
-            // 5. 返回文件
+            // 5. 处理文件类型和大小
+            String contentType = application.getMaterialType();
+            if (contentType == null || contentType.isEmpty()) {
+                logger.info("材料类型为空，根据文件名推断: {}", application.getMaterialName());
+                contentType = getMimeTypeByExtension(application.getMaterialName());
+                logger.info("推断出的MIME类型: {}", contentType);
+            }
+            
+            long contentLength = application.getMaterialSize() != null ? application.getMaterialSize() : Files.size(filePath);
+            
+            logger.info("文件下载成功，路径: {}", filePath);
+            logger.info("文件类型: {}, 文件大小: {}", contentType, contentLength);
+            
+            // 6. 返回文件
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + application.getMaterialName() + "\"")
-                    .header(HttpHeaders.CONTENT_TYPE, application.getMaterialType())
-                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(application.getMaterialSize()))
+                    .header(HttpHeaders.CONTENT_TYPE, contentType)
+                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(contentLength))
                     .body(resource);
             
         } catch (Exception e) {
@@ -211,6 +239,41 @@ public class StudentAwardApplicationController {
         }
     }
     
+    /**
+     * 根据文件扩展名获取MIME类型
+     */
+    private String getMimeTypeByExtension(String fileName) {
+        if (fileName == null) {
+            return "application/octet-stream";
+        }
+        
+        String extension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+        
+        switch (extension) {
+            case "jpg":
+            case "jpeg":
+                return "image/jpeg";
+            case "png":
+                return "image/png";
+            case "gif":
+                return "image/gif";
+            case "bmp":
+                return "image/bmp";
+            case "pdf":
+                return "application/pdf";
+            case "doc":
+                return "application/msword";
+            case "docx":
+                return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            case "ppt":
+                return "application/vnd.ms-powerpoint";
+            case "pptx":
+                return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+            default:
+                return "application/octet-stream";
+        }
+    }
+
     /**
      * 预览申请材料
      */
@@ -221,6 +284,7 @@ public class StudentAwardApplicationController {
             // 1. 查找申请
             Optional<StudentAwardApplication> optionalApplication = studentAwardApplicationService.findApplicationById(applicationId);
             if (!optionalApplication.isPresent()) {
+                logger.error("申请不存在，ID: {}", applicationId);
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             
@@ -229,27 +293,53 @@ public class StudentAwardApplicationController {
             // 2. 验证用户权限（复用findApplicationById方法的权限逻辑）
             ResponseEntity<StudentAwardApplication> permissionCheck = findApplicationById(applicationId, principal);
             if (permissionCheck.getStatusCode() != HttpStatus.OK) {
+                logger.error("用户权限不足，无法预览申请ID: {}", applicationId);
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
             
             // 3. 检查是否有材料
             if (application.getMaterialPath() == null) {
+                logger.error("申请ID: {} 未上传材料", applicationId);
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             
-            // 4. 构建文件路径
+            // 4. 构建文件路径，添加详细日志
+            logger.info("预览材料 - STORAGE_DIR: {}", STORAGE_DIR);
+            logger.info("预览材料 - 数据库中的材料路径: {}", application.getMaterialPath());
+            
             Path filePath = Paths.get(STORAGE_DIR, application.getMaterialPath());
+            logger.info("预览材料 - 完整文件路径: {}", filePath);
+            
             Resource resource = new UrlResource(filePath.toUri());
             
-            if (!resource.exists() || !resource.isReadable()) {
+            // 增强文件存在性检查
+            if (!resource.exists()) {
+                logger.error("文件不存在: {}", filePath);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            if (!resource.isReadable()) {
+                logger.error("文件不可读: {}", filePath);
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             
-            // 5. 返回文件，使用inline方式支持浏览器预览
+            // 5. 处理文件类型和大小
+            String contentType = application.getMaterialType();
+            if (contentType == null || contentType.isEmpty()) {
+                logger.info("材料类型为空，根据文件名推断: {}", application.getMaterialName());
+                contentType = getMimeTypeByExtension(application.getMaterialName());
+                logger.info("推断出的MIME类型: {}", contentType);
+            }
+            
+            long contentLength = application.getMaterialSize() != null ? application.getMaterialSize() : Files.size(filePath);
+            
+            logger.info("文件预览成功，路径: {}", filePath);
+            logger.info("文件类型: {}, 文件大小: {}", contentType, contentLength);
+            
+            // 6. 返回文件，使用inline方式支持浏览器预览
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + application.getMaterialName() + "\"")
-                    .header(HttpHeaders.CONTENT_TYPE, application.getMaterialType())
-                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(application.getMaterialSize()))
+                    .header(HttpHeaders.CONTENT_TYPE, contentType)
+                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(contentLength))
                     .body(resource);
             
         } catch (Exception e) {
