@@ -19,51 +19,130 @@
       </div>
       <!-- 搜索结果数量 -->
       <div class="search-result-count">
-        <small>共 {{ filteredUsers.length }} 条日志</small>
+        <small>共 {{ filteredUsers.length }} 条记录</small>
       </div>
     </div>
     
     <!-- 会话列表内容 -->
     <div class="chat-list-content">
-      <div 
-        v-for="user in filteredUsers" 
-        :key="user.id"
-        class="chat-item"
-        :class="{ 'active': isUserActive(user) }"
-        @click="handleSelectUser(user)"
-      >
-        <div class="chat-item-avatar">
-          <el-avatar size="large">
-            {{ getUserInitial(user) }}
-          </el-avatar>
-        </div>
+      <!-- 按角色分组的折叠列表 -->
+      <el-collapse v-model="activeNames" accordion>
+        <!-- 管理员组 -->
+        <el-collapse-item 
+          v-if="groupedUsers.admin.length > 0" 
+          :title="`管理员 (${groupedUsers.admin.length})`" 
+          name="admin"
+        >
+          <div 
+            v-for="user in groupedUsers.admin" 
+            :key="user.id"
+            class="chat-item"
+            :class="{ 'active': isUserActive(user) }"
+            @click="handleSelectUser(user)"
+          >
+            <div class="chat-item-avatar">
+              <el-avatar size="large">
+                {{ getUserInitial(user) }}
+              </el-avatar>
+            </div>
+            
+            <div class="chat-item-info">
+              <div class="chat-item-top">
+                <span class="chat-item-name">
+                  {{ user.realName || user.username }}
+                </span>
+                <span class="chat-item-role-tag" :class="getRoleClass(user.role)">
+                  {{ getRoleName(user.role) }}
+                </span>
+              </div>
+              
+              <div class="chat-item-bottom">
+                <span class="chat-item-message">
+                  点击开始聊天
+                </span>
+              </div>
+            </div>
+          </div>
+        </el-collapse-item>
         
-        <div class="chat-item-info">
-          <div class="chat-item-top">
-            <span class="chat-item-name">
-              {{ user.realName || user.username }}
-            </span>
-            <span class="chat-item-role-tag" :class="getRoleClass(user.role)">
-              {{ getRoleName(user.role) }}
-            </span>
+        <!-- 教师组 -->
+        <el-collapse-item 
+          v-if="groupedUsers.teacher.length > 0" 
+          :title="`教师 (${groupedUsers.teacher.length})`" 
+          name="teacher"
+        >
+          <div 
+            v-for="user in groupedUsers.teacher" 
+            :key="user.id"
+            class="chat-item"
+            :class="{ 'active': isUserActive(user) }"
+            @click="handleSelectUser(user)"
+          >
+            <div class="chat-item-avatar">
+              <el-avatar size="large">
+                {{ getUserInitial(user) }}
+              </el-avatar>
+            </div>
+            
+            <div class="chat-item-info">
+              <div class="chat-item-top">
+                <span class="chat-item-name">
+                  {{ user.realName || user.username }}
+                </span>
+                <span class="chat-item-role-tag" :class="getRoleClass(user.role)">
+                  {{ getRoleName(user.role) }}
+                </span>
+              </div>
+              
+              <div class="chat-item-bottom">
+                <span class="chat-item-message">
+                  {{ user.department || '暂无部门信息' }}
+                </span>
+              </div>
+            </div>
           </div>
-          
-          <div class="chat-item-bottom">
-            <span class="chat-item-message">
-              <template v-if="user.role === 'teacher'">
-                {{ user.department || '暂无部门信息' }}
-              </template>
-              <template v-else-if="user.role === 'student'">
-                {{ user.major || '' }} {{ user.className || '' }}
-              </template>
-              <template v-else>
-                点击开始聊天
-              </template>
-            </span>
+        </el-collapse-item>
+        
+        <!-- 学生组 -->
+        <el-collapse-item 
+          v-if="groupedUsers.student.length > 0" 
+          :title="`学生 (${groupedUsers.student.length})`" 
+          name="student"
+        >
+          <div 
+            v-for="user in groupedUsers.student" 
+            :key="user.id"
+            class="chat-item"
+            :class="{ 'active': isUserActive(user) }"
+            @click="handleSelectUser(user)"
+          >
+            <div class="chat-item-avatar">
+              <el-avatar size="large">
+                {{ getUserInitial(user) }}
+              </el-avatar>
+            </div>
+            
+            <div class="chat-item-info">
+              <div class="chat-item-top">
+                <span class="chat-item-name">
+                  {{ user.realName || user.username }}
+                </span>
+                <span class="chat-item-role-tag" :class="getRoleClass(user.role)">
+                  {{ getRoleName(user.role) }}
+                </span>
+              </div>
+              
+              <div class="chat-item-bottom">
+                <span class="chat-item-message">
+                  {{ user.major || '' }} {{ user.className || '' }}
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </el-collapse-item>
+      </el-collapse>
       
+      <!-- 无匹配用户时显示 -->
       <div v-if="filteredUsers.length === 0" class="empty-sessions">
         <el-empty description="暂无匹配用户" />
       </div>
@@ -97,6 +176,9 @@ const emit = defineEmits(['select-user'])
 // 搜索关键词
 const searchKeyword = ref('')
 
+// 折叠面板的活跃名称
+const activeNames = ref([])
+
 // 过滤后的用户列表
 const filteredUsers = computed(() => {
   if (!searchKeyword.value.trim()) {
@@ -117,6 +199,29 @@ const filteredUsers = computed(() => {
            major.includes(keyword) || 
            className.includes(keyword)
   })
+})
+
+// 按角色分组的用户列表
+const groupedUsers = computed(() => {
+  // 初始化分组对象
+  const groups = {
+    admin: [],
+    teacher: [],
+    student: []
+  }
+  
+  // 将过滤后的用户分配到对应的分组
+  filteredUsers.value.forEach(user => {
+    if (user.role === 'admin') {
+      groups.admin.push(user)
+    } else if (user.role === 'teacher') {
+      groups.teacher.push(user)
+    } else if (user.role === 'student') {
+      groups.student.push(user)
+    }
+  })
+  
+  return groups
 })
 
 // 获取当前用户ID

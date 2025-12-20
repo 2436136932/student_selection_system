@@ -437,6 +437,29 @@ a:hover {
 /* 应用容器 */
 .app-container {
   transition: all 0.3s ease;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* 确保html和body没有默认边距 */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 确保el-container和el-main充满可用空间 */
+.el-container {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.el-main {
+  padding: 0;
+  overflow: hidden;
 }
 
 /* 侧边栏样式 */
@@ -864,7 +887,34 @@ a:hover {
 .main-content {
   padding: 25px;
   background-color: #f5f7fa;
-  min-height: calc(100vh - 65px);
+  min-height: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+}
+
+/* 聊天中心页面样式 */
+.main-content:has(.chat-container) {
+  padding: 0;
+  background-color: transparent;
+  min-height: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.main-content:has(.chat-container) .content-wrapper {
+  padding: 0;
+  background-color: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  min-height: 100%;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  margin: 0;
+  overflow: hidden;
 }
 
 .content-wrapper {
@@ -873,6 +923,9 @@ a:hover {
   padding: 25px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
+  min-height: calc(100vh - 65px);
+  margin: 0;
+  height: 100%;
 }
 
 /* 响应式设计 */

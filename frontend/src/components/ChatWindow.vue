@@ -53,47 +53,39 @@
     </div>
     
     <!-- 消息输入区域 -->
-    <div class="chat-input-area">
-      <div class="input-hint">
-        <small>按 Enter 发送消息，Shift + Enter 换行</small>
-      </div>
-      <el-input
-        v-model="inputMessage"
-        type="textarea"
-        :rows="3"
-        placeholder="输入消息..."
-        resize="none"
-        @keyup.enter.exact="handleSendMessage"
-        @keyup.enter.shift="handleEnterShift"
-        style="margin-bottom: 12px;"
-      >
-        <template #append>
-          <el-button type="primary" @click="handleSendMessage" :disabled="!inputMessage.trim()" size="large" style="height: 100%;">
+      <div class="chat-input-area">
+        <div class="input-hint">
+          <small>按 Enter 发送消息，Shift + Enter 换行</small>
+        </div>
+        <div class="input-wrapper">
+          <el-input
+            v-model="inputMessage"
+            type="textarea"
+            :rows="2"
+            placeholder="输入消息..."
+            resize="none"
+            @keyup.enter.exact="handleSendMessage"
+            @keyup.enter.shift="handleEnterShift"
+            class="message-input"
+          ></el-input>
+          <el-button 
+            type="primary" 
+            @click="handleSendMessage" 
+            :disabled="!inputMessage.trim()" 
+            size="default"
+            class="send-button"
+          >
             <el-icon style="margin-right: 4px;"><Right /></el-icon>
             发送
           </el-button>
-        </template>
-      </el-input>
-      <!-- 额外的发送按钮 -->
-      <div class="extra-send-button-container">
-        <el-button 
-          type="primary" 
-          @click="handleSendMessage" 
-          :disabled="!inputMessage.trim()" 
-          size="large"
-          class="extra-send-button"
-        >
-          <el-icon style="margin-right: 4px;"><Right /></el-icon>
-          发送消息
-        </el-button>
+        </div>
       </div>
-    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch, nextTick } from 'vue'
-import { Close, Right, CircleCheck } from '@element-plus/icons-vue'
+import { Close, Right, CircleCheck, CirclePlus } from '@element-plus/icons-vue'
 
 // 接收父组件传递的属性
 const props = defineProps({
@@ -208,6 +200,7 @@ const handleCloseSession = () => {
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
+  overflow: hidden;
 }
 
 .chat-window-header {
@@ -217,6 +210,7 @@ const handleCloseSession = () => {
   padding: 12px 20px;
   border-bottom: 1px solid #e8e8e8;
   background-color: #fafafa;
+  flex-shrink: 0;
 }
 
 .header-left {
@@ -276,6 +270,7 @@ const handleCloseSession = () => {
   background-color: #f5f7fa;
   display: flex;
   flex-direction: column;
+  min-height: 0; /* 解决flex子元素溢出问题 */
 }
 
 .message-item {
@@ -341,64 +336,45 @@ const handleCloseSession = () => {
   padding: 16px 20px;
   border-top: 1px solid #e8e8e8;
   background-color: #ffffff;
+  flex-shrink: 0;
 }
 
 .input-hint {
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   text-align: right;
   color: #909399;
   font-size: 12px;
 }
 
-.chat-input-area .el-input {
-  border-radius: 8px;
-}
-
-/* 为追加的发送按钮添加样式 */
-.chat-input-area .el-button {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
-/* 额外的发送按钮容器 */
-.extra-send-button-container {
+/* 输入框和按钮的包装容器 */
+.input-wrapper {
   display: flex;
-  justify-content: flex-end;
+  gap: 12px;
+  align-items: flex-end;
+  width: 100%;
   margin-top: 8px;
 }
 
-/* 额外的发送按钮 */
-.extra-send-button {
-  min-width: 120px;
+/* 消息输入框样式 */
+.message-input {
+  flex: 1;
   border-radius: 8px;
-  background-color: #67c23a;
-  border-color: #67c23a;
+  width: 100%;
+  max-height: 150px;
+  overflow-y: auto;
 }
 
-/* 额外的发送按钮悬停效果 */
-.extra-send-button:hover {
-  background-color: #85ce61;
-  border-color: #85ce61;
-}
-
-/* 额外的发送按钮禁用状态 */
-.extra-send-button:disabled {
-  background-color: #c0eb75;
-  border-color: #c0eb75;
-  color: #ffffff;
-}
-
-/* 为追加的发送按钮添加悬停效果 */
-.chat-input-area .el-button:hover {
+/* 发送按钮样式 */
+.send-button {
+  min-width: 80px;
+  height: 40px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
   background-color: #409eff;
   border-color: #409eff;
-}
-
-/* 为禁用状态的追加发送按钮添加样式 */
-.chat-input-area .el-button:disabled {
-  background-color: #a0cfff;
-  border-color: #a0cfff;
   color: #ffffff;
+  white-space: nowrap;
 }
 
 @keyframes fadeIn {

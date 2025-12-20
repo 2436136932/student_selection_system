@@ -67,7 +67,6 @@ mybatis-plus:
   type-aliases-package: com.example.studentselectionsystem.entity
   configuration:
     map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
       id-type: AUTO
@@ -84,11 +83,11 @@ jwt:
 # Logging Configuration
 logging:
   level:
-    root: debug
-    com.example.studentselectionsystem: debug
-    org.springframework.web: debug
-    org.apache.catalina: debug
-    org.springframework.security: debug
+    root: info
+    com.example.studentselectionsystem: info
+    org.springframework.web: info
+    org.apache.catalina: info
+    org.springframework.security: info
   file:
     name: logs/student-selection-system.log
     max-size: 10MB

@@ -44,28 +44,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String requestURI = request.getRequestURI();
+        String requestMethod = request.getMethod();
+        
+        // 构建跳过规则，只跳过特定的GET请求，不跳过POST请求
         boolean shouldSkip = requestURI.equals("/api/auth/login") || 
                            requestURI.equals("/api/auth/register") ||
                            requestURI.startsWith("/api/test/") ||
                            requestURI.startsWith("/api/public/") ||
-                           // 跳过学生相关公开接口
-                           requestURI.equals("/api/students") ||
-                           requestURI.equals("/api/students/count") ||
-                           requestURI.equals("/api/students/with-major") ||
+                           // 跳过学生相关公开接口 - 仅跳过GET请求
+                           (requestURI.equals("/api/students") && requestMethod.equals("GET")) ||
+                           (requestURI.equals("/api/students/count") && requestMethod.equals("GET")) ||
+                           (requestURI.equals("/api/students/with-major") && requestMethod.equals("GET")) ||
                            
-                           // 跳过课程相关公开接口
-                           requestURI.equals("/api/courses/with-teacher") ||
-                           requestURI.equals("/api/courses/page") ||
-                           // 跳过专业相关公开接口
-                           requestURI.equals("/api/majors/search") ||
-                           // 跳过评奖标准相关公开接口
-                           requestURI.equals("/api/standards/page") ||
-                           // 跳过统计类公开接口
-                           requestURI.equals("/api/awards/count") ||
-                           requestURI.equals("/api/student-award-applications/count") ||
-                           // 跳过最近记录类公开接口
-                           requestURI.equals("/api/awards/recent") ||
-                           requestURI.equals("/api/notices/recent");
+                           // 跳过课程相关公开接口 - 仅跳过GET请求
+                           (requestURI.equals("/api/courses/with-teacher") && requestMethod.equals("GET")) ||
+                           (requestURI.equals("/api/courses/page") && requestMethod.equals("GET")) ||
+                           // 跳过专业相关公开接口 - 仅跳过GET请求
+                           (requestURI.equals("/api/majors/search") && requestMethod.equals("GET")) ||
+                           // 跳过评奖标准相关公开接口 - 仅跳过GET请求
+                           (requestURI.equals("/api/standards/page") && requestMethod.equals("GET")) ||
+                           // 跳过统计类公开接口 - 仅跳过GET请求
+                           (requestURI.equals("/api/awards/count") && requestMethod.equals("GET")) ||
+                           (requestURI.equals("/api/student-award-applications/count") && requestMethod.equals("GET")) ||
+                           // 跳过最近记录类公开接口 - 仅跳过GET请求
+                           (requestURI.equals("/api/awards/recent") && requestMethod.equals("GET")) ||
+                           (requestURI.equals("/api/notices/recent") && requestMethod.equals("GET"));
         System.out.println("JwtAuthenticationFilter - shouldNotFilter: " + shouldSkip + " for URI: " + requestURI);
         return shouldSkip;
     }

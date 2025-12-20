@@ -257,17 +257,25 @@ const initializeWebSocket = () => {
 
 <style scoped>
 .chat-container {
-  height: calc(100vh - 120px);
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 .chat-card {
   height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  border-radius: 12px;
+  border-radius: 0;
   overflow: hidden;
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
 }
 
 .card-header {
@@ -277,6 +285,7 @@ const initializeWebSocket = () => {
   padding: 16px 24px;
   background-color: #fafafa;
   border-bottom: 1px solid #e8e8e8;
+  flex-shrink: 0;
 }
 
 .card-header h2 {
@@ -286,28 +295,48 @@ const initializeWebSocket = () => {
   color: #2c3e50;
 }
 
+/* 直接修改 Element Plus 卡片内容区域样式 */
+.chat-card :deep(.el-card__body) {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  flex: 1;
+  max-width: none;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
 .chat-main {
   display: flex;
-  height: calc(100% - 60px);
   overflow: hidden;
+  flex: 1;
+  width: 100%;
 }
 
 .chat-list-panel {
   width: 320px;
   border-right: 1px solid #e8e8e8;
   overflow-y: auto;
+  background-color: #ffffff;
+  flex-shrink: 0;
 }
 
 .chat-window-panel {
   flex: 1;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  width: 0; /* 确保flex:1能正确计算 */
 }
 
 .no-session {
-  height: 100%;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #fafafa;
+  background-color: #f5f7fa;
+  height: 100%;
+  width: 100%;
 }
 </style>

@@ -77,14 +77,14 @@ public interface StudentRepository extends BaseMapper<Student> {
      * @param id 学生ID
      * @return 学生信息
      */
-    @Select("SELECT * FROM students WHERE id = #{id}")
+    @Select("SELECT s.*, m.department FROM students s LEFT JOIN majors m ON s.major = m.name WHERE s.id = #{id}")
     Optional<Student> selectByIdWithMajor(@Param("id") Long id);
 
     /**
      * 获取所有学生及其专业信息
      * @return 学生列表
      */
-    @Select("SELECT * FROM students")
+    @Select("SELECT s.*, m.department FROM students s LEFT JOIN majors m ON s.major = m.name")
     List<Student> selectAllWithMajor();
 
     /**
@@ -94,5 +94,15 @@ public interface StudentRepository extends BaseMapper<Student> {
      */
     @Select("SELECT * FROM students WHERE user_id = #{userId}")
     Optional<Student> selectByUserId(@Param("userId") Long userId);
+    
+    /**
+     * 分页和搜索获取学生及其院系信息
+     * @param studentNumber 学号
+     * @param name 姓名
+     * @param className 班级
+     * @return 学生列表
+     */
+    @Select("SELECT s.*, m.department FROM students s LEFT JOIN majors m ON s.major = m.name WHERE (#{studentNumber} IS NULL OR s.student_number LIKE CONCAT('%', #{studentNumber}, '%')) AND (#{name} IS NULL OR s.name LIKE CONCAT('%', #{name}, '%')) AND (#{className} IS NULL OR s.class_name LIKE CONCAT('%', #{className}, '%'))")
+    List<Student> selectStudentsWithDepartment(@Param("studentNumber") String studentNumber, @Param("name") String name, @Param("className") String className);
 
 }

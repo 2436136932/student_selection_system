@@ -39,16 +39,51 @@ public class StudentServiceImpl implements StudentService {
     private AwardService awardService;
 
     @Override
+    @Transactional
     public Student createStudent(Student student) {
+        // 参数验证
+        validateStudent(student);
+        
         // 检查学号是否已存在
         if (existsByStudentNumber(student.getStudentNumber())) {
             throw new RuntimeException("学号已存在");
         }
+        
         // 设置创建时间和更新时间
-        student.setCreatedAt(new Date());
-        student.setUpdatedAt(new Date());
+        Date now = new Date();
+        student.setCreatedAt(now);
+        student.setUpdatedAt(now);
+        
         studentRepository.insert(student);
         return student;
+    }
+    
+    /**
+     * 验证学生信息
+     * @param student 学生信息
+     */
+    private void validateStudent(Student student) {
+        if (student == null) {
+            throw new RuntimeException("学生信息不能为空");
+        }
+        if (student.getStudentNumber() == null || student.getStudentNumber().isEmpty()) {
+            throw new RuntimeException("学号不能为空");
+        }
+        if (student.getName() == null || student.getName().isEmpty()) {
+            throw new RuntimeException("姓名不能为空");
+        }
+        if (student.getGender() == null || student.getGender().isEmpty()) {
+            throw new RuntimeException("性别不能为空");
+        }
+        if (student.getMajor() == null || student.getMajor().isEmpty()) {
+            throw new RuntimeException("专业不能为空");
+        }
+        if (student.getClassName() == null || student.getClassName().isEmpty()) {
+            throw new RuntimeException("班级不能为空");
+        }
+        if (student.getAdmissionYear() == null) {
+            throw new RuntimeException("入学年份不能为空");
+        }
     }
 
     @Override
@@ -131,7 +166,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<Student> findAllStudents() {
-        return studentRepository.selectList(null);
+        // 使用selectAllWithMajor方法获取所有学生及其院系信息
+        return studentRepository.selectAllWithMajor();
     }
 
     @Override
@@ -168,13 +204,16 @@ public class StudentServiceImpl implements StudentService {
         // 执行查询
         com.baomidou.mybatisplus.core.metadata.IPage<Student> result = studentRepository.selectPage(pageObj, queryWrapper);
         
-        // 打印日志
-        System.out.println("学生分页查询结果:");
-        System.out.println("总记录数: " + result.getTotal());
-        System.out.println("当前页: " + result.getCurrent());
-        System.out.println("每页大小: " + result.getSize());
-        System.out.println("总页数: " + result.getPages());
-        System.out.println("记录列表: " + result.getRecords());
+        // 手动关联majors表获取院系信息
+        List<Student> students = result.getRecords();
+        for (Student student : students) {
+            // 查询该学生专业对应的院系
+            List<Student> studentsWithDept = studentRepository.selectStudentsWithDepartment(student.getStudentNumber(), null, null);
+            if (!studentsWithDept.isEmpty()) {
+                // 设置院系信息
+                student.setDepartment(studentsWithDept.get(0).getDepartment());
+            }
+        }
         
         return result;
     }

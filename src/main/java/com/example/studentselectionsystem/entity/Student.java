@@ -93,6 +93,12 @@ public class Student implements Serializable {
     private Long userId;
 
     /**
+     * 院系（非数据库字段，通过专业关联获取）
+     */
+    @TableField(exist = false)
+    private String department;
+
+    /**
      * 创建时间
      */
     @TableField(value = "created_at", updateStrategy = FieldStrategy.NEVER)
@@ -163,6 +169,10 @@ public class Student implements Serializable {
         return updatedAt;
     }
 
+    public String getDepartment() {
+        return department;
+    }
+
     // Setter methods
     public void setId(Long id) {
         this.id = id;
@@ -210,6 +220,10 @@ public class Student implements Serializable {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 
     public void setCreatedAt(Date createdAt) {

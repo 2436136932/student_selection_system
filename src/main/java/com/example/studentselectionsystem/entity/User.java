@@ -46,6 +46,13 @@ public class User implements Serializable {
     @TableField("real_name")
     @JsonProperty("real_name")
     private String realName;
+    
+    /**
+     * 姓名（用于前端兼容性，映射到realName字段）
+     */
+    @TableField(exist = false)
+    @JsonProperty("name")
+    private String name;
 
     /**
      * 邮箱
@@ -136,6 +143,19 @@ public class User implements Serializable {
 
     public void setRealName(String realName) {
         this.realName = realName;
+        // 同时更新name字段，保持同步
+        this.name = realName;
+    }
+
+    public String getName() {
+        // 返回realName的值，确保前端使用name字段时能获取到真实姓名
+        return this.realName;
+    }
+
+    public void setName(String name) {
+        // 设置name字段时，同时更新realName字段，保持同步
+        this.name = name;
+        this.realName = name;
     }
 
     public String getEmail() {

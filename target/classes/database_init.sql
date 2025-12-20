@@ -160,7 +160,10 @@ INSERT INTO majors (name, department) VALUES
 ('自动化', '自动化学院'),
 ('机械工程', '机械工程学院'),
 ('会计学', '经济管理学院'),
-('市场营销', '经济管理学院');
+('市场营销', '经济管理学院'),
+('物理学', '物理学院'),
+('化学工程', '化学学院');
+
 
 -- 学生奖项关联表
 CREATE TABLE IF NOT EXISTS student_awards (
