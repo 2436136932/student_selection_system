@@ -200,7 +200,6 @@ const handleCloseSession = () => {
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
-  overflow: hidden;
 }
 
 .chat-window-header {
@@ -268,8 +267,6 @@ const handleCloseSession = () => {
   overflow-y: auto;
   padding: 20px;
   background-color: #f5f7fa;
-  display: flex;
-  flex-direction: column;
   min-height: 0; /* 解决flex子元素溢出问题 */
 }
 

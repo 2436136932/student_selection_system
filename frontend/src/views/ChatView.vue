@@ -323,7 +323,6 @@ const initializeWebSocket = () => {
 
 .chat-window-panel {
   flex: 1;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   background-color: #ffffff;

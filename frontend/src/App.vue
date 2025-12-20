@@ -1,7 +1,7 @@
 <template>
   <!-- 根据用户是否登录显示不同界面 -->
   <div v-if="isLoggedIn" class="app-container" :class="{ 'dark-mode': isDarkMode }">
-    <el-container style="height: 100vh;">
+    <el-container>
       <!-- 侧边栏导航 -->
       <el-aside :width="isCollapse ? '64px' : '220px'" class="sidebar">
         <div class="logo-container">
@@ -440,7 +440,6 @@ a:hover {
   margin: 0;
   padding: 0;
   height: 100vh;
-  overflow: hidden;
 }
 
 /* 确保html和body没有默认边距 */
@@ -448,18 +447,16 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden;
 }
 
 /* 确保el-container和el-main充满可用空间 */
 .el-container {
   height: 100vh;
-  overflow: hidden;
 }
 
 .el-main {
   padding: 0;
-  overflow: hidden;
+  overflow: auto;
 }
 
 /* 侧边栏样式 */
@@ -890,7 +887,7 @@ html, body {
   min-height: 100%;
   height: 100%;
   position: relative;
-  overflow: hidden;
+  overflow: auto;
   margin: 0;
 }
 
@@ -925,7 +922,6 @@ html, body {
   transition: all 0.3s ease;
   min-height: calc(100vh - 65px);
   margin: 0;
-  height: 100%;
 }
 
 /* 响应式设计 */
