@@ -267,6 +267,33 @@ CREATE TABLE IF NOT EXISTS carousel (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='轮播图表';
 
+-- 创建聊天会话表
+CREATE TABLE IF NOT EXISTS chat_sessions (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '会话ID',
+    user1_id BIGINT NOT NULL COMMENT '用户1 ID',
+    user2_id BIGINT NOT NULL COMMENT '用户2 ID',
+    status VARCHAR(20) DEFAULT 'active' COMMENT '会话状态：active/closed',
+    last_message TEXT COMMENT '最后一条消息内容',
+    last_message_time DATETIME COMMENT '最后一条消息时间',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    UNIQUE KEY uk_user1_user2 (user1_id, user2_id),
+    UNIQUE KEY uk_user2_user1 (user2_id, user1_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='聊天会话表';
+
+-- 创建聊天消息表
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '消息ID',
+    session_id BIGINT NOT NULL COMMENT '会话ID',
+    sender_id BIGINT NOT NULL COMMENT '发送者ID',
+    receiver_id BIGINT NOT NULL COMMENT '接收者ID',
+    sender_type VARCHAR(20) NOT NULL COMMENT '发送者类型：student/teacher/admin',
+    content TEXT NOT NULL COMMENT '消息内容',
+    read_status VARCHAR(20) DEFAULT 'unread' COMMENT '阅读状态：read/unread',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '发送时间',
+    FOREIGN KEY (session_id) REFERENCES chat_sessions(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='聊天消息表';
+
 -- 插入轮播图初始数据
 INSERT INTO carousel (image_url, title, description, sort_order, status) VALUES
 ('https://picsum.photos/800/400?random=1', '欢迎使用学生评选系统', '学生评选系统提供奖学金、助学金等多种评选功能', 1, 1),
@@ -336,7 +363,7 @@ INSERT INTO awards (award_name, award_level, award_type, description, requiremen
 INSERT INTO students (student_number, name, gender, birth_date, major, class_name, admission_year, phone, email, status) VALUES
 ('S001', '赵同学', '男', '2002-01-01', '计算机科学与技术', '计科2001', 2020, '13800138001', 'zhaostudent@example.com', 1),
 ('S002', '钱同学', '女', '2002-02-02', '数学与应用数学', '数学2001', 2020, '13800138002', 'qianstudent@example.com', 1),
-('S003', '孙同学', '男', '2002-03-03', '物理学', '物理2001', 2020, '13800138003', 'sunstudent@example.com', 1),   
+('S003', '孙同学', '男', '2002-03-03', '物理学', '物理2001', 2020, '13800138003', 'sunstudent@example.com', 1);   
 
 
 
@@ -344,7 +371,7 @@ INSERT INTO students (student_number, name, gender, birth_date, major, class_nam
 INSERT INTO users (username, password, role, real_name, email, phone, avatar, status) VALUES
 ('student1', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '赵同学', 'zhaostudent@example.com', '13800138001', 'https://picsum.photos/id/1005/200/200', 1),
 ('student2', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '钱同学', 'qianstudent@example.com', '13800138002', 'https://picsum.photos/id/1005/200/200', 1),
-('student3', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '孙同学', 'sunstudent@example.com', '13800138003', 'https://picsum.photos/id/1005/200/200', 1),
+('student3', '$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi', 'student', '孙同学', 'sunstudent@example.com', '13800138003', 'https://picsum.photos/id/1005/200/200', 1);
 
 
 

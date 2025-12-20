@@ -1,0 +1,277 @@
+<template>
+  <div class="chat-list">
+    <!-- 会话列表头部 -->
+    <div class="chat-list-header">
+      <h3>用户列表</h3>
+      <!-- 搜索框 -->
+      <div class="search-container">
+        <el-input
+          v-model="searchKeyword"
+          placeholder="搜索用户..."
+          clearable
+          @input="handleSearch"
+          size="small"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+        </el-input>
+      </div>
+      <!-- 搜索结果数量 -->
+      <div class="search-result-count">
+        <small>共 {{ filteredUsers.length }} 条日志</small>
+      </div>
+    </div>
+    
+    <!-- 会话列表内容 -->
+    <div class="chat-list-content">
+      <div 
+        v-for="user in filteredUsers" 
+        :key="user.id"
+        class="chat-item"
+        :class="{ 'active': isUserActive(user) }"
+        @click="handleSelectUser(user)"
+      >
+        <div class="chat-item-avatar">
+          <el-avatar size="large">
+            {{ getUserInitial(user) }}
+          </el-avatar>
+        </div>
+        
+        <div class="chat-item-info">
+          <div class="chat-item-top">
+            <span class="chat-item-name">
+              {{ user.realName || user.username }}
+            </span>
+            <span class="chat-item-role-tag" :class="getRoleClass(user.role)">
+              {{ getRoleName(user.role) }}
+            </span>
+          </div>
+          
+          <div class="chat-item-bottom">
+            <span class="chat-item-message">
+              <template v-if="user.role === 'teacher'">
+                {{ user.department || '暂无部门信息' }}
+              </template>
+              <template v-else-if="user.role === 'student'">
+                {{ user.major || '' }} {{ user.className || '' }}
+              </template>
+              <template v-else>
+                点击开始聊天
+              </template>
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <div v-if="filteredUsers.length === 0" class="empty-sessions">
+        <el-empty description="暂无匹配用户" />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue'
+import { Search } from '@element-plus/icons-vue'
+
+// 接收父组件传递的属性
+const props = defineProps({
+  users: {
+    type: Array,
+    default: () => []
+  },
+  currentSession: {
+    type: Object,
+    default: null
+  },
+  chatSessions: {
+    type: Array,
+    default: () => []
+  }
+})
+
+// 定义事件
+const emit = defineEmits(['select-user'])
+
+// 搜索关键词
+const searchKeyword = ref('')
+
+// 过滤后的用户列表
+const filteredUsers = computed(() => {
+  if (!searchKeyword.value.trim()) {
+    return props.users
+  }
+  
+  const keyword = searchKeyword.value.trim().toLowerCase()
+  return props.users.filter(user => {
+    const realName = user.realName ? user.realName.toLowerCase() : ''
+    const username = user.username ? user.username.toLowerCase() : ''
+    const department = user.department ? user.department.toLowerCase() : ''
+    const major = user.major ? user.major.toLowerCase() : ''
+    const className = user.className ? user.className.toLowerCase() : ''
+    
+    return realName.includes(keyword) || 
+           username.includes(keyword) || 
+           department.includes(keyword) || 
+           major.includes(keyword) || 
+           className.includes(keyword)
+  })
+})
+
+// 获取当前用户ID
+const currentUserId = computed(() => {
+  return JSON.parse(localStorage.getItem('userInfo'))?.id || ''
+})
+
+// 判断用户是否活跃（是否是当前聊天对象）
+const isUserActive = (user) => {
+  if (!props.currentSession) return false
+  return props.currentSession.user1Id === user.id || props.currentSession.user2Id === user.id
+}
+
+// 获取用户角色名称
+const getRoleName = (role) => {
+  const roleMap = {
+    'admin': '管理员',
+    'teacher': '教师',
+    'student': '学生'
+  }
+  return roleMap[role] || '用户'
+}
+
+// 获取用户角色样式类
+const getRoleClass = (role) => {
+  return `role-${role}`
+}
+
+// 获取用户姓名首字母
+const getUserInitial = (user) => {
+  const name = user.realName || user.username
+  return name.charAt(0).toUpperCase()
+}
+
+// 处理选择用户
+const handleSelectUser = (user) => {
+  emit('select-user', user)
+}
+
+// 处理搜索
+const handleSearch = () => {
+  // 搜索逻辑由computed属性自动处理
+  console.log('搜索关键词:', searchKeyword.value)
+}
+</script>
+
+<style scoped>
+.chat-list {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-list-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e8e8e8;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-list-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* 搜索容器 */
+.search-container {
+  width: 100%;
+}
+
+/* 搜索结果数量 */
+.search-result-count {
+  text-align: right;
+  color: #909399;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.chat-list-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 8px;
+  background-color: #ffffff;
+  border: 1px solid #e8e8e8;
+}
+
+.chat-item:hover {
+  background-color: #f5f7fa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chat-item.active {
+  background-color: #ecf5ff;
+  border-color: #d9ecff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chat-item-avatar {
+  margin-right: 12px;
+}
+
+.chat-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.chat-item-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2c3e50;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-item-time {
+  font-size: 12px;
+  color: #909399;
+}
+
+.chat-item-bottom {
+  display: flex;
+  align-items: center;
+}
+
+.chat-item-message {
+  font-size: 13px;
+  color: #606266;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty-sessions {
+  padding: 40px 20px;
+}
+</style>

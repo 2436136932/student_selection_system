@@ -66,6 +66,10 @@
                         <el-icon><user /></el-icon>
                         个人中心
                       </el-dropdown-item>
+                      <el-dropdown-item command="chat">
+                        <el-icon><ChatLineRound /></el-icon>
+                        聊天中心
+                      </el-dropdown-item>
                       <el-dropdown-item command="settings">
                         <el-icon><setting /></el-icon>
                         系统设置
@@ -119,7 +123,9 @@ import {
   Setting,
   SwitchButton,
   Bell,
-  PictureRounded
+  PictureRounded,
+  ChatDotRound,
+  ChatLineRound
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -302,6 +308,9 @@ const handleDropdownCommand = (command) => {
   switch (command) {
     case 'profile':
       router.push('/profile')
+      break
+    case 'chat':
+      router.push('/chat')
       break
     case 'settings':
       router.push('/system-settings')

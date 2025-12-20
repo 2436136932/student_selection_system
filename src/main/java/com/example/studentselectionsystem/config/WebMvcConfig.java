@@ -24,7 +24,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     /**
      * 配置CORS跨域请求
-     * 允许前端应用访问后端API
+     * 允许前端应用访问后端API和WebSocket
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {

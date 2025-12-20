@@ -93,6 +93,12 @@ const router = createRouter({
       name: 'SystemSettings',
       component: () => import('../views/SystemSettingsView.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/chat',
+      name: 'Chat',
+      component: () => import('../views/ChatView.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })
