@@ -5199,3 +5199,229 @@ Caused by: java.lang.ClassNotFoundException: com.example.studentselectionsystem.
 2025-12-22T11:32:18.365+08:00  INFO 36800 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
 2025-12-22T11:32:18.365+08:00  INFO 36800 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
 2025-12-22T11:32:18.367+08:00  INFO 36800 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:33:05.729+08:00  INFO 44288 --- [restartedMain] s.StudentAwardSelectionSystemApplication : Starting StudentAwardSelectionSystemApplication using Java 21.0.2 with PID 44288 (G:\javacode\student-selection-system\target\classes started by 俞伟杰 in G:\javacode\student-selection-system)
+2025-12-22T11:33:05.731+08:00  INFO 44288 --- [restartedMain] s.StudentAwardSelectionSystemApplication : No active profile set, falling back to 1 default profile: "default"
+2025-12-22T11:33:05.786+08:00  INFO 44288 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-12-22T11:33:05.786+08:00  INFO 44288 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-12-22T11:33:06.977+08:00  INFO 44288 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2025-12-22T11:33:06.978+08:00  INFO 44288 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : Loaded Apache Tomcat Native library [2.0.8] using APR version [1.7.4].
+2025-12-22T11:33:06.982+08:00  INFO 44288 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : OpenSSL successfully initialized [OpenSSL 3.0.14 4 Jun 2024]
+2025-12-22T11:33:06.992+08:00  INFO 44288 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-22T11:33:06.992+08:00  INFO 44288 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.15]
+2025-12-22T11:33:07.076+08:00  INFO 44288 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-22T11:33:07.076+08:00  INFO 44288 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1289 ms
+2025-12-22T11:33:07.329+08:00 ERROR 44288 --- [restartedMain] c.b.m.core.MybatisConfiguration          : mapper[com.example.studentselectionsystem.mapper.StudentAwardApplicationMapper.selectApplicationsWithAwardByStudentIdPage] is ignored, because it exists, maybe from xml file
+2025-12-22T11:33:08.392+08:00  INFO 44288 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@48296a9c, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@640e76fc, org.springframework.security.web.context.SecurityContextHolderFilter@7d32e8c8, org.springframework.security.web.header.HeaderWriterFilter@2004c87d, org.springframework.web.filter.CorsFilter@3743ff6e, org.springframework.security.web.authentication.logout.LogoutFilter@53ff298c, com.example.studentselectionsystem.config.JwtAuthenticationFilter@1f931533, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@40da36dd, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7e1bb527, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@524468f6, org.springframework.security.web.session.SessionManagementFilter@6d5129f0, org.springframework.security.web.access.ExceptionTranslationFilter@4f66f6b7, org.springframework.security.web.access.intercept.AuthorizationFilter@6eb8566b]
+2025-12-22T11:33:08.515+08:00  WARN 44288 --- [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-12-22T11:33:08.628+08:00  INFO 44288 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-12-22T11:33:08.808+08:00  INFO 44288 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2025-12-22T11:33:08.819+08:00  INFO 44288 --- [restartedMain] s.StudentAwardSelectionSystemApplication : Started StudentAwardSelectionSystemApplication in 3.511 seconds (process running for 4.13)
+2025-12-22T11:33:08.858+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-22T11:33:08.858+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-12-22T11:33:08.860+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-12-22T11:37:17.166+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-22T11:37:17.281+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5df7ea9
+2025-12-22T11:37:17.283+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-22T11:37:17.288+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:17.288+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:17.306+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:17.329+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:17.329+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:17.329+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:17.372+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:17.372+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:17.372+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:17.374+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:17.374+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:17.374+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:17.406+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-10] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:17.408+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-10] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:17.413+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-10] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:17.415+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-10] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:21.891+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:21.893+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:21.910+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:21.912+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:21.932+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:21.932+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:21.933+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:21.933+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:21.934+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:21.936+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:21.945+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:21.946+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:21.947+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:21.947+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:21.949+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:21.950+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:21.959+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:21.960+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:21.965+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:21.968+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:21.974+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:21.976+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:21.980+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:21.982+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:29.207+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:29.208+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:29.212+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:29.215+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:29.385+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:29.385+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:29.387+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-10] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:29.387+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:29.387+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:29.388+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-10] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:29.392+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:29.392+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:29.394+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-10] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:29.395+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-10] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:29.395+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:29.395+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.382+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.385+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.390+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.391+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.401+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.401+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.402+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.402+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.403+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.404+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.414+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.415+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.416+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.416+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.421+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.422+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.428+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.429+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.429+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.430+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.433+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.437+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.442+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.444+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.444+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.446+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.449+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.452+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.458+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.459+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:53.462+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:37:53.464+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:37:56.625+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:56.627+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:56.632+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:56.634+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:56.663+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:56.663+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:56.663+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:56.664+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:56.664+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:56.664+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:56.667+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:56.667+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:56.667+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:56.670+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:56.670+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:56.670+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:57.675+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:57.677+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:57.682+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:57.684+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:57.685+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:37:57.687+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:37:57.730+08:00  WARN 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.b.m.c.t.support.ReflectLambdaMeta      : Unable to make field private final java.lang.Class java.lang.invoke.SerializedLambda.capturingClass accessible: module java.base does not "opens java.lang.invoke" to unnamed module @286185c4
+2025-12-22T11:38:02.295+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:38:02.297+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:38:08.165+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:38:08.166+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:42:32.515+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:42:32.518+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:42:32.523+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:42:32.524+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:42:32.562+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:42:32.562+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:42:32.562+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:42:32.564+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:42:32.564+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:42:32.564+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:42:32.570+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:42:32.570+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:42:32.570+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T11:42:32.571+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:42:32.571+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:42:32.571+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T11:42:37.122+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:42:37.124+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:42:37.127+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:42:37.129+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:42:37.153+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:42:37.154+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:42:37.158+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:42:37.159+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:42:37.161+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:42:37.162+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-4] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:42:38.581+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:42:38.581+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-1] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:42:38.581+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:42:38.582+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:42:38.582+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-1] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:42:38.582+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:42:38.587+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:42:38.587+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:42:38.587+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-1] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T11:42:38.589+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-5] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:42:38.589+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-1] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:42:38.589+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T11:48:12.519+08:00  WARN 44288 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3m55s27ms784µs).
+2025-12-22T12:25:59.315+08:00  WARN 44288 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=13m16s429ms969µs600ns).
+2025-12-22T12:31:18.988+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:18.992+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:18.998+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:18.998+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:19.061+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:19.061+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:19.062+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:19.062+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:19.063+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:19.064+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:19.066+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:19.066+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:19.066+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:19.067+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:19.067+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-6] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:19.067+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-3] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:20.707+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:20.709+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:20.714+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:20.716+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-2] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:20.742+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-1] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:20.744+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:20.745+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:20.745+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-1] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:20.745+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:20.747+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:20.748+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:20.748+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-1] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:20.749+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-8] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:20.749+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-1] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:20.750+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: admin
+2025-12-22T12:31:20.752+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=1, 用户名=admin, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=admin, 状态=1
+2025-12-22T12:31:28.577+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T12:31:28.578+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T12:31:28.587+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T12:31:28.590+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-9] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T12:31:28.759+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T12:31:28.759+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-10] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T12:31:28.760+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-1] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T12:31:28.763+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-10] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T12:31:28.763+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-1] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T12:31:28.763+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T12:31:28.767+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-1] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T12:31:28.767+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-10] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T12:31:28.767+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 正在查询用户名: student1
+2025-12-22T12:31:28.768+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-1] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T12:31:28.768+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-7] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1
+2025-12-22T12:31:28.768+08:00  INFO 44288 --- [http-nio-0.0.0.0-8080-exec-10] c.e.s.service.impl.UserServiceImpl       : 查询结果: 用户存在，ID=5, 用户名=student1, 密码=$2a$10$QFSTE8rMelK7GRMcyV.E.O4h9DZH5511KLErT.QkHS2xcL7bqpeyi, 角色=student, 状态=1

@@ -621,8 +621,8 @@
       <el-table :data="studentApplications" style="width: 100%" stripe v-loading="applicationLoading">
         <el-table-column prop="id" label="申请ID" width="80"></el-table-column>
         <el-table-column prop="student.name" label="学生姓名" width="120"></el-table-column>
-        <el-table-column prop="student.student_number" label="学号" width="150">
-          <template #default="scope">{{ scope.row.student?.student_number || '-' }}</template>
+        <el-table-column prop="student.studentNumber" label="学号" width="150">
+          <template #default="scope">{{ scope.row.student?.studentNumber || '-' }}</template>
         </el-table-column>
         <el-table-column prop="student.major" label="专业" width="150">
           <template #default="scope">{{ scope.row.student?.major || '-' }}</template>

@@ -40,11 +40,14 @@
           {{ message.content }}
         </div>
         <div class="message-time">
-          {{ formatTime(message.createdAt) }}
-          <el-icon v-if="message.senderId === currentUserId && message.readStatus === 'read'" class="read-icon">
-            <CircleCheck />
-          </el-icon>
-        </div>
+            {{ formatTime(message.createdAt) }}
+            <span v-if="message.readStatus === 'read'" class="read-status">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="8" cy="8" r="7" stroke="#409EFF" stroke-width="2" fill="transparent"/>
+                <path d="M5 8L7 10L11 6" stroke="#409EFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
       </div>
       
       <div v-if="messages.length === 0" class="empty-messages">
@@ -354,10 +357,11 @@ watch(
   gap: 4px;
 }
 
-/* 已读图标样式 */
-.read-icon {
-  font-size: 12px;
-  color: #409eff;
+/* 已读状态样式 */
+.read-status {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
 }
 
 .empty-messages {

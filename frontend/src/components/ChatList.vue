@@ -30,9 +30,19 @@
         <!-- 管理员组 -->
         <el-collapse-item 
           v-if="groupedUsers.admin.length > 0" 
-          :title="`管理员 (${groupedUsers.admin.length})`" 
           name="admin"
         >
+          <template #title>
+            <div class="collapse-title">
+              管理员 ({{ groupedUsers.admin.length }})
+              <el-badge 
+                v-if="roleUnreadCounts.admin > 0" 
+                :value="roleUnreadCounts.admin" 
+                class="role-unread-badge"
+                :max="99"
+              />
+            </div>
+          </template>
           <div 
             v-for="user in groupedUsers.admin" 
             :key="user.id"
@@ -75,9 +85,19 @@
         <!-- 教师组 -->
         <el-collapse-item 
           v-if="groupedUsers.teacher.length > 0" 
-          :title="`教师 (${groupedUsers.teacher.length})`" 
           name="teacher"
         >
+          <template #title>
+            <div class="collapse-title">
+              教师 ({{ groupedUsers.teacher.length }})
+              <el-badge 
+                v-if="roleUnreadCounts.teacher > 0" 
+                :value="roleUnreadCounts.teacher" 
+                class="role-unread-badge"
+                :max="99"
+              />
+            </div>
+          </template>
           <div 
             v-for="user in groupedUsers.teacher" 
             :key="user.id"
@@ -120,9 +140,19 @@
         <!-- 学生组 -->
         <el-collapse-item 
           v-if="groupedUsers.student.length > 0" 
-          :title="`学生 (${groupedUsers.student.length})`" 
           name="student"
         >
+          <template #title>
+            <div class="collapse-title">
+              学生 ({{ groupedUsers.student.length }})
+              <el-badge 
+                v-if="roleUnreadCounts.student > 0" 
+                :value="roleUnreadCounts.student" 
+                class="role-unread-badge"
+                :max="99"
+              />
+            </div>
+          </template>
           <div 
             v-for="user in groupedUsers.student" 
             :key="user.id"
@@ -245,6 +275,33 @@ const groupedUsers = computed(() => {
   return groups
 })
 
+// 计算每个角色的未读消息总数
+const roleUnreadCounts = computed(() => {
+  // 初始化各角色未读消息总数
+  const unreadCounts = {
+    admin: 0,
+    teacher: 0,
+    student: 0
+  }
+  
+  // 遍历所有聊天会话，计算各角色的未读消息总数
+  props.chatSessions.forEach(session => {
+    // 获取会话的对方用户ID
+    const currentUserId = JSON.parse(localStorage.getItem('userInfo'))?.id
+    const otherUserId = session.user1Id === currentUserId ? session.user2Id : session.user1Id
+    
+    // 查找对方用户
+    const otherUser = props.users.find(user => user.id === otherUserId)
+    
+    // 如果找到对方用户，将该会话的未读消息数量添加到对应角色的未读消息总数中
+    if (otherUser) {
+      unreadCounts[otherUser.role] += session.unreadCount || 0
+    }
+  })
+  
+  return unreadCounts
+})
+
 // 获取当前用户ID
 const currentUserId = computed(() => {
   return JSON.parse(localStorage.getItem('userInfo'))?.id || ''
@@ -333,6 +390,30 @@ const handleSearch = () => {
   color: #909399;
   font-size: 12px;
   margin-top: 4px;
+}
+
+/* 角色未读消息徽章样式 */
+.collapse-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.role-unread-badge {
+  transform: scale(0.8);
+  transform-origin: top center;
+}
+
+.collapse-title :deep(.el-badge__content) {
+  background-color: #f56c6c;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 20px;
+  height: 20px;
+  line-height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
 }
 
 .chat-list-content {
