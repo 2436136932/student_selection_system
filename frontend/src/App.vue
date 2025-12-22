@@ -447,16 +447,19 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  overflow: hidden;
 }
 
 /* 确保el-container和el-main充满可用空间 */
 .el-container {
   height: 100vh;
+  overflow: hidden;
 }
 
 .el-main {
   padding: 0;
   overflow: auto;
+  height: 100%;
 }
 
 /* 侧边栏样式 */
@@ -515,7 +518,7 @@ html, body {
 /* 侧边栏菜单 */
 .sidebar-menu {
   border-right: none;
-  height: calc(100vh - 65px);
+  min-height: calc(100vh - 65px);
   background-color: transparent;
 }
 

@@ -27,14 +27,6 @@ public interface StudentAwardApplicationService {
     StudentAwardApplication updateApplication(StudentAwardApplication application);
 
     /**
-     * 更新申请状态
-     * @param id 申请ID
-     * @param status 新状态
-     * @return 更新后的申请
-     */
-    StudentAwardApplication updateApplicationStatus(Integer id, Integer status);
-
-    /**
      * 教师审批申请
      * @param id 申请ID
      * @param status 审批状态（1-通过，2-不通过）

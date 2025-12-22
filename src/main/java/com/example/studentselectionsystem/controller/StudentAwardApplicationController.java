@@ -429,19 +429,6 @@ public class StudentAwardApplicationController {
     }
 
     /**
-     * 更新申请状态
-     */
-    @PutMapping("/{id}/status")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    public ResponseEntity<StudentAwardApplication> updateApplicationStatus(@PathVariable Integer id, @RequestParam Integer status) {
-        StudentAwardApplication updatedApplication = studentAwardApplicationService.updateApplicationStatus(id, status);
-        if (updatedApplication != null) {
-            return new ResponseEntity<>(updatedApplication, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    /**
      * 教师审批申请
      */
     @PutMapping("/{id}/teacher-approve")

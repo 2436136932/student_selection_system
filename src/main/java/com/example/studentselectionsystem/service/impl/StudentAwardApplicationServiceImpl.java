@@ -216,17 +216,6 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     }
 
     @Override
-    public StudentAwardApplication updateApplicationStatus(Integer id, Integer status) {
-        StudentAwardApplication application = studentAwardApplicationMapper.selectById(id);
-        if (application != null) {
-            application.setStatus(status);
-            application.setUpdateTime(new Date());
-            studentAwardApplicationMapper.updateById(application);
-        }
-        return application;
-    }
-
-    @Override
     public StudentAwardApplication teacherApproveApplication(Integer id, Integer status, String comments) {
         StudentAwardApplication application = studentAwardApplicationMapper.selectById(id);
         if (application != null) {
@@ -517,13 +506,7 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
 
     @Override
     public long countTeacherApprovedApplicationsByAwardId(Long awardId) {
-        // 查询奖项信息
-        Award award = awardMapper.selectById(awardId);
-        if (award != null && "国家奖学金".equals(award.getAwardName())) {
-            // 国家奖学金固定返回2
-            return 2;
-        }
-        // 其他奖项返回实际数量
+        // 返回实际的教师审核通过数量
         return studentAwardApplicationMapper.selectCount(
                 new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
                         .eq(StudentAwardApplication::getAwardId, awardId)

@@ -1354,26 +1354,40 @@ export default {
             axios.get(`/api/student-award-applications/award/${process.awardId}/teacher-approved-count`).then(res => { console.log('教师审核通过数接口返回:', res); return res; }),
             axios.get(`/api/student-award-applications/award/${process.awardId}/admin-approved-count`).then(res => { console.log('管理员审核通过数接口返回:', res); return res; })
           ]);
-          applicationCount.value = applicationCountData.data;
-          finalApprovedCount.value = finalApprovedCountData.data;
-          teacherApprovedCount.value = teacherApprovedCountData.data;
-          adminApprovedCount.value = adminApprovedCountData.data;
+          // 将数据存储到当前流程对象中
+          process.applicationCount = applicationCountData.data;
+          process.finalApprovedCount = finalApprovedCountData.data;
+          process.teacherApprovedCount = teacherApprovedCountData.data;
+          process.adminApprovedCount = adminApprovedCountData.data;
+          
+          // 添加日志，查看最终存储的数据
+          console.log('统计数据加载完成，当前流程数据:', process);
         } catch (error) {
           console.error('加载统计数据失败:', error);
           console.error('错误详情:', error.response ? error.response.data : error.message);
-          applicationCount.value = 0;
-          finalApprovedCount.value = 0;
-          teacherApprovedCount.value = 0;
-          adminApprovedCount.value = 0;
+          // 错误情况下，将数据初始化为0
+          process.applicationCount = 0;
+          process.finalApprovedCount = 0;
+          process.teacherApprovedCount = 0;
+          process.adminApprovedCount = 0;
         }
       }
       
       // 查看流程详情
     const handleViewProcessDetails = async (process) => {
-      currentProcessDetail.value = process
-      processDetailDialogVisible.value = true
+      // 创建一个新对象，确保包含所有必要的统计属性
+      const processWithStats = {
+        ...process,
+        applicationCount: 0,
+        finalApprovedCount: 0,
+        teacherApprovedCount: 0,
+        adminApprovedCount: 0
+      };
+      
+      currentProcessDetail.value = processWithStats;
+      processDetailDialogVisible.value = true;
       // 加载统计数据
-      await loadStatisticsData(process)
+      await loadStatisticsData(currentProcessDetail.value);
     }
     
     // 格式化阶段时间
@@ -1451,22 +1465,22 @@ export default {
     
     // 获取总申请数
     const getApplicationCount = (process) => {
-      return applicationCount.value;
+      return process.applicationCount || 0;
     }
     
     // 获取教师审核通过数
     const getTeacherApprovedCount = (process) => {
-      return teacherApprovedCount.value
+      return process.teacherApprovedCount || 0;
     }
     
     // 获取管理员审核通过数
     const getAdminApprovedCount = (process) => {
-      return adminApprovedCount.value
+      return process.adminApprovedCount || 0;
     }
     
     // 获取最终获奖数
     const getFinalApprovedCount = (process) => {
-      return finalApprovedCount.value;
+      return process.finalApprovedCount || 0;
     }
 
     // 发布奖项
