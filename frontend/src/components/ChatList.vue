@@ -44,6 +44,13 @@
               <el-avatar size="large">
                 {{ getUserInitial(user) }}
               </el-avatar>
+              <!-- 未读消息提示 -->
+              <el-badge 
+                v-if="getUnreadCount(user) > 0" 
+                :value="getUnreadCount(user)" 
+                class="unread-badge"
+                :max="99"
+              />
             </div>
             
             <div class="chat-item-info">
@@ -82,6 +89,13 @@
               <el-avatar size="large">
                 {{ getUserInitial(user) }}
               </el-avatar>
+              <!-- 未读消息提示 -->
+              <el-badge 
+                v-if="getUnreadCount(user) > 0" 
+                :value="getUnreadCount(user)" 
+                class="unread-badge"
+                :max="99"
+              />
             </div>
             
             <div class="chat-item-info">
@@ -120,6 +134,13 @@
               <el-avatar size="large">
                 {{ getUserInitial(user) }}
               </el-avatar>
+              <!-- 未读消息提示 -->
+              <el-badge 
+                v-if="getUnreadCount(user) > 0" 
+                :value="getUnreadCount(user)" 
+                class="unread-badge"
+                :max="99"
+              />
             </div>
             
             <div class="chat-item-info">
@@ -256,6 +277,16 @@ const getUserInitial = (user) => {
   return name.charAt(0).toUpperCase()
 }
 
+// 获取用户的未读消息数量
+const getUnreadCount = (user) => {
+  // 从chatSessions中查找与当前用户相关的会话
+  const session = props.chatSessions.find(s => 
+    s.user1Id === user.id || s.user2Id === user.id
+  )
+  // 返回会话的未读消息数量，如果没有会话或没有未读消息，返回0
+  return session?.unreadCount || 0
+}
+
 // 处理选择用户
 const handleSelectUser = (user) => {
   emit('select-user', user)
@@ -335,6 +366,25 @@ const handleSearch = () => {
 
 .chat-item-avatar {
   margin-right: 12px;
+  position: relative;
+}
+
+/* 未读消息徽章样式 */
+.unread-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  transform: scale(0.8);
+  transform-origin: top right;
+}
+
+/* 确保未读消息徽章显示在头像上方 */
+.chat-item-avatar :deep(.el-badge) {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  transform: scale(0.8);
+  transform-origin: top right;
 }
 
 .chat-item-info {

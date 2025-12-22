@@ -84,7 +84,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { Close, Right, CircleCheck, CirclePlus } from '@element-plus/icons-vue'
 
 // 接收父组件传递的属性
@@ -190,8 +190,46 @@ const handleEnterShift = () => {
 // 处理关闭会话
 const handleCloseSession = () => {
   emit('close-session', props.session.id)
-  console.log('关闭会话:', props.session.id)
+  console.log('会话已关闭:', props.session.id)
 }
+
+// 标记消息为已读
+const markMessagesAsRead = async () => {
+  try {
+    await fetch(`http://localhost:8080/api/chats/sessions/${props.session.id}/read-all`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    console.log('消息已标记为已读')
+    // 更新App.vue中的未读消息数量
+    window.dispatchEvent(new CustomEvent('updateUnreadCount'))
+  } catch (error) {
+    console.error('标记消息为已读失败:', error)
+  }
+}
+
+// 组件挂载时标记消息为已读
+onMounted(() => {
+  markMessagesAsRead()
+})
+
+// 监听新消息，标记为已读
+watch(
+  () => props.messages,
+  (newMessages, oldMessages) => {
+    if (newMessages.length > oldMessages.length) {
+      // 有新消息，检查是否是收到的消息
+      const newMessage = newMessages[newMessages.length - 1]
+      if (newMessage.senderId !== currentUserId.value) {
+        markMessagesAsRead()
+      }
+    }
+  },
+  { deep: true }
+)
 </script>
 
 <style scoped>

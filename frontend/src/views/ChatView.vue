@@ -122,6 +122,8 @@ const selectUser = async (user) => {
       currentSession.value = session
       currentChatUser.value = user
       fetchMessagesBySessionId(session.id)
+      // 标记该会话的消息为已读
+      markMessagesAsRead(session.id)
       // 更新会话列表
       if (!chatSessions.value.some(s => s.id === session.id)) {
         chatSessions.value.push(session)
@@ -131,6 +133,29 @@ const selectUser = async (user) => {
     }
   } catch (error) {
     console.error('创建会话异常:', error)
+  }
+}
+
+// 标记消息为已读
+const markMessagesAsRead = async (sessionId) => {
+  try {
+    await fetch(`http://localhost:8080/api/chats/sessions/${sessionId}/read-all`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    console.log('消息已标记为已读')
+    // 更新会话的未读消息数量为0
+    const sessionIndex = chatSessions.value.findIndex(session => session.id === sessionId)
+    if (sessionIndex !== -1) {
+      chatSessions.value[sessionIndex].unreadCount = 0
+    }
+    // 更新App.vue中的未读消息数量
+    window.dispatchEvent(new CustomEvent('updateUnreadCount'))
+  } catch (error) {
+    console.error('标记消息为已读失败:', error)
   }
 }
 
@@ -187,6 +212,10 @@ const updateSessionLastMessage = (sessionId, message) => {
   if (sessionIndex !== -1) {
     chatSessions.value[sessionIndex].lastMessage = message.content
     chatSessions.value[sessionIndex].lastMessageTime = message.createdAt
+    // 如果是收到的消息，未读消息数量加1
+    if (message.senderId !== JSON.parse(localStorage.getItem('userInfo'))?.id) {
+      chatSessions.value[sessionIndex].unreadCount = (chatSessions.value[sessionIndex].unreadCount || 0) + 1
+    }
   }
 }
 
@@ -219,6 +248,10 @@ const initializeWebSocket = () => {
           // 如果消息属于当前会话，直接添加到消息列表
           if (currentSession.value && currentSession.value.id === message.sessionId) {
             currentMessages.value.push(message)
+            // 如果是收到的消息，标记为已读
+            if (message.senderId !== userId) {
+              markMessagesAsRead(message.sessionId)
+            }
           } else {
             // 否则更新会话列表中的最后一条消息
             updateSessionLastMessage(message.sessionId, message)
@@ -226,6 +259,8 @@ const initializeWebSocket = () => {
             if (!chatSessions.value.some(session => session.id === message.sessionId)) {
               fetchChatSessions()
             }
+            // 发送未读消息数量更新事件
+            window.dispatchEvent(new CustomEvent('updateUnreadCount'))
           }
         } catch (error) {
           console.error('解析WebSocket消息失败:', error)

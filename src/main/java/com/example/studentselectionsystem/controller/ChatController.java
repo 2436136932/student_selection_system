@@ -297,6 +297,11 @@ public class ChatController {
                 sessionMap.put("createdAt", session.getCreatedAt());
                 sessionMap.put("updatedAt", session.getUpdatedAt());
                 
+                // 添加未读消息数量
+                long unreadCount = chatMessageService.countUnreadMessagesBySessionIdAndUserId(session.getId(), currentUserId);
+                sessionMap.put("unreadCount", unreadCount);
+                System.out.println("会话 " + session.getId() + " 的未读消息数量: " + unreadCount);
+                
                 // 添加对方用户的信息
                 Long otherUserId = session.getUser1Id().equals(currentUserId) ? session.getUser2Id() : session.getUser1Id();
                 System.out.println("对方用户ID: " + otherUserId);
@@ -451,6 +456,24 @@ public class ChatController {
         try {
             List<ChatMessage> chatMessages = chatMessageService.findAllChatMessages();
             return new ResponseEntity<>(chatMessages, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * 获取当前用户的未读消息总数
+     * @return 未读消息总数
+     */
+    @PreAuthorize("hasRole('STUDENT') or hasRole('TEACHER') or hasRole('ADMIN')")
+    @GetMapping("/unread-count")
+    public ResponseEntity<Map<String, Long>> getUnreadMessageCount() {
+        try {
+            Long currentUserId = getCurrentUserId();
+            long unreadCount = chatMessageService.countUnreadMessagesByUserId(currentUserId);
+            Map<String, Long> response = new HashMap<>();
+            response.put("unreadCount", unreadCount);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

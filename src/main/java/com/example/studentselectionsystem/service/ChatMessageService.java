@@ -57,4 +57,19 @@ public interface ChatMessageService {
      * @return 聊天消息列表
      */
     List<ChatMessage> findAllChatMessages();
+
+    /**
+     * 获取当前用户的未读消息总数
+     * @param userId 用户ID
+     * @return 未读消息总数
+     */
+    long countUnreadMessagesByUserId(Long userId);
+
+    /**
+     * 获取会话的未读消息数量
+     * @param sessionId 会话ID
+     * @param userId 用户ID
+     * @return 未读消息数量
+     */
+    long countUnreadMessagesBySessionIdAndUserId(Long sessionId, Long userId);
 }

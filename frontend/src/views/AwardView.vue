@@ -1180,24 +1180,48 @@ export default {
     }
 
     // 计算评选流程进度
-    const calculateProgress = (award) => {
-      // 根据奖项状态和当前阶段计算进度
-      if (award.status === '已结束') {
-        return 100
-      } else if (award.status === '已发布') {
-        switch (award.currentStage) {
-          case '学生申请':
-            return 25
-          case '教师审批':
-            return 50
-          case '管理员审批':
-            return 75
-          default:
-            return 0
-        }
-      } else {
-        return 0
+    const calculateProgress = (process) => {
+      // 根据当前阶段和实际统计数据计算整体进度
+      const { applicationCount, teacherApprovedCount, adminApprovedCount, finalApprovedCount } = process;
+      
+      // 确保所有统计数据都有值
+      const totalApplications = applicationCount || 0;
+      const teacherApproved = teacherApprovedCount || 0;
+      const adminApproved = adminApprovedCount || 0;
+      const finalApproved = finalApprovedCount || 0;
+      
+      // 如果没有申请，进度为0
+      if (totalApplications === 0) {
+        return 0;
       }
+      
+      // 计算各阶段的进度贡献（每个阶段最高贡献25%）
+      // 学生申请阶段：如果有申请，贡献25%；否则贡献0%
+      const studentApplicationProgress = totalApplications > 0 ? 25 : 0;
+      
+      // 教师审批阶段：根据教师审批通过率计算（0-25%）
+      const teacherApprovalProgress = (teacherApproved / totalApplications) * 25;
+      
+      // 管理员审批阶段：根据管理员审批通过率计算（0-25%）
+      // 使用教师已审批数作为分母，如果为0则使用总申请数
+      const adminApprovalDenominator = Math.max(teacherApproved, 1);
+      const adminApprovalProgress = (adminApproved / adminApprovalDenominator) * 25;
+      
+      // 结果公示阶段：根据结果公示率计算（0-25%）
+      // 使用管理员已审批数作为分母，如果为0则使用总申请数
+      const resultAnnouncementDenominator = Math.max(adminApproved, 1);
+      const resultAnnouncementProgress = (finalApproved / resultAnnouncementDenominator) * 25;
+      
+      // 计算整体进度，累加各阶段贡献度
+      const totalProgress = Math.round(
+        studentApplicationProgress + 
+        teacherApprovalProgress + 
+        adminApprovalProgress + 
+        resultAnnouncementProgress
+      );
+      
+      // 确保进度不超过100%
+      return Math.min(totalProgress, 100);
     }
 
     // 获取进度颜色
@@ -1206,9 +1230,9 @@ export default {
       if (progress === 0) {
         return '#909399' // 未开始 - 灰色
       } else if (progress < 100) {
-        return '#67c23a' // 进行中 - 绿色
+        return '#e6a23c' // 进行中 - 橙色
       } else {
-        return '#e6a23c' // 已完成 - 橙色
+        return '#67c23a' // 已完成 - 绿色
       }
     }
 
@@ -1253,6 +1277,9 @@ export default {
         // 检查结束时间是否已到
         const isEndTimeReached = endTime != null && now > endTime
         
+        // 获取实际的申请和审批数据
+        const stats = await getAwardStatistics(award.awardId);
+        
         // 根据奖项状态和结束时间设置当前状态
         if (award.status === '未发布') {
           currentStatus = '待开始'
@@ -1263,9 +1290,6 @@ export default {
             currentStage = '结果公示'
           } else {
             currentStatus = '进行中'
-            
-            // 获取实际的申请和审批数据
-            const stats = await getAwardStatistics(award.awardId);
             
             // 根据实际数据确定当前阶段
             if (stats.applicationCount === 0) {
@@ -1287,9 +1311,13 @@ export default {
           currentStage = '结果公示'
         }
         
-        // 将当前阶段和状态保存到奖项对象中
+        // 将当前阶段、状态和统计数据保存到奖项对象中
         award.currentStage = currentStage
         award.currentStatus = currentStatus
+        award.applicationCount = stats.applicationCount
+        award.teacherApprovedCount = stats.teacherApprovedCount
+        award.adminApprovedCount = stats.adminApprovedCount
+        award.finalApprovedCount = stats.finalApprovedCount
         
         return award;
       }));
@@ -1427,40 +1455,104 @@ export default {
     
     // 获取阶段状态
     const getStageStatus = (process, stageName) => {
-      const overallProgress = calculateProgress(process)
-      if (overallProgress === 0) return 'wait'
-      if (overallProgress === 100) return 'success'
+      // 根据实际统计数据判断阶段状态
+      const { applicationCount, teacherApprovedCount, adminApprovedCount, finalApprovedCount } = process;
       
-      const stageMap = {
-        '学生申请': 25,
-        '教师审批': 50,
-        '管理员审批': 75,
-        '结果公示': 100
+      // 根据阶段名称和实际数据判断状态
+      switch (stageName) {
+        case '学生申请':
+          // 学生申请阶段，如果有申请，状态为success；否则为wait
+          return applicationCount > 0 ? 'success' : 'wait';
+          
+        case '教师审批':
+          // 教师审批阶段
+          if (applicationCount === 0) {
+            return 'wait';
+          } else if (teacherApprovedCount === applicationCount) {
+            // 教师已全部审批，状态为success
+            return 'success';
+          } else if (teacherApprovedCount > 0) {
+            // 教师部分审批，状态为process
+            return 'process';
+          } else {
+            // 教师尚未开始审批，状态为wait
+            return 'wait';
+          }
+          
+        case '管理员审批':
+          // 管理员审批阶段
+          if (teacherApprovedCount === 0) {
+            return 'wait';
+          } else if (adminApprovedCount === teacherApprovedCount) {
+            // 管理员已全部审批，状态为success
+            return 'success';
+          } else if (adminApprovedCount > 0) {
+            // 管理员部分审批，状态为process
+            return 'process';
+          } else {
+            // 管理员尚未开始审批，状态为wait
+            return 'wait';
+          }
+          
+        case '结果公示':
+          // 结果公示阶段
+          if (adminApprovedCount === 0) {
+            return 'wait';
+          } else if (finalApprovedCount === adminApprovedCount) {
+            // 结果已全部公示，状态为success
+            return 'success';
+          } else if (finalApprovedCount > 0) {
+            // 结果部分公示，状态为process
+            return 'process';
+          } else {
+            // 结果尚未开始公示，状态为wait
+            return 'wait';
+          }
+          
+        default:
+          return 'wait';
       }
-      
-      const stageProgress = stageMap[stageName] || 0
-      if (overallProgress >= stageProgress) return 'success'
-      if (overallProgress >= stageProgress - 25) return 'process'
-      return 'wait'
     }
     
     // 获取阶段进度
     const getStageProgress = (process, stageName) => {
-      const overallProgress = calculateProgress(process)
-      if (overallProgress === 0) return 0
-      if (overallProgress === 100) return 100
+      // 根据实际统计数据计算阶段进度
+      const { applicationCount, teacherApprovedCount, adminApprovedCount, finalApprovedCount } = process;
       
-      const stageMap = {
-        '学生申请': 25,
-        '教师审批': 50,
-        '管理员审批': 75,
-        '结果公示': 100
+      // 确保所有统计数据都有值
+      const totalApplications = applicationCount || 0;
+      const teacherApproved = teacherApprovedCount || 0;
+      const adminApproved = adminApprovedCount || 0;
+      const finalApproved = finalApprovedCount || 0;
+      
+      // 根据阶段名称和实际数据计算进度
+      switch (stageName) {
+        case '学生申请':
+          // 学生申请阶段，根据是否有申请来判断
+          return totalApplications > 0 ? 100 : 0;
+          
+        case '教师审批':
+          // 教师审批阶段，根据教师审核通过数与总申请数的比例计算
+          if (totalApplications === 0) return 0;
+          return Math.min(Math.round((teacherApproved / totalApplications) * 100), 100);
+          
+        case '管理员审批':
+          // 管理员审批阶段，根据管理员审核通过数与教师审核通过数的比例计算
+          // 修复：如果教师未审批但管理员已审批，使用总申请数作为分母
+          const adminApprovalDenominator = teacherApproved > 0 ? teacherApproved : totalApplications;
+          if (adminApprovalDenominator === 0) return 0;
+          return Math.min(Math.round((adminApproved / adminApprovalDenominator) * 100), 100);
+          
+        case '结果公示':
+          // 结果公示阶段，根据最终获奖数与管理员审核通过数的比例计算
+          // 修复：如果管理员未审批但有最终获奖数，使用总申请数作为分母
+          const resultDenominator = adminApproved > 0 ? adminApproved : totalApplications;
+          if (resultDenominator === 0) return 0;
+          return Math.min(Math.round((finalApproved / resultDenominator) * 100), 100);
+          
+        default:
+          return 0;
       }
-      
-      const stageProgress = stageMap[stageName] || 0
-      if (overallProgress >= stageProgress) return 100
-      if (overallProgress >= stageProgress - 25) return 50
-      return 0
     }
     
     // 获取总申请数

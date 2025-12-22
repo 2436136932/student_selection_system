@@ -69,6 +69,7 @@
                       <el-dropdown-item command="chat">
                         <el-icon><ChatLineRound /></el-icon>
                         聊天中心
+                        <el-badge v-if="unreadMessageCount > 0" :value="unreadMessageCount" class="unread-badge" />
                       </el-dropdown-item>
                       <el-dropdown-item command="settings">
                         <el-icon><setting /></el-icon>
@@ -102,7 +103,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { 
@@ -127,6 +128,7 @@ import {
   ChatDotRound,
   ChatLineRound
 } from '@element-plus/icons-vue'
+import axios from 'axios'
 
 const router = useRouter()
 const route = useRoute()
@@ -148,6 +150,9 @@ const isCompactMode = ref(false)
 
 // 深色模式
 const isDarkMode = ref(false)
+
+// 未读消息数量
+const unreadMessageCount = ref(0)
 
 // 菜单定义，包含每个菜单的权限信息
 const menuItems = [
@@ -189,6 +194,8 @@ const checkLoginStatus = () => {
   if (userInfoStr) {
     isLoggedIn.value = true
     userInfo.value = JSON.parse(userInfoStr)
+    // 登录状态下获取未读消息数量
+    getUnreadMessageCount()
   } else {
     isLoggedIn.value = false
     userInfo.value = {}
@@ -210,6 +217,14 @@ onMounted(() => {
       console.error('解析显示设置失败:', e)
     }
   }
+  
+  // 监听未读消息数量更新事件
+  window.addEventListener('updateUnreadCount', getUnreadMessageCount)
+})
+
+// 组件卸载时移除事件监听
+onUnmounted(() => {
+  window.removeEventListener('updateUnreadCount', getUnreadMessageCount)
 })
 
 // 监听userInfo变化
@@ -285,6 +300,23 @@ const getFullAvatarUrl = (avatar) => {
 const handleAvatarError = (error) => {
   console.error('右上角头像加载失败：', error)
   // 头像加载失败时，不做特殊处理，让组件显示默认图标
+}
+
+// 获取未读消息数量
+const getUnreadMessageCount = async () => {
+  try {
+    const response = await axios.get('/api/chats/unread-count', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+    if (response.data) {
+      unreadMessageCount.value = response.data.unreadCount || 0
+    }
+  } catch (error) {
+    console.error('获取未读消息数量失败:', error)
+    // 忽略错误，避免影响页面加载
+  }
 }
 
 // 获取可见菜单
