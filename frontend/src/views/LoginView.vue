@@ -82,68 +82,78 @@
                 {{ loginLoading ? '登录中...' : '登录' }}
               </button>
             </el-form-item>
+            
+            <div class="forgot-password-container">
+              <el-link type="primary" :underline="false" @click="openForgotPasswordDialog">忘记密码？</el-link>
+            </div>
           </el-form>
         </el-tab-pane>
         
         <el-tab-pane label="注册" name="register">
           <el-form :model="registerForm" :rules="registerRules" ref="registerFormRef" class="login-form">
-            <el-form-item prop="username">
-              <el-input
-                v-model="registerForm.username"
-                placeholder="用户名"
-                prefix-icon="el-icon-user"
-                size="large"
-              ></el-input>
-            </el-form-item>
+            <div class="form-row">
+              <el-form-item prop="username" class="form-col">
+                <el-input
+                  v-model="registerForm.username"
+                  placeholder="用户名"
+                  prefix-icon="el-icon-user"
+                  size="large"
+                ></el-input>
+              </el-form-item>
+              
+              <el-form-item prop="name" class="form-col">
+                <el-input
+                  v-model="registerForm.name"
+                  placeholder="真实姓名"
+                  prefix-icon="el-icon-user"
+                  size="large"
+                ></el-input>
+              </el-form-item>
+            </div>
             
-            <el-form-item prop="password">
-              <el-input
-                v-model="registerForm.password"
-                type="password"
-                placeholder="密码"
-                prefix-icon="el-icon-lock"
-                show-password
-                size="large"
-              ></el-input>
-            </el-form-item>
+            <div class="form-row">
+              <el-form-item prop="password" class="form-col">
+                <el-input
+                  v-model="registerForm.password"
+                  type="password"
+                  placeholder="密码"
+                  prefix-icon="el-icon-lock"
+                  show-password
+                  size="large"
+                ></el-input>
+              </el-form-item>
+              
+              <el-form-item prop="confirmPassword" class="form-col">
+                <el-input
+                  v-model="registerForm.confirmPassword"
+                  type="password"
+                  placeholder="确认密码"
+                  prefix-icon="el-icon-lock"
+                  show-password
+                  size="large"
+                ></el-input>
+              </el-form-item>
+            </div>
             
-            <el-form-item prop="confirmPassword">
-              <el-input
-                v-model="registerForm.confirmPassword"
-                type="password"
-                placeholder="确认密码"
-                prefix-icon="el-icon-lock"
-                show-password
-                size="large"
-              ></el-input>
-            </el-form-item>
-            
-            <el-form-item prop="name">
-              <el-input
-                v-model="registerForm.name"
-                placeholder="真实姓名"
-                prefix-icon="el-icon-user"
-                size="large"
-              ></el-input>
-            </el-form-item>
-            
-            <el-form-item prop="email">
-              <el-input
-                v-model="registerForm.email"
-                placeholder="邮箱"
-                prefix-icon="el-icon-message"
-                size="large"
-              ></el-input>
-            </el-form-item>
-            
-            <el-form-item prop="phone">
-              <el-input
-                v-model="registerForm.phone"
-                placeholder="联系电话"
-                prefix-icon="el-icon-phone"
-                size="large"
-              ></el-input>
-            </el-form-item>
+            <div class="form-row">
+              <el-form-item prop="email" class="form-col">
+                <el-input
+                  v-model="registerForm.email"
+                  placeholder="邮箱"
+                  prefix-icon="el-icon-message"
+                  size="large"
+                ></el-input>
+              </el-form-item>
+              
+              <el-form-item prop="phone" class="form-col">
+                <el-input
+                  v-model="registerForm.phone"
+                  placeholder="联系电话"
+                  prefix-icon="el-icon-phone"
+                  size="large"
+                ></el-input>
+              </el-form-item>
+            </div>
             
             <el-form-item>
               <button @click="handleRegister" :disabled="registerLoading" class="custom-register-btn">
@@ -154,6 +164,73 @@
         </el-tab-pane>
       </el-tabs>
     </div>
+    
+    <!-- 忘记密码对话框 -->
+    <el-dialog
+      v-model="forgotPasswordVisible"
+      title="重置密码"
+      width="400px"
+      center
+    >
+      <el-form :model="forgotPasswordForm" :rules="forgotPasswordRules" ref="forgotPasswordFormRef" class="forgot-password-form">
+        <el-form-item prop="email">
+          <el-input
+            v-model="forgotPasswordForm.email"
+            placeholder="请输入注册邮箱"
+            prefix-icon="el-icon-message"
+            size="large"
+          ></el-input>
+        </el-form-item>
+        
+        <el-form-item prop="code">
+          <el-input
+            v-model="forgotPasswordForm.code"
+            placeholder="请输入验证码"
+            prefix-icon="el-icon-document"
+            size="large"
+          >
+            <template #append>
+              <el-button
+                type="primary"
+                :disabled="codeSending || countdown > 0"
+                @click="sendResetCode"
+              >
+                {{ codeSending ? '发送中...' : countdown > 0 ? `${countdown}秒后重试` : '发送验证码' }}
+              </el-button>
+            </template>
+          </el-input>
+        </el-form-item>
+        
+        <el-form-item prop="newPassword">
+          <el-input
+            v-model="forgotPasswordForm.newPassword"
+            type="password"
+            placeholder="请输入新密码"
+            prefix-icon="el-icon-lock"
+            show-password
+            size="large"
+          ></el-input>
+        </el-form-item>
+        
+        <el-form-item prop="confirmPassword">
+          <el-input
+            v-model="forgotPasswordForm.confirmPassword"
+            type="password"
+            placeholder="请确认新密码"
+            prefix-icon="el-icon-lock"
+            show-password
+            size="large"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="closeForgotPasswordDialog">取消</el-button>
+          <el-button type="primary" @click="resetPassword" :loading="resetPasswordLoading">重置密码</el-button>
+        </div>
+      </template>
+    </el-dialog>
     
     <div class="login-footer">
       <div class="footer-content">
@@ -206,10 +283,26 @@ const registerForm = reactive({
 // 加载状态
 const loginLoading = ref(false)
 const registerLoading = ref(false)
+const codeSending = ref(false)
+const resetPasswordLoading = ref(false)
+const countdown = ref(0)
+
+// 倒计时定时器
+let countdownTimer = null
 
 // 表单引用
 const loginFormRef = ref()
 const registerFormRef = ref()
+const forgotPasswordFormRef = ref()
+
+// 忘记密码相关数据
+const forgotPasswordVisible = ref(false)
+const forgotPasswordForm = reactive({
+  email: '',
+  code: '',
+  newPassword: '',
+  confirmPassword: ''
+})
 
 // 登录表单验证规则
 const loginRules = reactive({
@@ -260,24 +353,43 @@ const registerRules = reactive({
   ]
 })
 
+// 忘记密码表单验证规则
+const forgotPasswordRules = reactive({
+  email: [
+    { required: true, message: '请输入注册邮箱', trigger: 'blur' },
+    { type: 'email', message: '请输入有效的邮箱地址', trigger: 'blur' }
+  ],
+  code: [
+    { required: true, message: '请输入验证码', trigger: 'blur' },
+    { min: 6, max: 6, message: '验证码长度为6位', trigger: 'blur' }
+  ],
+  newPassword: [
+    { required: true, message: '请输入新密码', trigger: 'blur' },
+    { min: 6, max: 20, message: '密码长度在6到20个字符', trigger: 'blur' }
+  ],
+  confirmPassword: [
+    { required: true, message: '请确认新密码', trigger: 'blur' },
+    { validator: (rule, value, callback) => {
+        if (value !== forgotPasswordForm.newPassword) {
+          callback(new Error('两次输入的密码不一致'))
+        } else {
+          callback()
+        }
+      }, trigger: 'blur' }
+  ]
+})
+
 // 登录处理
 const handleLogin = () => {
-  console.log('开始登录流程')
   loginFormRef.value.validate((valid) => {
-    console.log('表单验证结果:', valid)
     if (valid) {
       loginLoading.value = true
-      console.log('登录请求参数:', {
-        username: loginForm.username,
-        password: loginForm.password
-      })
       // 调用后端登录API
       axios.post('/api/auth/login', {
         username: loginForm.username,
         password: loginForm.password
       })
       .then(response => {
-        console.log('登录请求响应:', response)
         loginLoading.value = false
         if (response.data.success) {
           // 检查用户实际角色与选择的角色是否匹配
@@ -310,10 +422,9 @@ const handleLogin = () => {
         }
       })
       .catch(error => {
-        console.error('登录请求失败:', error)
-        console.error('错误详情:', error.response)
         loginLoading.value = false
         ElMessage.error('登录失败，请检查网络或联系管理员')
+        console.error('登录错误:', error)
       })
     }
   })
@@ -347,6 +458,88 @@ const handleRegister = () => {
         ElMessage.error('注册失败，请检查网络或联系管理员')
         console.error('注册错误:', error)
       })
+    }
+  })
+}
+
+// 打开忘记密码对话框
+const openForgotPasswordDialog = () => {
+  forgotPasswordVisible.value = true
+}
+
+// 关闭忘记密码对话框
+const closeForgotPasswordDialog = () => {
+  forgotPasswordVisible.value = false
+  // 清空表单
+  Object.assign(forgotPasswordForm, {
+    email: '',
+    code: '',
+    newPassword: '',
+    confirmPassword: ''
+  })
+  // 重置表单验证
+  forgotPasswordFormRef.value?.resetFields()
+  // 清除倒计时
+  if (countdownTimer) {
+    clearInterval(countdownTimer)
+    countdown.value = 0
+  }
+}
+
+// 发送重置密码验证码
+const sendResetCode = () => {
+  forgotPasswordFormRef.value.validateField('email', (error) => {
+    if (!error) {
+      codeSending.value = true
+      axios.post('/api/auth/send-reset-code', { email: forgotPasswordForm.email })
+        .then(response => {
+          if (response.status === 200) {
+            ElMessage.success('验证码发送成功')
+            // 开始倒计时
+            countdown.value = 60
+            countdownTimer = setInterval(() => {
+              countdown.value--
+              if (countdown.value <= 0) {
+                clearInterval(countdownTimer)
+                countdownTimer = null
+              }
+            }, 1000)
+          } else {
+            ElMessage.error(response.data || '验证码发送失败')
+          }
+        })
+        .catch(error => {
+          console.error('发送验证码失败:', error)
+          ElMessage.error('验证码发送失败，请稍后重试')
+        })
+        .finally(() => {
+          codeSending.value = false
+        })
+    }
+  })
+}
+
+// 重置密码
+const resetPassword = () => {
+  forgotPasswordFormRef.value.validate((valid) => {
+    if (valid) {
+      resetPasswordLoading.value = true
+      axios.post('/api/auth/reset-password', forgotPasswordForm)
+        .then(response => {
+          if (response.status === 200) {
+            ElMessage.success('密码重置成功，请使用新密码登录')
+            closeForgotPasswordDialog()
+          } else {
+            ElMessage.error(response.data || '密码重置失败')
+          }
+        })
+        .catch(error => {
+          console.error('重置密码失败:', error)
+          ElMessage.error('密码重置失败，请稍后重试')
+        })
+        .finally(() => {
+          resetPasswordLoading.value = false
+        })
     }
   })
 }
@@ -700,6 +893,20 @@ const handleRegister = () => {
   text-align: center !important;
 }
 
+
+
+/* 双列表单布局 */
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 35px;
+}
+
+.form-col {
+  flex: 1;
+  margin-bottom: 0 !important;
+}
+
 /* 确保所有按钮都能正确显示 */
 .el-form-item {
   position: relative;
@@ -711,6 +918,18 @@ const handleRegister = () => {
   z-index: 1000 !important;
   visibility: visible !important;
   pointer-events: auto !important;
+}
+
+/* 忘记密码链接样式 */
+.forgot-password-container {
+  text-align: center;
+  margin-top: -25px;
+  margin-bottom: 20px;
+}
+
+/* 忘记密码表单样式 */
+.forgot-password-form .el-form-item {
+  margin-bottom: 25px;
 }
 
 .login-footer {
@@ -781,6 +1000,12 @@ const handleRegister = () => {
   .bg-circle {
     display: none;
   }
+  
+  /* 小屏幕下恢复单列布局 */
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
 }
 
 @media (max-width: 480px) {
@@ -795,6 +1020,12 @@ const handleRegister = () => {
   
   .role-button {
     width: 100%;
+  }
+  
+  /* 小屏幕下恢复单列布局 */
+  .form-row {
+    flex-direction: column;
+    gap: 0;
   }
 }
 </style>

@@ -405,7 +405,6 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
             if (award != null) {
                 // 设置为null以避免循环引用
                 award.setStudentAwardApplications(null);
-                award.setSelectionCriteria(null);
                 award.setSelectionProcesses(null);
                 award.setSelectionResults(null);
                 

@@ -130,5 +130,12 @@ public interface UserService {
      * @return 当前登录用户信息
      */
     User findCurrentUser();
-
+    
+    /**
+     * 通过邮箱重置密码
+     * @param email 邮箱
+     * @param newPassword 新密码
+     * @return 是否重置成功
+     */
+    boolean resetPasswordByEmail(String email, String newPassword);
 }

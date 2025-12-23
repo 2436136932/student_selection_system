@@ -46,6 +46,21 @@ spring:
       max-file-size: 10MB  # 单个文件最大大小
       max-request-size: 10MB  # 整个请求的最大大小
       
+  # Email Configuration
+  mail:
+    host: smtp.qq.com  # 已修正为QQ邮箱SMTP地址
+    port: 465  # QQ邮箱SSL端口465
+    username: 2436136932@qq.com  # 你的QQ邮箱
+    password: vfheiholpgyieaei  # 你的QQ邮箱授权码（核对有效性）
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true  # 开启SSL加密（适配465端口，替代starttls）
+      debug: true
+      
 # File Storage Configuration
 file:
   storage:
@@ -88,6 +103,9 @@ logging:
     org.springframework.web: info
     org.apache.catalina: info
     org.springframework.security: info
+    org.springframework.boot.sql.init: debug
+    org.springframework.jdbc: debug
+    com.baomidou: debug
   file:
     name: logs/student-selection-system.log
     max-size: 10MB

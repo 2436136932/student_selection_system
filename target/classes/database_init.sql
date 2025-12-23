@@ -182,31 +182,7 @@ CREATE TABLE IF NOT EXISTS student_awards (
     FOREIGN KEY (award_id) REFERENCES awards(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='学生奖项关联表';
 
--- 创建评选标准表
-CREATE TABLE IF NOT EXISTS selection_criteria (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '标准ID',
-    award_id BIGINT NOT NULL COMMENT '奖项ID',
-    criterion_name VARCHAR(100) NOT NULL COMMENT '标准名称',
-    criterion_type VARCHAR(50) NOT NULL COMMENT '标准类型（成绩、竞赛、科研、志愿等）',
-    weight DECIMAL(5,2) NOT NULL COMMENT '权重',
-    threshold DECIMAL(5,2) DEFAULT 0 COMMENT '阈值（最低要求）',
-    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    FOREIGN KEY (award_id) REFERENCES awards(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评选标准表';
 
--- 创建评奖标准表
-CREATE TABLE IF NOT EXISTS standards (
-    id INT PRIMARY KEY AUTO_INCREMENT COMMENT '标准ID',
-    code VARCHAR(50) NOT NULL UNIQUE COMMENT '标准代码',
-    name VARCHAR(100) NOT NULL UNIQUE COMMENT '标准名称',
-    teacher VARCHAR(50) COMMENT '负责人',
-    weight DECIMAL(5,2) COMMENT '权重',
-    capacity INT DEFAULT 0 COMMENT '达标值',
-    enrolled INT DEFAULT 0 COMMENT '符合人数',
-    semester VARCHAR(20) COMMENT '学期',
-    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评奖标准表';
 
 -- 创建学生奖项申请表
 CREATE TABLE IF NOT EXISTS student_award_applications (
@@ -297,6 +273,16 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     FOREIGN KEY (session_id) REFERENCES chat_sessions(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='聊天消息表';
 
+-- 创建验证码表
+CREATE TABLE IF NOT EXISTS verification_codes (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '验证码ID',
+    email VARCHAR(100) NOT NULL COMMENT '邮箱',
+    code VARCHAR(20) NOT NULL COMMENT '验证码',
+    expire_time DATETIME NOT NULL COMMENT '过期时间',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    status TINYINT DEFAULT 0 COMMENT '状态：0-未使用，1-已使用，2-已过期'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='验证码表';
+
 -- 插入轮播图初始数据
 INSERT INTO carousel (image_url, title, description, sort_order, status) VALUES
 ('https://picsum.photos/800/400?random=1', '欢迎使用学生评选系统', '学生评选系统提供奖学金、助学金等多种评选功能', 1, 1),
@@ -313,7 +299,6 @@ TRUNCATE TABLE scores;
 TRUNCATE TABLE student_awards;
 TRUNCATE TABLE student_award_applications;
 TRUNCATE TABLE selection_result;
-TRUNCATE TABLE selection_criteria;
 
 -- 然后清空没有直接外键被引用的表
 TRUNCATE TABLE students;

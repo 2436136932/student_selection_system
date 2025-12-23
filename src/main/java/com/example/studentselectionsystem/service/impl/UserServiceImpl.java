@@ -260,4 +260,21 @@ public class UserServiceImpl implements UserService {
         return optionalUser.orElse(null);
     }
 
+    @Override
+    public boolean resetPasswordByEmail(String email, String newPassword) {
+        // 根据邮箱查找用户
+        Optional<User> optionalUser = findUserByEmail(email);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            // 加密新密码
+            String encodedNewPassword = passwordEncoder.encode(newPassword);
+            // 更新用户密码
+            user.setPassword(encodedNewPassword);
+            user.setUpdateTime(new Date());
+            userRepository.updateById(user);
+            return true;
+        }
+        return false;
+    }
+
 }

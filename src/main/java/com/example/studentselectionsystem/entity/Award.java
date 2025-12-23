@@ -121,12 +121,6 @@ public class Award implements Serializable {
     private String approvingTeacherName;
 
     /**
-     * 奖项评选标准关联（不映射到数据库）
-     */
-    @TableField(exist = false)
-    private List<SelectionCriteria> selectionCriteria;
-
-    /**
      * 奖项评选流程关联（不映射到数据库）
      */
     @TableField(exist = false)
@@ -231,14 +225,6 @@ public class Award implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
-    }
-
-    public List<SelectionCriteria> getSelectionCriteria() {
-        return selectionCriteria;
-    }
-
-    public void setSelectionCriteria(List<SelectionCriteria> selectionCriteria) {
-        this.selectionCriteria = selectionCriteria;
     }
 
     public List<SelectionProcess> getSelectionProcesses() {
