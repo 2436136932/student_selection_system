@@ -171,7 +171,9 @@
       title="重置密码"
       width="400px"
       center
+      @close="closeForgotPasswordDialog"
     >
+
       <el-form :model="forgotPasswordForm" :rules="forgotPasswordRules" ref="forgotPasswordFormRef" class="forgot-password-form">
         <el-form-item prop="email">
           <el-input
@@ -194,6 +196,7 @@
                 type="primary"
                 :disabled="codeSending || countdown > 0"
                 @click="sendResetCode"
+                class="custom-send-code-btn"
               >
                 {{ codeSending ? '发送中...' : countdown > 0 ? `${countdown}秒后重试` : '发送验证码' }}
               </el-button>
@@ -248,7 +251,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
@@ -289,6 +292,17 @@ const countdown = ref(0)
 
 // 倒计时定时器
 let countdownTimer = null
+
+// 监听codeSending和countdown状态变化
+watch([codeSending, countdown], (newVal, oldVal) => {
+  // 使用.value访问ref变量的值
+  console.log('状态变化监听:', {
+    newCodeSending: newVal[0],
+    newCountdown: newVal[1],
+    oldCodeSending: oldVal[0],
+    oldCountdown: oldVal[1]
+  })
+})
 
 // 表单引用
 const loginFormRef = ref()
@@ -465,6 +479,13 @@ const handleRegister = () => {
 // 打开忘记密码对话框
 const openForgotPasswordDialog = () => {
   forgotPasswordVisible.value = true
+  // 确保每次打开对话框时，所有相关状态都已重置
+  codeSending.value = false
+  countdown.value = 0
+  if (countdownTimer) {
+    clearInterval(countdownTimer)
+    countdownTimer = null
+  }
 }
 
 // 关闭忘记密码对话框
@@ -484,39 +505,51 @@ const closeForgotPasswordDialog = () => {
     clearInterval(countdownTimer)
     countdown.value = 0
   }
+  // 重置发送状态
+  codeSending.value = false
 }
 
 // 发送重置密码验证码
 const sendResetCode = () => {
-  forgotPasswordFormRef.value.validateField('email', (error) => {
-    if (!error) {
-      codeSending.value = true
-      axios.post('/api/auth/send-reset-code', { email: forgotPasswordForm.email })
-        .then(response => {
-          if (response.status === 200) {
-            ElMessage.success('验证码发送成功')
-            // 开始倒计时
-            countdown.value = 60
-            countdownTimer = setInterval(() => {
-              countdown.value--
-              if (countdown.value <= 0) {
-                clearInterval(countdownTimer)
-                countdownTimer = null
-              }
-            }, 1000)
-          } else {
-            ElMessage.error(response.data || '验证码发送失败')
+  // 使用自定义邮箱验证逻辑，绕过Element Plus表单验证
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const email = forgotPasswordForm.email.trim()
+  
+  if (!email) {
+    ElMessage.warning('请输入邮箱地址')
+    return
+  }
+  
+  if (!emailRegex.test(email)) {
+    ElMessage.warning('请输入有效的邮箱地址')
+    return
+  }
+  
+  codeSending.value = true
+  
+  axios.post('/api/auth/send-reset-code', { email })
+    .then(response => {
+      if (response.status === 200) {
+        ElMessage.success('验证码发送成功')
+        // 开始倒计时
+        countdown.value = 60
+        countdownTimer = setInterval(() => {
+          countdown.value--
+          if (countdown.value <= 0) {
+            clearInterval(countdownTimer)
+            countdownTimer = null
           }
-        })
-        .catch(error => {
-          console.error('发送验证码失败:', error)
-          ElMessage.error('验证码发送失败，请稍后重试')
-        })
-        .finally(() => {
-          codeSending.value = false
-        })
-    }
-  })
+        }, 1000)
+      } else {
+        ElMessage.error(response.data || '验证码发送失败')
+      }
+    })
+    .catch(error => {
+      ElMessage.error('验证码发送失败，请稍后重试')
+    })
+    .finally(() => {
+      codeSending.value = false
+    })
 }
 
 // 重置密码

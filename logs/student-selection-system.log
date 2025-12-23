@@ -20120,3 +20120,97 @@ Consider defining a bean of type 'org.springframework.security.crypto.password.P
 2025-12-23T17:03:12.954+08:00 DEBUG 36496 --- [http-nio-0.0.0.0-8080-exec-4] o.s.jdbc.support.JdbcTransactionManager  : Initiating transaction commit
 2025-12-23T17:03:12.955+08:00 DEBUG 36496 --- [http-nio-0.0.0.0-8080-exec-4] o.s.jdbc.support.JdbcTransactionManager  : Committing JDBC transaction on Connection [HikariProxyConnection@882372082 wrapping com.mysql.cj.jdbc.ConnectionImpl@6109e43c]
 2025-12-23T17:03:12.957+08:00 DEBUG 36496 --- [http-nio-0.0.0.0-8080-exec-4] o.s.jdbc.support.JdbcTransactionManager  : Releasing JDBC Connection [HikariProxyConnection@882372082 wrapping com.mysql.cj.jdbc.ConnectionImpl@6109e43c] after transaction
+2025-12-23T17:15:58.680+08:00  INFO 36496 --- [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2025-12-23T17:15:58.690+08:00  INFO 36496 --- [Thread-5] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-23T17:15:58.691+08:00  INFO 36496 --- [Thread-5] o.a.c.c.C.[Tomcat].[localhost].[/]       : Destroying Spring FrameworkServlet 'dispatcherServlet'
+2025-12-23T17:15:58.699+08:00  WARN 36496 --- [Thread-5] o.a.c.loader.WebappClassLoaderBase       : The web application [ROOT] appears to have started a thread named [HikariPool-1 housekeeper] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.base/jdk.internal.misc.Unsafe.park(Native Method)
+ java.base/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:269)
+ java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:1758)
+ java.base/java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1182)
+ java.base/java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:899)
+ java.base/java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1070)
+ java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1130)
+ java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+ java.base/java.lang.Thread.run(Thread.java:1583)
+2025-12-23T17:15:58.706+08:00  INFO 36496 --- [Thread-5] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-23T17:15:58.714+08:00  INFO 36496 --- [Thread-5] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-12-23T17:15:58.785+08:00  INFO 36496 --- [restartedMain] s.StudentAwardSelectionSystemApplication : Starting StudentAwardSelectionSystemApplication using Java 21.0.2 with PID 36496 (G:\javacode\student-selection-system\target\classes started by 俞伟杰 in G:\javacode\student-selection-system)
+2025-12-23T17:15:58.785+08:00  INFO 36496 --- [restartedMain] s.StudentAwardSelectionSystemApplication : No active profile set, falling back to 1 default profile: "default"
+2025-12-23T17:15:59.104+08:00  INFO 36496 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2025-12-23T17:15:59.105+08:00  INFO 36496 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : Loaded Apache Tomcat Native library [2.0.8] using APR version [1.7.4].
+2025-12-23T17:15:59.106+08:00  INFO 36496 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : OpenSSL successfully initialized [OpenSSL 3.0.14 4 Jun 2024]
+2025-12-23T17:15:59.107+08:00  INFO 36496 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-23T17:15:59.107+08:00  INFO 36496 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.15]
+2025-12-23T17:15:59.142+08:00  INFO 36496 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-23T17:15:59.143+08:00  INFO 36496 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 355 ms
+2025-12-23T17:15:59.209+08:00 DEBUG 36496 --- [restartedMain] c.b.m.e.s.MybatisSqlSessionFactoryBean   : Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor@5c7d3483'
+2025-12-23T17:15:59.216+08:00 ERROR 36496 --- [restartedMain] c.b.m.core.MybatisConfiguration          : mapper[com.example.studentselectionsystem.mapper.StudentAwardApplicationMapper.selectApplicationsWithAwardByStudentIdPage] is ignored, because it exists, maybe from xml file
+2025-12-23T17:15:59.224+08:00 DEBUG 36496 --- [restartedMain] c.b.m.e.s.MybatisSqlSessionFactoryBean   : Parsed mapper file: 'file [G:\javacode\student-selection-system\target\classes\mapper\StudentAwardApplicationMapper.xml]'
+2025-12-23T17:15:59.681+08:00  INFO 36496 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@3463f97f, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@5adb7854, org.springframework.security.web.context.SecurityContextHolderFilter@2ac27eca, org.springframework.security.web.header.HeaderWriterFilter@444b8436, org.springframework.web.filter.CorsFilter@40da7664, org.springframework.security.web.authentication.logout.LogoutFilter@1ddf166, com.example.studentselectionsystem.config.JwtAuthenticationFilter@43a6f7aa, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@3d68ec64, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@259aa5cb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@8ff5389, org.springframework.security.web.session.SessionManagementFilter@1b00cafa, org.springframework.security.web.access.ExceptionTranslationFilter@6d6f4a5c, org.springframework.security.web.access.intercept.AuthorizationFilter@b6860a6]
+2025-12-23T17:15:59.724+08:00  WARN 36496 --- [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-12-23T17:15:59.762+08:00  INFO 36496 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-12-23T17:15:59.886+08:00  INFO 36496 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2025-12-23T17:15:59.889+08:00  INFO 36496 --- [restartedMain] s.StudentAwardSelectionSystemApplication : Started StudentAwardSelectionSystemApplication in 1.14 seconds (process running for 794.814)
+2025-12-23T17:15:59.890+08:00  INFO 36496 --- [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-12-23T17:16:03.975+08:00  INFO 36496 --- [http-nio-0.0.0.0-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-23T17:16:03.976+08:00  INFO 36496 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-12-23T17:16:03.977+08:00  INFO 36496 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-12-23T17:20:14.585+08:00  INFO 45108 --- [restartedMain] s.StudentAwardSelectionSystemApplication : Starting StudentAwardSelectionSystemApplication using Java 21.0.2 with PID 45108 (G:\javacode\student-selection-system\target\classes started by 俞伟杰 in G:\javacode\student-selection-system)
+2025-12-23T17:20:14.586+08:00  INFO 45108 --- [restartedMain] s.StudentAwardSelectionSystemApplication : No active profile set, falling back to 1 default profile: "default"
+2025-12-23T17:20:14.633+08:00  INFO 45108 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-12-23T17:20:14.633+08:00  INFO 45108 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-12-23T17:20:15.785+08:00  INFO 45108 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2025-12-23T17:20:15.786+08:00  INFO 45108 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : Loaded Apache Tomcat Native library [2.0.8] using APR version [1.7.4].
+2025-12-23T17:20:15.791+08:00  INFO 45108 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : OpenSSL successfully initialized [OpenSSL 3.0.14 4 Jun 2024]
+2025-12-23T17:20:15.801+08:00  INFO 45108 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-23T17:20:15.802+08:00  INFO 45108 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.15]
+2025-12-23T17:20:15.883+08:00  INFO 45108 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-23T17:20:15.883+08:00  INFO 45108 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1249 ms
+2025-12-23T17:20:16.023+08:00 DEBUG 45108 --- [restartedMain] c.b.m.e.s.MybatisSqlSessionFactoryBean   : Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor@58d52b86'
+2025-12-23T17:20:16.136+08:00 ERROR 45108 --- [restartedMain] c.b.m.core.MybatisConfiguration          : mapper[com.example.studentselectionsystem.mapper.StudentAwardApplicationMapper.selectApplicationsWithAwardByStudentIdPage] is ignored, because it exists, maybe from xml file
+2025-12-23T17:20:16.193+08:00 DEBUG 45108 --- [restartedMain] c.b.m.e.s.MybatisSqlSessionFactoryBean   : Parsed mapper file: 'file [G:\javacode\student-selection-system\target\classes\mapper\StudentAwardApplicationMapper.xml]'
+2025-12-23T17:20:17.056+08:00  INFO 45108 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@267082d0, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@759943e3, org.springframework.security.web.context.SecurityContextHolderFilter@77e19fea, org.springframework.security.web.header.HeaderWriterFilter@1fd4e952, org.springframework.web.filter.CorsFilter@3ef03957, org.springframework.security.web.authentication.logout.LogoutFilter@63a18ab4, com.example.studentselectionsystem.config.JwtAuthenticationFilter@761e936a, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4a7ca9f8, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@35a1401b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@48def7b2, org.springframework.security.web.session.SessionManagementFilter@479e2a0c, org.springframework.security.web.access.ExceptionTranslationFilter@650db453, org.springframework.security.web.access.intercept.AuthorizationFilter@6446ff92]
+2025-12-23T17:20:17.176+08:00  WARN 45108 --- [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-12-23T17:20:17.271+08:00  WARN 45108 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : Unable to start LiveReload server
+2025-12-23T17:20:17.423+08:00  WARN 45108 --- [restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2025-12-23T17:20:17.429+08:00  INFO 45108 --- [restartedMain] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-23T17:20:17.439+08:00  INFO 45108 --- [restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-12-23T17:20:17.456+08:00 ERROR 45108 --- [restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2025-12-23T17:22:24.861+08:00  INFO 35920 --- [restartedMain] s.StudentAwardSelectionSystemApplication : Starting StudentAwardSelectionSystemApplication using Java 21.0.2 with PID 35920 (G:\javacode\student-selection-system\target\classes started by 俞伟杰 in G:\javacode\student-selection-system)
+2025-12-23T17:22:24.862+08:00  INFO 35920 --- [restartedMain] s.StudentAwardSelectionSystemApplication : No active profile set, falling back to 1 default profile: "default"
+2025-12-23T17:22:24.911+08:00  INFO 35920 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-12-23T17:22:24.912+08:00  INFO 35920 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-12-23T17:22:26.011+08:00  INFO 35920 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2025-12-23T17:22:26.012+08:00  INFO 35920 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : Loaded Apache Tomcat Native library [2.0.8] using APR version [1.7.4].
+2025-12-23T17:22:26.017+08:00  INFO 35920 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : OpenSSL successfully initialized [OpenSSL 3.0.14 4 Jun 2024]
+2025-12-23T17:22:26.024+08:00  INFO 35920 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-23T17:22:26.025+08:00  INFO 35920 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.15]
+2025-12-23T17:22:26.096+08:00  INFO 35920 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-23T17:22:26.097+08:00  INFO 35920 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1184 ms
+2025-12-23T17:22:26.228+08:00 DEBUG 35920 --- [restartedMain] c.b.m.e.s.MybatisSqlSessionFactoryBean   : Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor@3501a3'
+2025-12-23T17:22:26.307+08:00 ERROR 35920 --- [restartedMain] c.b.m.core.MybatisConfiguration          : mapper[com.example.studentselectionsystem.mapper.StudentAwardApplicationMapper.selectApplicationsWithAwardByStudentIdPage] is ignored, because it exists, maybe from xml file
+2025-12-23T17:22:26.357+08:00 DEBUG 35920 --- [restartedMain] c.b.m.e.s.MybatisSqlSessionFactoryBean   : Parsed mapper file: 'file [G:\javacode\student-selection-system\target\classes\mapper\StudentAwardApplicationMapper.xml]'
+2025-12-23T17:22:27.199+08:00  INFO 35920 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@478b26e1, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@39bb66b3, org.springframework.security.web.context.SecurityContextHolderFilter@4838e917, org.springframework.security.web.header.HeaderWriterFilter@5c10ac5c, org.springframework.web.filter.CorsFilter@2a3ce62d, org.springframework.security.web.authentication.logout.LogoutFilter@51850e75, com.example.studentselectionsystem.config.JwtAuthenticationFilter@66d54b00, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@45519407, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@54ad51c7, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@7befb794, org.springframework.security.web.session.SessionManagementFilter@5518c7ad, org.springframework.security.web.access.ExceptionTranslationFilter@2c388ba8, org.springframework.security.web.access.intercept.AuthorizationFilter@73f3e35]
+2025-12-23T17:22:27.310+08:00  WARN 35920 --- [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-12-23T17:22:27.404+08:00  INFO 35920 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-12-23T17:22:27.580+08:00  INFO 35920 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2025-12-23T17:22:27.590+08:00  INFO 35920 --- [restartedMain] s.StudentAwardSelectionSystemApplication : Started StudentAwardSelectionSystemApplication in 3.126 seconds (process running for 3.602)
+2025-12-23T17:22:27.912+08:00  INFO 35920 --- [http-nio-0.0.0.0-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-23T17:22:27.912+08:00  INFO 35920 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-12-23T17:22:27.914+08:00  INFO 35920 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
