@@ -1,168 +1,361 @@
 <template>
-  <div class="login-container">
-    <!-- 背景装饰 -->
-    <div class="bg-decoration">
-      <div class="bg-circle circle-1"></div>
-      <div class="bg-circle circle-2"></div>
-      <div class="bg-circle circle-3"></div>
-      <div class="bg-circle circle-4"></div>
+  <div class="container" ref="containerRef">
+    <!-- 左侧和右侧面板 -->
+    <div class="panels-container">
+      <!-- 左侧面板 - 登录引导 -->
+      <div class="panel left-panel">
+        <div class="content">
+          <h3>新用户？</h3>
+          <p>
+            填写您的信息，开始使用学生评奖评优系统
+          </p>
+          <button class="btn transparent" id="sign-up-btn" @click="switchToRegister">
+            注册
+          </button>
+        </div>
+        <!-- 大型插画 - 登录场景 -->
+        <svg class="image" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- 背景 -->
+          <defs>
+            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#3498db;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#2980b9;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <rect width="400" height="400" fill="url(#bgGradient)" rx="20" />
+          
+          <!-- 人物 -->
+          <g transform="translate(200, 300)">
+            <!-- 身体 -->
+            <ellipse cx="0" cy="-50" rx="30" ry="50" fill="#34495e" />
+            <!-- 头部 -->
+            <circle cx="0" cy="-90" r="25" fill="#f1c40f" />
+            <!-- 头发 -->
+            <path d="M-25 -90 C-35 -100 -35 -110 -25 -120 C-20 -125 20 -125 25 -120 C35 -110 35 -100 25 -90 Z" fill="#2c3e50" />
+            <!-- 眼睛 -->
+            <circle cx="-10" cy="-90" r="4" fill="#2c3e50" />
+            <circle cx="10" cy="-90" r="4" fill="#2c3e50" />
+            <!-- 嘴巴 -->
+            <path d="M-8 -85 Q0 -80 8 -85" stroke="#2c3e50" stroke-width="2" fill="none" />
+            <!-- 手臂 -->
+            <path d="M30 -50 Q45 -60 50 -80" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
+            <path d="M-30 -50 Q-45 -60 -50 -80" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
+            <!-- 手 -->
+            <circle cx="50" cy="-80" r="6" fill="#f1c40f" />
+            <circle cx="-50" cy="-80" r="6" fill="#f1c40f" />
+            <!-- 腿 -->
+            <path d="M20 0 Q25 20 20 40" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
+            <path d="M-20 0 Q-25 20 -20 40" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
+            <!-- 脚 -->
+            <rect x="10" y="40" width="20" height="8" fill="#34495e" rx="4" />
+            <rect x="-30" y="40" width="20" height="8" fill="#34495e" rx="4" />
+          </g>
+          
+          <!-- 火箭 -->
+          <g transform="translate(100, 150) scale(0.6)">
+            <!-- 火箭主体 -->
+            <path d="M50 0 L150 100 L150 250 L50 350 L-50 250 L-50 100 Z" fill="#ecf0f1" />
+            <!-- 火箭窗户 -->
+            <circle cx="50" cy="100" r="30" fill="#3498db" />
+            <circle cx="50" cy="100" r="20" fill="#ecf0f1" />
+            <!-- 火箭鳍 -->
+            <path d="M-50 150 L-100 125 L-100 175 Z" fill="#e74c3c" />
+            <path d="M150 150 L200 125 L200 175 Z" fill="#e74c3c" />
+            <path d="M-50 250 L-100 225 L-100 275 Z" fill="#e74c3c" />
+            <path d="M150 250 L200 225 L200 275 Z" fill="#e74c3c" />
+            <!-- 火箭火焰 -->
+            <path d="M50 350 L20 400 L80 400 Z" fill="#f39c12" />
+            <path d="M50 370 L30 420 L70 420 Z" fill="#e74c3c" />
+          </g>
+          
+          <!-- 装饰元素 -->
+          <circle cx="50" cy="50" r="10" fill="white" opacity="0.3" />
+          <circle cx="350" cy="100" r="15" fill="white" opacity="0.3" />
+          <circle cx="300" cy="350" r="8" fill="white" opacity="0.3" />
+          <circle cx="100" cy="300" r="12" fill="white" opacity="0.3" />
+        </svg>
+      </div>
+      
+      <!-- 右侧面板 - 注册引导 -->
+      <div class="panel right-panel">
+        <div class="content">
+          <h3>已有账号？</h3>
+          <p>
+            请使用您的账号登录学生评奖评优系统
+          </p>
+          <button class="btn transparent" id="sign-in-btn" @click="switchToLogin">
+            登录
+          </button>
+        </div>
+        <!-- 大型插画 - 注册场景 -->
+        <svg class="image" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="regBgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#8e44ad;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#9b59b6;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <rect width="400" height="400" fill="url(#regBgGradient)" rx="20" />
+          
+          <!-- 人物 -->
+          <g transform="translate(200, 300)">
+            <!-- 身体 -->
+            <ellipse cx="0" cy="-50" rx="30" ry="50" fill="#34495e" />
+            <!-- 头部 -->
+            <circle cx="0" cy="-90" r="25" fill="#e84393" />
+            <!-- 头发 -->
+            <path d="M-25 -90 C-35 -100 -35 -110 -25 -120 C-20 -125 20 -125 25 -120 C35 -110 35 -100 25 -90 Z" fill="#2c3e50" />
+            <!-- 眼睛 -->
+            <circle cx="-10" cy="-90" r="4" fill="#2c3e50" />
+            <circle cx="10" cy="-90" r="4" fill="#2c3e50" />
+            <!-- 嘴巴 -->
+            <path d="M-8 -85 Q0 -80 8 -85" stroke="#2c3e50" stroke-width="2" fill="none" />
+            <!-- 手臂 -->
+            <path d="M30 -50 Q45 -60 50 -80" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
+            <path d="M-30 -50 Q-45 -60 -50 -80" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
+            <!-- 手 -->
+            <circle cx="50" cy="-80" r="6" fill="#e84393" />
+            <circle cx="-50" cy="-80" r="6" fill="#e84393" />
+            <!-- 腿 -->
+            <path d="M20 0 Q25 20 20 40" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
+            <path d="M-20 0 Q-25 20 -20 40" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
+            <!-- 脚 -->
+            <rect x="10" y="40" width="20" height="8" fill="#34495e" rx="4" />
+            <rect x="-30" y="40" width="20" height="8" fill="#34495e" rx="4" />
+          </g>
+          
+          <!-- 电脑 -->
+          <g transform="translate(200, 200)">
+            <!-- 屏幕 -->
+            <rect x="-60" y="-100" width="120" height="80" fill="#2c3e50" rx="5" />
+            <!-- 屏幕内容 -->
+            <rect x="-50" y="-90" width="100" height="60" fill="#3498db" />
+            <!-- 电脑支架 -->
+            <rect x="-20" y="-20" width="40" height="20" fill="#7f8c8d" />
+            <!-- 键盘 -->
+            <rect x="-45" y="0" width="90" height="20" fill="#7f8c8d" rx="3" />
+            <!-- 按键 -->
+            <circle cx="-35" cy="10" r="3" fill="#2c3e50" />
+            <circle cx="-25" cy="10" r="3" fill="#2c3e50" />
+            <circle cx="-15" cy="10" r="3" fill="#2c3e50" />
+            <circle cx="-5" cy="10" r="3" fill="#2c3e50" />
+            <circle cx="5" cy="10" r="3" fill="#2c3e50" />
+            <circle cx="15" cy="10" r="3" fill="#2c3e50" />
+            <circle cx="25" cy="10" r="3" fill="#2c3e50" />
+            <circle cx="35" cy="10" r="3" fill="#2c3e50" />
+          </g>
+          
+          <!-- 装饰元素 -->
+          <circle cx="50" cy="50" r="10" fill="white" opacity="0.3" />
+          <circle cx="350" cy="100" r="15" fill="white" opacity="0.3" />
+          <circle cx="300" cy="350" r="8" fill="white" opacity="0.3" />
+          <circle cx="100" cy="300" r="12" fill="white" opacity="0.3" />
+        </svg>
+      </div>
     </div>
     
-    <div class="login-box">
-      <div class="login-header">
-        <!-- 大学风格的标志 -->
-        <div class="university-logo">
-          <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50 10L90 90H10L50 10Z" fill="#2c3e50"/>
-            <path d="M50 30L70 70H30L50 30Z" fill="#3498db"/>
-            <path d="M50 50L60 60H40L50 50Z" fill="#ffffff"/>
-            <path d="M30 20L40 30H60L70 20" stroke="#2c3e50" stroke-width="4" fill="none"/>
-            <path d="M30 80L40 70H60L70 80" stroke="#2c3e50" stroke-width="4" fill="none"/>
-          </svg>
+    <!-- 登录和注册表单 -->
+    <div class="signin-signup">
+      <!-- 登录表单 -->
+      <div v-show="activeTab === 'login'" class="form-wrapper">
+        <h2 class="title">学生评奖评优系统 - 登录</h2>
+        
+        <!-- 角色选择 -->
+        <div class="role-selector">
+          <el-radio-group v-model="selectedRole" class="role-group">
+            <el-radio-button label="admin" class="role-button">
+              <span class="role-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+              </span>
+              管理员
+            </el-radio-button>
+            <el-radio-button label="teacher" class="role-button">
+              <span class="role-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20 21V19c0-2.76-4-5-9-5s-9 2.24-9 5v2h18zM7.5 8.25h9v2.62h-9zM12 2C9.24 2 7 4.24 7 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z"/>
+                </svg>
+              </span>
+              教师
+            </el-radio-button>
+            <el-radio-button label="student" class="role-button">
+              <span class="role-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+              </span>
+              学生
+            </el-radio-button>
+          </el-radio-group>
         </div>
-        <h1>学生评奖评优系统</h1>
-        <p class="subtitle">University Student Evaluation & Award System</p>
-        <p class="role-guide">请选择您的角色登录或注册</p>
-      </div>
-      
-      <div class="role-selector">
-        <el-radio-group v-model="selectedRole" class="role-group">
-          <el-radio-button label="admin" class="role-button">
-            <span class="role-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-              </svg>
-            </span>
-            管理员
-          </el-radio-button>
-          <el-radio-button label="teacher" class="role-button">
-            <span class="role-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20 21V19c0-2.76-4-5-9-5s-9 2.24-9 5v2h18zM7.5 8.25h9v2.62h-9zM12 2C9.24 2 7 4.24 7 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z"/>
-              </svg>
-            </span>
-            教师
-          </el-radio-button>
-          <el-radio-button label="student" class="role-button">
-            <span class="role-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-              </svg>
-            </span>
-            学生
-          </el-radio-button>
-        </el-radio-group>
-      </div>
-      
-      <el-tabs v-model="activeTab" class="login-tabs">
-        <el-tab-pane label="登录" name="login">
-          <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef" class="login-form">
-            <el-form-item prop="username">
+        
+        <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef" class="login-form">
+          <el-form-item prop="username">
+            <div class="input-field">
+              <i class="el-icon-user"></i>
               <el-input
                 v-model="loginForm.username"
                 placeholder="用户名"
-                prefix-icon="el-icon-user"
                 size="large"
+                class="no-border-input"
               ></el-input>
-            </el-form-item>
-            
-            <el-form-item prop="password">
+            </div>
+          </el-form-item>
+          
+          <el-form-item prop="password">
+            <div class="input-field">
+              <i class="el-icon-lock"></i>
               <el-input
                 v-model="loginForm.password"
                 type="password"
                 placeholder="密码"
-                prefix-icon="el-icon-lock"
                 show-password
                 size="large"
+                class="no-border-input"
               ></el-input>
-            </el-form-item>
-            
-            <el-form-item>
-              <button @click="handleLogin" :disabled="loginLoading" class="custom-login-btn">
-                {{ loginLoading ? '登录中...' : '登录' }}
-              </button>
-            </el-form-item>
-            
-            <div class="forgot-password-container">
-              <el-link type="primary" :underline="false" @click="openForgotPasswordDialog">忘记密码？</el-link>
             </div>
-          </el-form>
-        </el-tab-pane>
+          </el-form-item>
+          
+          <el-form-item>
+            <button @click="handleLogin" :disabled="loginLoading" class="btn solid">
+              {{ loginLoading ? '登录中...' : '登录' }}
+            </button>
+          </el-form-item>
+          
+          <div class="forgot-password-container">
+            <el-link type="primary" :underline="false" @click="openForgotPasswordDialog">忘记密码？</el-link>
+          </div>
+        </el-form>
+      </div>
+      
+      <!-- 注册表单 -->
+      <div v-show="activeTab === 'register'" class="form-wrapper">
+        <h2 class="title">学生评奖评优系统 - 注册</h2>
         
-        <el-tab-pane label="注册" name="register">
-          <el-form :model="registerForm" :rules="registerRules" ref="registerFormRef" class="login-form">
-            <div class="form-row">
-              <el-form-item prop="username" class="form-col">
+        <!-- 角色选择 -->
+        <div class="role-selector">
+          <el-radio-group v-model="selectedRole" class="role-group">
+            <el-radio-button label="admin" class="role-button">
+              <span class="role-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+              </span>
+              管理员
+            </el-radio-button>
+            <el-radio-button label="teacher" class="role-button">
+              <span class="role-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20 21V19c0-2.76-4-5-9-5s-9 2.24-9 5v2h18zM7.5 8.25h9v2.62h-9zM12 2C9.24 2 7 4.24 7 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z"/>
+                </svg>
+              </span>
+              教师
+            </el-radio-button>
+            <el-radio-button label="student" class="role-button">
+              <span class="role-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+              </span>
+              学生
+            </el-radio-button>
+          </el-radio-group>
+        </div>
+        
+        <el-form :model="registerForm" :rules="registerRules" ref="registerFormRef" class="login-form">
+          <!-- 第一行：用户名和真实姓名 -->
+          <div class="form-row">
+            <el-form-item prop="username" class="form-col">
+              <div class="input-field">
+                <i class="el-icon-user"></i>
                 <el-input
                   v-model="registerForm.username"
                   placeholder="用户名"
-                  prefix-icon="el-icon-user"
                   size="large"
+                  class="no-border-input"
                 ></el-input>
-              </el-form-item>
-              
-              <el-form-item prop="name" class="form-col">
+              </div>
+            </el-form-item>
+            
+            <el-form-item prop="name" class="form-col">
+              <div class="input-field">
+                <i class="el-icon-user"></i>
                 <el-input
                   v-model="registerForm.name"
                   placeholder="真实姓名"
-                  prefix-icon="el-icon-user"
                   size="large"
+                  class="no-border-input"
                 ></el-input>
-              </el-form-item>
-            </div>
-            
-            <div class="form-row">
-              <el-form-item prop="password" class="form-col">
+              </div>
+            </el-form-item>
+          </div>
+          
+          <!-- 第二行：密码和确认密码 -->
+          <div class="form-row">
+            <el-form-item prop="password" class="form-col">
+              <div class="input-field">
+                <i class="el-icon-lock"></i>
                 <el-input
                   v-model="registerForm.password"
                   type="password"
                   placeholder="密码"
-                  prefix-icon="el-icon-lock"
                   show-password
                   size="large"
+                  class="no-border-input"
                 ></el-input>
-              </el-form-item>
-              
-              <el-form-item prop="confirmPassword" class="form-col">
+              </div>
+            </el-form-item>
+            
+            <el-form-item prop="confirmPassword" class="form-col">
+              <div class="input-field">
+                <i class="el-icon-lock"></i>
                 <el-input
                   v-model="registerForm.confirmPassword"
                   type="password"
                   placeholder="确认密码"
-                  prefix-icon="el-icon-lock"
                   show-password
                   size="large"
+                  class="no-border-input"
                 ></el-input>
-              </el-form-item>
-            </div>
-            
-            <div class="form-row">
-              <el-form-item prop="email" class="form-col">
+              </div>
+            </el-form-item>
+          </div>
+          
+          <!-- 第三行：邮箱和联系电话 -->
+          <div class="form-row">
+            <el-form-item prop="email" class="form-col">
+              <div class="input-field">
+                <i class="el-icon-message"></i>
                 <el-input
                   v-model="registerForm.email"
                   placeholder="邮箱"
-                  prefix-icon="el-icon-message"
                   size="large"
+                  class="no-border-input"
                 ></el-input>
-              </el-form-item>
-              
-              <el-form-item prop="phone" class="form-col">
+              </div>
+            </el-form-item>
+            
+            <el-form-item prop="phone" class="form-col">
+              <div class="input-field">
+                <i class="el-icon-phone"></i>
                 <el-input
                   v-model="registerForm.phone"
                   placeholder="联系电话"
-                  prefix-icon="el-icon-phone"
                   size="large"
+                  class="no-border-input"
                 ></el-input>
-              </el-form-item>
-            </div>
-            
-            <el-form-item>
-              <button @click="handleRegister" :disabled="registerLoading" class="custom-register-btn">
-                {{ registerLoading ? '注册中...' : '注册' }}
-              </button>
+              </div>
             </el-form-item>
-          </el-form>
-        </el-tab-pane>
-      </el-tabs>
+          </div>
+          
+          <el-form-item>
+            <button @click="handleRegister" :disabled="registerLoading" class="btn solid">
+              {{ registerLoading ? '注册中...' : '注册' }}
+            </button>
+          </el-form-item>
+        </el-form>
+      </div>
     </div>
     
     <!-- 忘记密码对话框 -->
@@ -176,54 +369,66 @@
 
       <el-form :model="forgotPasswordForm" :rules="forgotPasswordRules" ref="forgotPasswordFormRef" class="forgot-password-form">
         <el-form-item prop="email">
-          <el-input
-            v-model="forgotPasswordForm.email"
-            placeholder="请输入注册邮箱"
-            prefix-icon="el-icon-message"
-            size="large"
-          ></el-input>
+          <div class="input-field">
+            <i class="el-icon-message"></i>
+            <el-input
+              v-model="forgotPasswordForm.email"
+              placeholder="请输入注册邮箱"
+              size="large"
+              class="no-border-input"
+            ></el-input>
+          </div>
         </el-form-item>
         
         <el-form-item prop="code">
-          <el-input
-            v-model="forgotPasswordForm.code"
-            placeholder="请输入验证码"
-            prefix-icon="el-icon-document"
-            size="large"
-          >
-            <template #append>
-              <el-button
-                type="primary"
-                :disabled="codeSending || countdown > 0"
-                @click="sendResetCode"
-                class="custom-send-code-btn"
-              >
-                {{ codeSending ? '发送中...' : countdown > 0 ? `${countdown}秒后重试` : '发送验证码' }}
-              </el-button>
-            </template>
-          </el-input>
+          <div class="input-field with-append">
+            <i class="el-icon-document"></i>
+            <el-input
+              v-model="forgotPasswordForm.code"
+              placeholder="请输入验证码"
+              size="large"
+              class="no-border-input"
+            >
+              <template #append>
+                <el-button
+                  type="primary"
+                  :disabled="codeSending || countdown > 0"
+                  @click="sendResetCode"
+                  class="custom-send-code-btn"
+                >
+                  {{ codeSending ? '发送中...' : countdown > 0 ? `${countdown}秒后重试` : '发送验证码' }}
+                </el-button>
+              </template>
+            </el-input>
+          </div>
         </el-form-item>
         
         <el-form-item prop="newPassword">
-          <el-input
-            v-model="forgotPasswordForm.newPassword"
-            type="password"
-            placeholder="请输入新密码"
-            prefix-icon="el-icon-lock"
-            show-password
-            size="large"
-          ></el-input>
+          <div class="input-field">
+            <i class="el-icon-lock"></i>
+            <el-input
+              v-model="forgotPasswordForm.newPassword"
+              type="password"
+              placeholder="请输入新密码"
+              show-password
+              size="large"
+              class="no-border-input"
+            ></el-input>
+          </div>
         </el-form-item>
         
         <el-form-item prop="confirmPassword">
-          <el-input
-            v-model="forgotPasswordForm.confirmPassword"
-            type="password"
-            placeholder="请确认新密码"
-            prefix-icon="el-icon-lock"
-            show-password
-            size="large"
-          ></el-input>
+          <div class="input-field">
+            <i class="el-icon-lock"></i>
+            <el-input
+              v-model="forgotPasswordForm.confirmPassword"
+              type="password"
+              placeholder="请确认新密码"
+              show-password
+              size="large"
+              class="no-border-input"
+            ></el-input>
+          </div>
         </el-form-item>
       </el-form>
       
@@ -235,23 +440,12 @@
       </template>
     </el-dialog>
     
-    <div class="login-footer">
-      <div class="footer-content">
-        <p class="copyright">© 2026 学生评奖评优系统 - 版权所有：俞伟杰</p>
-        <div class="footer-links">
-          <a href="#" class="footer-link">隐私政策</a>
-          <span class="footer-divider">|</span>
-          <a href="#" class="footer-link">服务条款</a>
-          <span class="footer-divider">|</span>
-          <a href="#" class="footer-link">联系我们</a>
-        </div>
-      </div>
-    </div>
+
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
@@ -266,6 +460,9 @@ const selectedRole = ref('student')
 
 // 标签页切换
 const activeTab = ref('login')
+
+// 容器引用
+const containerRef = ref(null)
 
 // 登录表单
 const loginForm = reactive({
@@ -302,6 +499,17 @@ watch([codeSending, countdown], (newVal, oldVal) => {
     oldCodeSending: oldVal[0],
     oldCountdown: oldVal[1]
   })
+})
+
+// 监听activeTab变化，切换样式类
+watch(activeTab, (newVal) => {
+  if (containerRef.value) {
+    if (newVal === 'register') {
+      containerRef.value.classList.add('sign-up-mode')
+    } else {
+      containerRef.value.classList.remove('sign-up-mode')
+    }
+  }
 })
 
 // 表单引用
@@ -576,489 +784,947 @@ const resetPassword = () => {
     }
   })
 }
+
+// 切换到注册
+const switchToRegister = () => {
+  activeTab.value = 'register'
+}
+
+// 切换到登录
+const switchToLogin = () => {
+  activeTab.value = 'login'
+}
+
+// 页面挂载时初始化
+onMounted(() => {
+  // 初始化样式类
+  if (containerRef.value) {
+    if (activeTab.value === 'register') {
+      containerRef.value.classList.add('sign-up-mode')
+    } else {
+      containerRef.value.classList.remove('sign-up-mode')
+    }
+  }
+})
 </script>
 
 <style scoped>
-/* 大学风格配色方案 */
-:root {
-  --primary-color: #2c3e50;
-  --secondary-color: #3498db;
-  --accent-color: #e74c3c;
-  --light-color: #ecf0f1;
-  --dark-color: #34495e;
-  --success-color: #27ae60;
-  --warning-color: #f39c12;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body, input {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.login-container {
-  width: 100%;
-  height: 100vh;
-  background: linear-gradient(135deg, #ffffff 0%, #a8d8ea 100%);
-  background-size: 400% 400%;
-  animation: gradientAnimation 15s ease infinite;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2980b9;
+  --accent-color: #8e44ad;
+  --light-color: #f8f9fa;
+  --dark-color: #2c3e50;
+  --white-color: #ffffff;
+  --success-color: #27ae60;
+  --warning-color: #f39c12;
+  --danger-color: #e74c3c;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.15);
+  --transition: all 0.3s ease;
+}
+
+/* 主容器样式 */
+.container {
   position: relative;
+  width: 100%;
+  background-color: var(--light-color);
+  min-height: 100vh;
   overflow: hidden;
 }
 
-/* 背景装饰元素 */
-.bg-decoration {
+/* 背景装饰 */
+.container:before {
+  content: "";
+  position: absolute;
+  height: 2000px;
+  width: 2000px;
+  top: -10%;
+  right: 48%;
+  transform: translateY(-50%);
+  background-image: linear-gradient(-45deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  transition: 1.8s ease-in-out;
+  border-radius: 50%;
+  z-index: 6;
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.1);
+}
+
+/* 添加装饰性气泡 */
+.container:after {
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(52, 152, 219, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(142, 68, 173, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(41, 128, 185, 0.1) 0%, transparent 50%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* 表单容器 */
+.forms-container {
   position: absolute;
   width: 100%;
   height: 100%;
   top: 0;
   left: 0;
-  z-index: 0;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 7;
 }
 
-.bg-circle {
+/* 登录注册表单 */
+.signin-signup {
   position: absolute;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(44, 62, 80, 0.05) 100%);
-  animation: float 20s ease-in-out infinite;
-}
-
-.bg-circle.circle-1 {
-  width: 400px;
-  height: 400px;
-  top: -100px;
-  left: -100px;
-  animation-delay: 0s;
-}
-
-.bg-circle.circle-2 {
-  width: 300px;
-  height: 300px;
-  bottom: -150px;
-  right: -100px;
-  animation-delay: 5s;
-}
-
-.bg-circle.circle-3 {
-  width: 200px;
-  height: 200px;
   top: 50%;
-  left: 20%;
-  animation-delay: 10s;
+  transform: translate(-50%, -50%);
+  left: 75%;
+  width: 50%;
+  transition: 1s 0.7s ease-in-out;
+  display: grid;
+  grid-template-columns: 1fr;
+  z-index: 7;
+  max-width: 400px;
 }
 
-.bg-circle.circle-4 {
-  width: 150px;
-  height: 150px;
-  bottom: 30%;
-  right: 30%;
-  animation-delay: 15s;
+/* 表单样式 */
+.form-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 2rem 3rem;
+  transition: all 0.2s 0.7s;
+  overflow: hidden;
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  background: var(--white-color);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  min-height: 480px;
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-20px) rotate(180deg);
-  }
-}
-
-/* 渐变背景动画 */
-@keyframes gradientAnimation {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.login-box {
-  background: white;
-  border-radius: 24px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-  padding: 60px 50px;
-  width: 100%;
-  max-width: 650px;
-  animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  position: relative;
-  z-index: 1;
-  border: 1px solid rgba(52, 152, 219, 0.1);
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.login-header {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.university-logo {
+/* 标题样式 */
+.title {
+  font-size: 2rem;
+  color: var(--dark-color);
   margin-bottom: 20px;
-  animation: logoPulse 2s ease-in-out infinite;
-}
-
-@keyframes logoPulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-.login-header h1 {
-  color: var(--primary-color);
-  font-size: 32px;
-  margin-bottom: 12px;
   font-weight: 700;
   letter-spacing: -0.5px;
-  font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.login-header .subtitle {
-  color: var(--secondary-color);
-  font-size: 14px;
-  margin-bottom: 15px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.login-header .role-guide {
-  color: var(--dark-color);
-  font-size: 15px;
-  font-weight: 400;
-}
-
-.role-selector {
-  margin-bottom: 40px;
-}
-
-.role-group {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  background: var(--light-color);
-  border-radius: 12px;
-  padding: 6px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.role-button {
-  flex: 1;
   text-align: center;
-  font-size: 15px;
-  font-weight: 500;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  border: none;
-  background: transparent;
-  color: var(--dark-color);
 }
 
-.role-button.is-active {
-  background: white;
-  color: var(--secondary-color);
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
-}
-
-.role-icon {
-  margin-right: 6px;
-  vertical-align: middle;
-}
-
-.login-tabs {
+/* 输入框样式 */
+.input-field {
+  max-width: 380px;
   width: 100%;
-}
-
-.login-tabs .el-tabs__header {
-  margin-bottom: 35px;
-}
-
-.login-tabs .el-tabs__nav-wrap::after {
   background-color: var(--light-color);
-}
-
-.login-tabs .el-tabs__active-bar {
-  background-color: var(--secondary-color);
-  height: 3px;
-}
-
-.login-tabs .el-tabs__item {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--dark-color);
+  margin: 15px 0;
+  height: 55px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
   padding: 0 20px;
-}
-
-.login-tabs .el-tabs__item.is-active {
-  color: var(--secondary-color);
-}
-
-.login-form {
-  margin-top: 30px;
-}
-
-.login-form .el-form-item {
-  margin-bottom: 35px;
-}
-
-.login-form .el-input__wrapper {
-  border-radius: 14px;
-  height: 56px;
-  background-color: var(--light-color);
-  border: 2px solid transparent;
-  transition: all 0.3s ease;
-}
-
-.login-form .el-input__wrapper:hover {
-  border-color: var(--secondary-color);
-  background-color: white;
-  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.15);
-}
-
-.login-form .el-input__wrapper.is-focus {
-  border-color: var(--secondary-color);
-  background-color: white;
-  box-shadow: 0 4px 16px rgba(52, 152, 219, 0.25);
-}
-
-.login-form .el-input__inner {
-  font-size: 16px;
-  color: var(--dark-color);
-}
-
-.login-form .el-input__prefix {
-  color: var(--secondary-color);
-}
-
-.login-form .el-button {
-  height: 52px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  background: linear-gradient(135deg, var(--secondary-color) 0%, #2980b9 100%);
+  position: relative;
+  transition: var(--transition);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  overflow: hidden;
+  background-clip: padding-box;
   border: none !important;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: white !important;
-  z-index: 10;
-  display: block !important;
-  opacity: 1 !important;
 }
 
-.login-form .el-button:hover {
-  background: linear-gradient(135deg, #2980b9 0%, var(--secondary-color) 100%);
-  box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
+/* 确保表单没有默认样式 */
+.login-form :deep(.el-form-item) {
+  margin-bottom: 0 !important;
+}
+
+.login-form :deep(.el-form-item__label) {
+  display: none !important;
+}
+
+.login-form :deep(.el-form-item__content) {
+  margin-left: 0 !important;
+  width: 100% !important;
+}
+
+.input-field:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
-  color: white !important;
+}
+
+.input-field i {
+  margin-right: 15px;
+  color: var(--primary-color);
+  transition: 0.5s;
+  font-size: 1.2rem;
+  z-index: 1;
+}
+
+/* 无边框输入框样式 */
+.no-border-input {
+  background: transparent !important;
   border: none !important;
-}
-
-.login-form .el-button:active {
-  transform: translateY(0);
-  color: white !important;
-  border: none !important;
-}
-
-/* 确保成功类型按钮也有清晰的文字颜色 */
-.login-form .el-button--success {
-  background: linear-gradient(135deg, var(--success-color) 0%, #219653 100%) !important;
-  color: white !important;
-}
-
-.login-form .el-button--success:hover {
-  background: linear-gradient(135deg, #219653 0%, var(--success-color) 100%) !important;
-  color: white !important;
-}
-
-/* 自定义登录按钮样式 */
-.custom-login-btn {
-  background-color: #3498db !important;
-  color: white !important;
-  height: 56px !important;
-  border-radius: 14px !important;
-  font-size: 18px !important;
-  font-weight: 600 !important;
-  border: none !important;
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3) !important;
-  z-index: 9999 !important;
-  display: block !important;
-  opacity: 1 !important;
+  outline: none !important;
+  box-shadow: none !important;
   width: 100% !important;
-  margin-top: 20px !important;
-  line-height: 56px !important;
-  text-align: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex: 1 !important;
+  height: 100% !important;
+  border-radius: 0 !important;
 }
 
-/* 自定义注册按钮样式 */
-.custom-register-btn {
-  background-color: #3498db !important;
-  color: white !important;
-  height: 56px !important;
-  border-radius: 14px !important;
-  font-size: 18px !important;
-  font-weight: 600 !important;
-  border: none !important;
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3) !important;
-  z-index: 9999 !important;
-  display: block !important;
-  opacity: 1 !important;
+/* 确保输入框完全填满胶囊 */
+.input-field > .el-input {
+  flex: 1 !important;
   width: 100% !important;
-  margin-top: 20px !important;
-  line-height: 56px !important;
-  text-align: center !important;
+  height: 100% !important;
 }
 
+.input-field > .el-input > .el-input__wrapper {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
 
+.input-field > .el-input > .el-input__wrapper > .el-input__inner {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
 
-/* 双列表单布局 */
+/* 表单行和列样式 */
 .form-row {
   display: flex;
-  gap: 20px;
-  margin-bottom: 35px;
+  gap: 15px;
+  width: 100%;
+  margin-bottom: 0;
 }
 
 .form-col {
   flex: 1;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.form-col :deep(.el-form-item) {
+  margin-bottom: 0;
+  width: 100%;
+}
+
+/* 确保登录表单没有额外样式 */
+.login-form {
+  width: 100%;
+}
+
+/* 深度修改Element Plus输入框样式 */
+.input-field :deep(.el-input) {
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1 !important;
+}
+
+.input-field :deep(.el-input__wrapper) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+  overflow: hidden;
+  border-radius: 0 !important;
+  --el-input-wrapper-bg-color: transparent !important;
+  --el-input-wrapper-border-color: transparent !important;
+  --el-input-wrapper-focus-border-color: transparent !important;
+  --el-input-wrapper-hover-border-color: transparent !important;
+  --el-input-wrapper-focus-box-shadow: none !important;
+}
+
+.input-field :deep(.el-input__inner) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  color: var(--dark-color) !important;
+  height: 100% !important;
+  line-height: 55px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  outline: none !important;
+  border-radius: 0 !important;
+}
+
+/* 确保输入框容器没有额外样式 */
+.login-form :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
+.login-form :deep(.el-form-item__content) {
+  margin-left: 0 !important;
+  width: 100%;
+}
+
+/* 移除输入框的默认样式 */
+.el-input {
+  --el-input-bg-color: transparent !important;
+  --el-input-border-color: transparent !important;
+  --el-input-focus-border-color: transparent !important;
+  --el-input-hover-border-color: transparent !important;
+  --el-input-border-radius: 0 !important;
+}
+
+/* 确保所有输入框都应用相同样式 */
+:deep(.el-input__wrapper) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+:deep(.el-input__inner) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* 确保输入框没有额外的圆角 */
+.el-input__inner {
+  border-radius: 0 !important;
+}
+
+/* 确保输入框容器没有额外的样式 */
+.el-form-item {
   margin-bottom: 0 !important;
 }
 
-/* 确保所有按钮都能正确显示 */
-.el-form-item {
-  position: relative;
-  overflow: visible !important;
+.el-form-item__content {
+  margin-left: 0 !important;
+  width: 100% !important;
 }
 
-.el-button {
-  position: relative !important;
-  z-index: 1000 !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
+.no-border-input .el-input__inner::placeholder {
+  color: #95a5a6 !important;
+  font-weight: 500 !important;
+}
+
+/* 带有附加按钮的输入框 */
+.input-field.with-append {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 按钮样式 */
+.btn {
+  width: 100%;
+  max-width: 380px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  border: none;
+  outline: none;
+  height: 55px;
+  border-radius: 50px;
+  color: var(--white-color);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin: 20px 0;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  font-size: 1rem;
+  letter-spacing: 1px;
+}
+
+.btn:hover {
+  background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+  box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+  transform: translateY(-3px);
+}
+
+.btn:active {
+  transform: translateY(-1px);
+}
+
+/* 角色选择器样式 */
+.role-selector {
+  margin: 25px 0;
+  width: 100%;
+}
+
+.role-group {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  background: transparent !important;
+  border-radius: 30px;
+  padding: 0;
+  box-shadow: none;
+  transition: var(--transition);
+  gap: 0;
+  border: 2px solid rgba(52, 152, 219, 0.2);
+}
+
+.role-group:hover {
+  border-color: rgba(52, 152, 219, 0.4);
+}
+
+/* 使用:deep()选择器确保样式被正确应用 */
+.role-selector :deep(.el-radio-group) {
+  background: transparent !important;
+  width: 100% !important;
+  display: flex !important;
+  border-radius: 28px !important;
+  padding: 0 !important;
+}
+
+.role-selector :deep(.el-radio-button) {
+  flex: 1 !important;
+  width: 33.33% !important;
+  margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.role-selector :deep(.el-radio-button__inner) {
+  border: none !important;
+  background: transparent !important;
+  color: var(--dark-color) !important;
+  border-radius: 0 !important;
+  padding: 14px 8px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+  line-height: normal !important;
+  height: auto !important;
+  min-height: 50px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* 移除第一个和最后一个按钮的圆角 */
+.role-selector :deep(.el-radio-button:first-child .el-radio-button__inner) {
+  border-radius: 28px 0 0 28px !important;
+}
+
+.role-selector :deep(.el-radio-button:last-child .el-radio-button__inner) {
+  border-radius: 0 28px 28px 0 !important;
+}
+
+/* 按钮悬停效果 */
+.role-selector :deep(.el-radio-button__inner:hover) {
+  background: rgba(52, 152, 219, 0.1) !important;
+  color: var(--primary-color) !important;
+}
+
+/* 按钮激活效果 */
+.role-selector :deep(.el-radio-button.is-active .el-radio-button__inner) {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+  color: var(--white-color) !important;
+  box-shadow: 0 4px 16px rgba(52, 152, 219, 0.3) !important;
+}
+
+/* 确保激活状态的按钮样式正确 */
+.role-selector :deep(.el-radio-button__orig-radio:checked + .el-radio-button__inner) {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+  color: var(--white-color) !important;
+}
+
+/* 移除Element Plus默认的边框和背景 */
+.role-selector :deep(.el-radio-button--default.is-active .el-radio-button__inner) {
+  border-color: transparent !important;
+  color: var(--white-color) !important;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+}
+
+.role-selector :deep(.el-radio-button--default:not(.is-active) .el-radio-button__inner) {
+  border-color: transparent !important;
+  color: var(--dark-color) !important;
+  background: transparent !important;
+}
+
+/* 确保没有额外的边框 */
+.role-selector :deep(.el-radio-button + .el-radio-button) {
+  margin-left: 0 !important;
+  border-left: none !important;
+}
+
+/* 确保激活状态的按钮显示在最上层 */
+.role-selector :deep(.el-radio-button.is-active) {
+  z-index: 1;
+}
+
+/* 确保激活状态的按钮没有额外样式 */
+.role-selector :deep(.el-radio-button.is-active + .el-radio-button .el-radio-button__inner) {
+  border-left: none !important;
+}
+
+/* 移除所有可能导致白底的样式 */
+.role-selector :deep(.el-radio-button__inner) {
+  --el-button-bg-color: transparent !important;
+  --el-button-border-color: transparent !important;
+  --el-button-hover-bg-color: rgba(52, 152, 219, 0.1) !important;
+  --el-button-hover-border-color: transparent !important;
+  --el-button-active-bg-color: transparent !important;
+  --el-button-active-border-color: transparent !important;
+}
+
+/* 角色图标样式 */
+.role-icon {
+  margin-right: 6px;
+  vertical-align: middle;
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* 忘记密码链接样式 */
 .forgot-password-container {
   text-align: center;
-  margin-top: -25px;
-  margin-bottom: 20px;
+  margin-top: 20px;
+  margin-bottom: 15px;
 }
 
-/* 忘记密码表单样式 */
+.forgot-password-container .el-link {
+  color: var(--primary-color) !important;
+  font-weight: 500 !important;
+  transition: var(--transition);
+  font-size: 0.9rem;
+}
+
+.forgot-password-container .el-link:hover {
+  color: var(--secondary-color) !important;
+  text-decoration: underline !important;
+}
+
+/* 左侧和右侧面板样式 */
+.panels-container {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  z-index: 6;
+}
+
+/* 面板样式 */
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-around;
+  text-align: center;
+  z-index: 6;
+  padding: 3rem 12%;
+}
+
+.left-panel {
+  pointer-events: all;
+  align-items: flex-start;
+}
+
+.right-panel {
+  pointer-events: none;
+  align-items: flex-end;
+}
+
+.panel .content {
+  color: var(--white-color);
+  transition: transform 0.9s ease-in-out;
+  transition-delay: 0.6s;
+  max-width: 300px;
+}
+
+.panel h3 {
+  font-weight: 700;
+  line-height: 1.2;
+  font-size: 2rem;
+  margin-bottom: 15px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.panel p {
+  font-size: 1rem;
+  padding: 0.7rem 0;
+  margin-bottom: 30px;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+.btn.transparent {
+  margin: 0;
+  background: none;
+  border: 2px solid var(--white-color);
+  width: 150px;
+  height: 45px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--white-color);
+  transition: var(--transition);
+  border-radius: 22px;
+}
+
+.btn.transparent:hover {
+  background: var(--white-color);
+  color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* 图片样式 */
+.image {
+  width: 100%;
+  transition: transform 1.1s ease-in-out, opacity 1.1s ease-in-out;
+  transition-delay: 0.4s;
+  max-width: 300px;
+  opacity: 0.95;
+}
+
+/* 右侧面板初始状态 */
+.right-panel .image,
+.right-panel .content {
+  transform: translateX(800px);
+}
+
+/* 注册模式样式 */
+.container.sign-up-mode:before {
+  transform: translate(100%, -50%);
+  right: 52%;
+}
+
+.container.sign-up-mode .left-panel .image,
+.container.sign-up-mode .left-panel .content {
+  transform: translateX(-800px);
+}
+
+.container.sign-up-mode .signin-signup {
+  left: 25%;
+}
+
+.container.sign-up-mode .form-wrapper {
+  opacity: 1;
+  z-index: 2;
+}
+
+.container.sign-up-mode .right-panel .image,
+.container.sign-up-mode .right-panel .content {
+  transform: translateX(0%);
+}
+
+.container.sign-up-mode .left-panel {
+  pointer-events: none;
+}
+
+.container.sign-up-mode .right-panel {
+  pointer-events: all;
+}
+
+
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .signin-signup {
+    width: 60%;
+  }
+  
+  .panel h3 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 870px) {
+  .container {
+    min-height: 800px;
+    height: 100vh;
+  }
+  
+  .signin-signup {
+    width: 90%;
+    top: 95%;
+    transform: translate(-50%, -100%);
+    transition: 1s 0.8s ease-in-out;
+  }
+  
+  .signin-signup, .container.sign-up-mode .signin-signup {
+    left: 50%;
+  }
+  
+  .panels-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 2fr 1fr;
+  }
+  
+  .panel {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 2rem 8%;
+    grid-column: 1 / 2;
+  }
+  
+  .right-panel {
+    grid-row: 3 / 4;
+  }
+  
+  .left-panel {
+    grid-row: 1 / 2;
+  }
+  
+  .image {
+    width: 250px;
+    transition: transform 0.9s ease-in-out;
+    transition-delay: 0.6s;
+  }
+  
+  .panel .content {
+    padding-right: 15%;
+    transition: transform 0.9s ease-in-out;
+    transition-delay: 0.8s;
+  }
+  
+  .panel h3 {
+    font-size: 1.5rem;
+  }
+  
+  .panel p {
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+  }
+  
+  .btn.transparent {
+    width: 130px;
+    height: 40px;
+    font-size: 0.8rem;
+  }
+  
+  .container:before {
+    width: 1500px;
+    height: 1500px;
+    transform: translateX(-50%);
+    left: 30%;
+    bottom: 68%;
+    right: initial;
+    top: initial;
+    transition: 2s ease-in-out;
+  }
+  
+  .container.sign-up-mode:before {
+    transform: translate(-50%, 100%);
+    bottom: 32%;
+    right: initial;
+  }
+  
+  .container.sign-up-mode .left-panel .image,
+  .container.sign-up-mode .left-panel .content {
+    transform: translateY(-300px);
+  }
+  
+  .container.sign-up-mode .right-panel .image,
+  .container.sign-up-mode .right-panel .content {
+    transform: translateY(0px);
+  }
+  
+  .right-panel .image,
+  .right-panel .content {
+    transform: translateY(300px);
+  }
+  
+  .container.sign-up-mode .signin-signup {
+    top: 5%;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (max-width: 570px) {
+  .form-wrapper {
+    padding: 2rem 1.5rem;
+    min-height: 450px;
+    width: 100%;
+  }
+  
+  /* 小屏幕下单列显示 */
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .image {
+    display: none;
+  }
+  
+  .panel .content {
+    padding: 0.5rem 1rem;
+  }
+  
+  .container {
+    padding: 1rem;
+  }
+  
+  .container:before {
+    bottom: 72%;
+    left: 50%;
+  }
+  
+  .container.sign-up-mode:before {
+    bottom: 28%;
+    left: 50%;
+  }
+  
+  .title {
+    font-size: 1.8rem;
+  }
+  
+  .input-field {
+    margin: 12px 0;
+    height: 50px;
+  }
+  
+  .btn {
+    width: 160px;
+    height: 45px;
+    font-size: 0.9rem;
+  }
+  
+  /* 身份选择器始终一行三个显示 */
+  .role-group {
+    flex-direction: row;
+    gap: 4px;
+  }
+  
+  .role-button {
+    width: auto;
+    flex: 1;
+  }
+  
+  .panel h3 {
+    font-size: 1.5rem;
+  }
+  
+  .panel p {
+    font-size: 0.85rem;
+  }
+}
+
+/* 忘记密码对话框样式 */
 .forgot-password-form .el-form-item {
   margin-bottom: 25px;
 }
 
-.login-footer {
-  margin-top: 40px;
-  text-align: center;
-  color: var(--dark-color);
-  font-size: 14px;
-  position: relative;
-  z-index: 1;
+.forgot-password-form .input-field {
+  margin: 15px 0;
 }
 
-.footer-content {
+/* 自定义发送验证码按钮 */
+.custom-send-code-btn {
+  background-color: var(--primary-color) !important;
+  border: none !important;
+  color: var(--white-color) !important;
+  height: 40px !important;
+  padding: 0 15px !important;
+  font-size: 0.85rem !important;
+  border-radius: 20px !important;
+  transition: var(--transition) !important;
+  box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3) !important;
+}
+
+.custom-send-code-btn:hover {
+  background-color: var(--secondary-color) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4) !important;
+}
+
+/* 忘记密码对话框按钮样式 */
+.dialog-footer {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 15px;
+  padding: 20px 0 0 0;
 }
 
-.copyright {
-  margin: 0;
-  opacity: 0.8;
+.dialog-footer .el-button {
+  border-radius: 30px !important;
+  padding: 10px 25px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  min-width: 120px !important;
 }
 
-.footer-links {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.dialog-footer .el-button--primary {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3) !important;
+  color: var(--white-color) !important;
 }
 
-.footer-link {
-  color: var(--secondary-color);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
+.dialog-footer .el-button--primary:hover {
+  background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%) !important;
+  box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4) !important;
+  transform: translateY(-1px) !important;
 }
 
-.footer-link:hover {
-  color: var(--primary-color);
-  text-decoration: underline;
+.dialog-footer .el-button--default {
+  background: transparent !important;
+  border: 2px solid var(--primary-color) !important;
+  color: var(--primary-color) !important;
+  box-shadow: none !important;
 }
 
-.footer-divider {
-  color: rgba(0, 0, 0, 0.2);
+.dialog-footer .el-button--default:hover {
+  background: rgba(52, 152, 219, 0.1) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2) !important;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .login-box {
-    padding: 50px 40px;
-    max-width: 550px;
-    margin: 20px;
+/* 添加加载动画 */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
   }
-  
-  .login-header h1 {
-    font-size: 32px;
-  }
-  
-  .login-form .el-input__wrapper {
-    height: 52px;
-  }
-  
-  .custom-login-btn,
-  .custom-register-btn {
-    height: 52px;
-    line-height: 52px;
-  }
-  
-  .bg-circle {
-    display: none;
-  }
-  
-  /* 小屏幕下恢复单列布局 */
-  .form-row {
-    flex-direction: column;
-    gap: 0;
+  50% {
+    opacity: 0.5;
   }
 }
 
-@media (max-width: 480px) {
-  .login-box {
-    padding: 35px 25px;
-  }
-  
-  .role-group {
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .role-button {
-    width: 100%;
-  }
-  
-  /* 小屏幕下恢复单列布局 */
-  .form-row {
-    flex-direction: column;
-    gap: 0;
-  }
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  animation: pulse 1.5s ease-in-out infinite;
 }
 </style>
