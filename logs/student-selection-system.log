@@ -20214,3 +20214,158 @@ Identify and stop the process that's listening on port 8080 or configure this ap
 2025-12-23T17:22:27.912+08:00  INFO 35920 --- [http-nio-0.0.0.0-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
 2025-12-23T17:22:27.912+08:00  INFO 35920 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
 2025-12-23T17:22:27.914+08:00  INFO 35920 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-12-24T10:19:56.361+08:00  INFO 24392 --- [restartedMain] s.StudentAwardSelectionSystemApplication : Starting StudentAwardSelectionSystemApplication using Java 21.0.2 with PID 24392 (G:\javacode\student-selection-system\target\classes started by 俞伟杰 in G:\javacode\student-selection-system)
+2025-12-24T10:19:56.364+08:00  INFO 24392 --- [restartedMain] s.StudentAwardSelectionSystemApplication : No active profile set, falling back to 1 default profile: "default"
+2025-12-24T10:19:56.408+08:00  INFO 24392 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-12-24T10:19:56.408+08:00  INFO 24392 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-12-24T10:19:57.467+08:00  INFO 24392 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2025-12-24T10:19:57.468+08:00  INFO 24392 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : Loaded Apache Tomcat Native library [2.0.8] using APR version [1.7.4].
+2025-12-24T10:19:57.473+08:00  INFO 24392 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : OpenSSL successfully initialized [OpenSSL 3.0.14 4 Jun 2024]
+2025-12-24T10:19:57.480+08:00  INFO 24392 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-24T10:19:57.480+08:00  INFO 24392 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.15]
+2025-12-24T10:19:57.552+08:00  INFO 24392 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-24T10:19:57.552+08:00  INFO 24392 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1144 ms
+2025-12-24T10:19:57.690+08:00 DEBUG 24392 --- [restartedMain] c.b.m.e.s.MybatisSqlSessionFactoryBean   : Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor@58e2a294'
+2025-12-24T10:19:57.768+08:00 ERROR 24392 --- [restartedMain] c.b.m.core.MybatisConfiguration          : mapper[com.example.studentselectionsystem.mapper.StudentAwardApplicationMapper.selectApplicationsWithAwardByStudentIdPage] is ignored, because it exists, maybe from xml file
+2025-12-24T10:19:57.819+08:00 DEBUG 24392 --- [restartedMain] c.b.m.e.s.MybatisSqlSessionFactoryBean   : Parsed mapper file: 'file [G:\javacode\student-selection-system\target\classes\mapper\StudentAwardApplicationMapper.xml]'
+2025-12-24T10:19:58.678+08:00  INFO 24392 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@c233891, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3468f989, org.springframework.security.web.context.SecurityContextHolderFilter@37870b3e, org.springframework.security.web.header.HeaderWriterFilter@1356f611, org.springframework.web.filter.CorsFilter@2af0de04, org.springframework.security.web.authentication.logout.LogoutFilter@616b73b2, com.example.studentselectionsystem.config.JwtAuthenticationFilter@7ffb90de, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@240c5b65, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@216d5d81, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@60202e0c, org.springframework.security.web.session.SessionManagementFilter@7f4ad500, org.springframework.security.web.access.ExceptionTranslationFilter@16a4b1d2, org.springframework.security.web.access.intercept.AuthorizationFilter@4aae4baf]
+2025-12-24T10:19:58.787+08:00  WARN 24392 --- [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-12-24T10:19:58.873+08:00  INFO 24392 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-12-24T10:19:59.035+08:00  INFO 24392 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2025-12-24T10:19:59.045+08:00  INFO 24392 --- [restartedMain] s.StudentAwardSelectionSystemApplication : Started StudentAwardSelectionSystemApplication in 3.097 seconds (process running for 3.558)
+2025-12-24T10:23:26.841+08:00  INFO 24392 --- [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 133 class path changes (0 additions, 133 deletions, 0 modifications)
+2025-12-24T10:23:26.858+08:00  INFO 24392 --- [Thread-5] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-24T10:23:26.964+08:00  INFO 24392 --- [restartedMain] s.StudentAwardSelectionSystemApplication : Starting StudentAwardSelectionSystemApplication using Java 21.0.2 with PID 24392 (G:\javacode\student-selection-system\target\classes started by 俞伟杰 in G:\javacode\student-selection-system)
+2025-12-24T10:23:26.965+08:00  INFO 24392 --- [restartedMain] s.StudentAwardSelectionSystemApplication : No active profile set, falling back to 1 default profile: "default"
+2025-12-24T10:23:27.179+08:00  WARN 24392 --- [restartedMain] o.m.s.mapper.ClassPathMapperScanner      : No MyBatis mapper was found in '[com.example.studentselectionsystem.mapper, com.example.studentselectionsystem.repository]' package. Please check your configuration.
+2025-12-24T10:23:27.267+08:00  INFO 24392 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2025-12-24T10:23:27.268+08:00  INFO 24392 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : Loaded Apache Tomcat Native library [2.0.8] using APR version [1.7.4].
+2025-12-24T10:23:27.271+08:00  INFO 24392 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : OpenSSL successfully initialized [OpenSSL 3.0.14 4 Jun 2024]
+2025-12-24T10:23:27.272+08:00  INFO 24392 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-24T10:23:27.272+08:00  INFO 24392 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.15]
+2025-12-24T10:23:27.319+08:00  INFO 24392 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-24T10:23:27.319+08:00  INFO 24392 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 352 ms
+2025-12-24T10:23:27.419+08:00  WARN 24392 --- [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-12-24T10:23:27.477+08:00  WARN 24392 --- [restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'sqlSessionFactory' defined in class path resource [com/baomidou/mybatisplus/autoconfigure/MybatisPlusAutoConfiguration.class]: Failed to instantiate [org.apache.ibatis.session.SqlSessionFactory]: Factory method 'sqlSessionFactory' threw exception with message: Failed to parse mapping resource: 'file [G:\javacode\student-selection-system\target\classes\mapper\StudentAwardApplicationMapper.xml]'
+2025-12-24T10:23:27.478+08:00  INFO 24392 --- [restartedMain] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-24T10:23:27.483+08:00  INFO 24392 --- [restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-12-24T10:23:27.503+08:00 ERROR 24392 --- [restartedMain] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'sqlSessionFactory' defined in class path resource [com/baomidou/mybatisplus/autoconfigure/MybatisPlusAutoConfiguration.class]: Failed to instantiate [org.apache.ibatis.session.SqlSessionFactory]: Factory method 'sqlSessionFactory' threw exception with message: Failed to parse mapping resource: 'file [G:\javacode\student-selection-system\target\classes\mapper\StudentAwardApplicationMapper.xml]'
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:654) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:642) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1332) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1162) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:560) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:520) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:973) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:950) ~[spring-context-6.0.13.jar:6.0.13]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:616) ~[spring-context-6.0.13.jar:6.0.13]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.1.5.jar:3.1.5]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:738) ~[spring-boot-3.1.5.jar:3.1.5]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:440) ~[spring-boot-3.1.5.jar:3.1.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:316) ~[spring-boot-3.1.5.jar:3.1.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1306) ~[spring-boot-3.1.5.jar:3.1.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1295) ~[spring-boot-3.1.5.jar:3.1.5]
+	at com.example.studentselectionsystem.StudentAwardSelectionSystemApplication.main(StudentAwardSelectionSystemApplication.java:22) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.1.5.jar:3.1.5]
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.ibatis.session.SqlSessionFactory]: Factory method 'sqlSessionFactory' threw exception with message: Failed to parse mapping resource: 'file [G:\javacode\student-selection-system\target\classes\mapper\StudentAwardApplicationMapper.xml]'
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:171) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:650) ~[spring-beans-6.0.13.jar:6.0.13]
+	... 22 common frames omitted
+Caused by: java.io.IOException: Failed to parse mapping resource: 'file [G:\javacode\student-selection-system\target\classes\mapper\StudentAwardApplicationMapper.xml]'
+	at com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean.buildSqlSessionFactory(MybatisSqlSessionFactoryBean.java:575) ~[mybatis-plus-extension-3.5.3.1.jar:3.5.3.1]
+	at com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean.afterPropertiesSet(MybatisSqlSessionFactoryBean.java:444) ~[mybatis-plus-extension-3.5.3.1.jar:3.5.3.1]
+	at com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean.getObject(MybatisSqlSessionFactoryBean.java:608) ~[mybatis-plus-extension-3.5.3.1.jar:3.5.3.1]
+	at com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration.sqlSessionFactory(MybatisPlusAutoConfiguration.java:224) ~[mybatis-plus-boot-starter-3.5.3.1.jar:3.5.3.1]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:139) ~[spring-beans-6.0.13.jar:6.0.13]
+	... 23 common frames omitted
+Caused by: org.apache.ibatis.builder.BuilderException: Error parsing Mapper XML. The XML location is 'file [G:\javacode\student-selection-system\target\classes\mapper\StudentAwardApplicationMapper.xml]'. Cause: org.apache.ibatis.builder.BuilderException: Error resolving class. Cause: org.apache.ibatis.type.TypeException: Could not resolve type alias 'com.example.studentselectionsystem.entity.StudentAwardApplication'.  Cause: java.lang.ClassNotFoundException: Cannot find class: com.example.studentselectionsystem.entity.StudentAwardApplication
+	at org.apache.ibatis.builder.xml.XMLMapperBuilder.configurationElement(XMLMapperBuilder.java:123) ~[mybatis-3.5.10.jar:3.5.10]
+	at org.apache.ibatis.builder.xml.XMLMapperBuilder.parse(XMLMapperBuilder.java:95) ~[mybatis-3.5.10.jar:3.5.10]
+	at com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean.buildSqlSessionFactory(MybatisSqlSessionFactoryBean.java:573) ~[mybatis-plus-extension-3.5.3.1.jar:3.5.3.1]
+	... 29 common frames omitted
+Caused by: org.apache.ibatis.builder.BuilderException: Error resolving class. Cause: org.apache.ibatis.type.TypeException: Could not resolve type alias 'com.example.studentselectionsystem.entity.StudentAwardApplication'.  Cause: java.lang.ClassNotFoundException: Cannot find class: com.example.studentselectionsystem.entity.StudentAwardApplication
+	at org.apache.ibatis.builder.BaseBuilder.resolveClass(BaseBuilder.java:118) ~[mybatis-3.5.10.jar:3.5.10]
+	at org.apache.ibatis.builder.xml.XMLMapperBuilder.resultMapElement(XMLMapperBuilder.java:263) ~[mybatis-3.5.10.jar:3.5.10]
+	at org.apache.ibatis.builder.xml.XMLMapperBuilder.resultMapElement(XMLMapperBuilder.java:254) ~[mybatis-3.5.10.jar:3.5.10]
+	at org.apache.ibatis.builder.xml.XMLMapperBuilder.resultMapElements(XMLMapperBuilder.java:246) ~[mybatis-3.5.10.jar:3.5.10]
+	at org.apache.ibatis.builder.xml.XMLMapperBuilder.configurationElement(XMLMapperBuilder.java:119) ~[mybatis-3.5.10.jar:3.5.10]
+	... 31 common frames omitted
+Caused by: org.apache.ibatis.type.TypeException: Could not resolve type alias 'com.example.studentselectionsystem.entity.StudentAwardApplication'.  Cause: java.lang.ClassNotFoundException: Cannot find class: com.example.studentselectionsystem.entity.StudentAwardApplication
+	at org.apache.ibatis.type.TypeAliasRegistry.resolveAlias(TypeAliasRegistry.java:128) ~[mybatis-3.5.10.jar:3.5.10]
+	at org.apache.ibatis.builder.BaseBuilder.resolveAlias(BaseBuilder.java:149) ~[mybatis-3.5.10.jar:3.5.10]
+	at org.apache.ibatis.builder.BaseBuilder.resolveClass(BaseBuilder.java:116) ~[mybatis-3.5.10.jar:3.5.10]
+	... 35 common frames omitted
+Caused by: java.lang.ClassNotFoundException: Cannot find class: com.example.studentselectionsystem.entity.StudentAwardApplication
+	at org.apache.ibatis.io.ClassLoaderWrapper.classForName(ClassLoaderWrapper.java:196) ~[mybatis-3.5.10.jar:3.5.10]
+	at org.apache.ibatis.io.ClassLoaderWrapper.classForName(ClassLoaderWrapper.java:89) ~[mybatis-3.5.10.jar:3.5.10]
+	at org.apache.ibatis.io.Resources.classForName(Resources.java:261) ~[mybatis-3.5.10.jar:3.5.10]
+	at org.apache.ibatis.type.TypeAliasRegistry.resolveAlias(TypeAliasRegistry.java:124) ~[mybatis-3.5.10.jar:3.5.10]
+	... 37 common frames omitted
+
+2025-12-24T10:23:31.470+08:00  INFO 24392 --- [restartedMain] s.StudentAwardSelectionSystemApplication : Starting StudentAwardSelectionSystemApplication using Java 21.0.2 with PID 24392 (G:\javacode\student-selection-system\target\classes started by 俞伟杰 in G:\javacode\student-selection-system)
+2025-12-24T10:23:31.472+08:00  INFO 24392 --- [restartedMain] s.StudentAwardSelectionSystemApplication : No active profile set, falling back to 1 default profile: "default"
+2025-12-24T10:23:31.744+08:00  INFO 24392 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2025-12-24T10:23:31.744+08:00  INFO 24392 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : Loaded Apache Tomcat Native library [2.0.8] using APR version [1.7.4].
+2025-12-24T10:23:31.746+08:00  INFO 24392 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : OpenSSL successfully initialized [OpenSSL 3.0.14 4 Jun 2024]
+2025-12-24T10:23:31.746+08:00  INFO 24392 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-24T10:23:31.747+08:00  INFO 24392 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.15]
+2025-12-24T10:23:31.780+08:00  INFO 24392 --- [restartedMain] o.a.c.c.C.[Tomcat-1].[localhost].[/]     : Initializing Spring embedded WebApplicationContext
+2025-12-24T10:23:31.780+08:00  INFO 24392 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 307 ms
+2025-12-24T10:23:31.830+08:00 DEBUG 24392 --- [restartedMain] c.b.m.e.s.MybatisSqlSessionFactoryBean   : Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor@238f5b5c'
+2025-12-24T10:23:31.836+08:00 ERROR 24392 --- [restartedMain] c.b.m.core.MybatisConfiguration          : mapper[com.example.studentselectionsystem.mapper.StudentAwardApplicationMapper.selectApplicationsWithAwardByStudentIdPage] is ignored, because it exists, maybe from xml file
+2025-12-24T10:23:31.844+08:00 DEBUG 24392 --- [restartedMain] c.b.m.e.s.MybatisSqlSessionFactoryBean   : Parsed mapper file: 'file [G:\javacode\student-selection-system\target\classes\mapper\StudentAwardApplicationMapper.xml]'
+2025-12-24T10:23:32.256+08:00  INFO 24392 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@77d4f882, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@235a35b4, org.springframework.security.web.context.SecurityContextHolderFilter@3426fb32, org.springframework.security.web.header.HeaderWriterFilter@13cbcf2d, org.springframework.web.filter.CorsFilter@7827e8e2, org.springframework.security.web.authentication.logout.LogoutFilter@7154b1d5, com.example.studentselectionsystem.config.JwtAuthenticationFilter@628ce57b, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2369c11c, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@6e96d0fb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@33506e69, org.springframework.security.web.session.SessionManagementFilter@2307f4b4, org.springframework.security.web.access.ExceptionTranslationFilter@47fa045e, org.springframework.security.web.access.intercept.AuthorizationFilter@4491e5ba]
+2025-12-24T10:23:32.261+08:00  WARN 24392 --- [restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'paginationInnerInterceptor' defined in com.example.studentselectionsystem.StudentAwardSelectionSystemApplication: Failed to instantiate [com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor]: Illegal arguments to factory method 'paginationInnerInterceptor'; args: 
+2025-12-24T10:23:32.262+08:00  INFO 24392 --- [restartedMain] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-24T10:23:32.266+08:00  INFO 24392 --- [restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-12-24T10:23:32.269+08:00 ERROR 24392 --- [restartedMain] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'paginationInnerInterceptor' defined in com.example.studentselectionsystem.StudentAwardSelectionSystemApplication: Failed to instantiate [com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor]: Illegal arguments to factory method 'paginationInnerInterceptor'; args: 
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:654) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:488) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1332) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1162) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:560) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:520) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:973) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:950) ~[spring-context-6.0.13.jar:6.0.13]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:616) ~[spring-context-6.0.13.jar:6.0.13]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.1.5.jar:3.1.5]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:738) ~[spring-boot-3.1.5.jar:3.1.5]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:440) ~[spring-boot-3.1.5.jar:3.1.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:316) ~[spring-boot-3.1.5.jar:3.1.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1306) ~[spring-boot-3.1.5.jar:3.1.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1295) ~[spring-boot-3.1.5.jar:3.1.5]
+	at com.example.studentselectionsystem.StudentAwardSelectionSystemApplication.main(StudentAwardSelectionSystemApplication.java:22) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.1.5.jar:3.1.5]
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor]: Illegal arguments to factory method 'paginationInnerInterceptor'; args: 
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:157) ~[spring-beans-6.0.13.jar:6.0.13]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:650) ~[spring-beans-6.0.13.jar:6.0.13]
+	... 22 common frames omitted
+Caused by: java.lang.IllegalArgumentException: object is not an instance of declaring class
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.checkReceiver(DirectMethodHandleAccessor.java:197) ~[na:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:99) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:139) ~[spring-beans-6.0.13.jar:6.0.13]
+	... 23 common frames omitted
+

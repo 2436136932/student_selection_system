@@ -6,6 +6,7 @@ import com.example.studentselectionsystem.mapper.VerificationCodeMapper;
 import com.example.studentselectionsystem.service.EmailService;
 import com.example.studentselectionsystem.service.VerificationCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -44,7 +45,7 @@ public class VerificationCodeServiceImpl extends ServiceImpl<VerificationCodeMap
         }
         
         // 发送邮件
-        String subject = "学生评选系统 - 密码重置验证码";
+        String subject = "学生评奖评优系统 - 密码重置验证码";
         String content = "您的验证码是：" + code + "，有效期为5分钟，请尽快使用。";
         return emailService.sendEmail(email, subject, content);
     }
@@ -91,5 +92,17 @@ public class VerificationCodeServiceImpl extends ServiceImpl<VerificationCodeMap
             sb.append(random.nextInt(10));
         }
         return sb.toString();
+    }
+    
+    /**
+     * 更新过期验证码状态为已过期
+     */
+    @Scheduled(cron = "0 */5 * * * ?") // 每5分钟执行一次
+    public void updateExpiredCodes() {
+        this.lambdaUpdate()
+                .eq(VerificationCode::getStatus, 0) // 只处理未使用的验证码
+                .lt(VerificationCode::getExpireTime, new Date()) // 过期时间小于当前时间
+                .set(VerificationCode::getStatus, 2) // 更新为已过期状态
+                .update();
     }
 }
