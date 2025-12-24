@@ -25,6 +25,7 @@
             :session="currentSession"
             :messages="currentMessages"
             :chat-user="currentChatUser"
+            :online-users="onlineUsers"
             @send-message="handleSendMessage"
             @close-session="handleCloseSession"
           />
@@ -52,13 +53,51 @@ const currentSession = ref(null)
 const currentChatUser = ref(null)
 // 当前会话的消息列表
 const currentMessages = ref([])
+// 在线用户列表
+const onlineUsers = ref([])
+
+// 导入WebSocket服务
+import { initializeWebSocket as initWebSocket } from '../utils/websocketService'
 
 // 初始化聊天功能
 onMounted(() => {
   fetchUsers()
   fetchChatSessions()
-  initializeWebSocket()
+  fetchOnlineUsers()
+  // 使用WebSocket服务初始化连接，传入消息处理函数
+  initWebSocket(handleWebSocketMessage)
+  // 每30秒获取一次在线用户列表
+  setInterval(fetchOnlineUsers, 30000)
 })
+
+// 消息处理函数
+const handleWebSocketMessage = (event) => {
+  try {
+    const message = JSON.parse(event.data)
+    console.log('接收到消息: ', message)
+    
+    // 如果消息属于当前会话，直接添加到消息列表
+    if (currentSession.value && currentSession.value.id === message.sessionId) {
+      currentMessages.value.push(message)
+      // 如果是收到的消息，标记为已读
+      const userId = JSON.parse(localStorage.getItem('userInfo'))?.id
+      if (message.senderId !== userId) {
+        markMessagesAsRead(message.sessionId)
+      }
+    } else {
+      // 否则更新会话列表中的最后一条消息
+      updateSessionLastMessage(message.sessionId, message)
+      // 如果会话不存在，添加到会话列表
+      if (!chatSessions.value.some(session => session.id === message.sessionId)) {
+        fetchChatSessions()
+      }
+      // 发送未读消息数量更新事件
+      window.dispatchEvent(new CustomEvent('updateUnreadCount'))
+    }
+  } catch (error) {
+    console.error('解析WebSocket消息失败:', error)
+  }
+}
 
 // 获取所有用户
 const fetchUsers = async () => {
@@ -101,6 +140,29 @@ const fetchChatSessions = async () => {
     }
   } catch (error) {
     console.error('获取聊天会话异常:', error)
+  }
+}
+
+// 获取在线用户列表
+const fetchOnlineUsers = async () => {
+  try {
+    const response = await fetch('http://localhost:8080/api/chats/online-users', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    
+    if (response.ok) {
+      const data = await response.json()
+      onlineUsers.value = data
+      console.log('获取在线用户列表成功:', onlineUsers.value)
+    } else {
+      console.error('获取在线用户列表失败:', response.statusText)
+    }
+  } catch (error) {
+    console.error('获取在线用户列表异常:', error)
   }
 }
 
@@ -227,67 +289,7 @@ const handleCloseSession = (sessionId) => {
   console.log('会话已关闭:', sessionId)
 }
 
-// 初始化WebSocket连接
-const initializeWebSocket = () => {
-  const userId = JSON.parse(localStorage.getItem('userInfo'))?.id
-  if (!userId) return
-  
-  // 使用WebSocket创建连接，添加详细的错误处理
-    console.log(`尝试建立WebSocket连接: ws://localhost:8080/ws/chat?userId=${userId}`)
-    try {
-      const socket = new WebSocket(`ws://localhost:8080/ws/chat?userId=${userId}`)
-      
-      socket.onopen = () => {
-        console.log('WebSocket连接已建立')
-      }
-      
-      socket.onmessage = (event) => {
-        console.log('收到WebSocket消息:', event.data)
-        try {
-          const message = JSON.parse(event.data)
-          // 如果消息属于当前会话，直接添加到消息列表
-          if (currentSession.value && currentSession.value.id === message.sessionId) {
-            currentMessages.value.push(message)
-            // 如果是收到的消息，标记为已读
-            if (message.senderId !== userId) {
-              markMessagesAsRead(message.sessionId)
-            }
-          } else {
-            // 否则更新会话列表中的最后一条消息
-            updateSessionLastMessage(message.sessionId, message)
-            // 如果会话不存在，添加到会话列表
-            if (!chatSessions.value.some(session => session.id === message.sessionId)) {
-              fetchChatSessions()
-            }
-            // 发送未读消息数量更新事件
-            window.dispatchEvent(new CustomEvent('updateUnreadCount'))
-          }
-        } catch (error) {
-          console.error('解析WebSocket消息失败:', error)
-        }
-      }
-      
-      socket.onclose = (event) => {
-        console.log(`WebSocket连接已关闭，代码: ${event.code}, 原因: ${event.reason}`)
-        // 5秒后重新连接
-        setTimeout(() => {
-          initializeWebSocket()
-        }, 5000)
-      }
-      
-      socket.onerror = (error) => {
-        console.error('WebSocket连接出错:', error)
-        console.error('错误类型:', error.type)
-        console.error('错误目标:', error.target)
-      }
-    } catch (error) {
-      console.error('创建WebSocket连接失败:', error)
-      // 5秒后重新连接
-      setTimeout(() => {
-        initializeWebSocket()
-      }, 5000)
-    }
-}
+
 </script>
 
 <style scoped>

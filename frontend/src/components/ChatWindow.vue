@@ -16,7 +16,9 @@
               <span class="header-major-class">{{ props.chatUser.major || '' }} {{ props.chatUser.className || '' }}</span>
             </template>
           </div>
-          <span class="header-status">在线</span>
+          <span class="header-status" :class="isUserOnline ? 'online' : 'offline'">
+            {{ isUserOnline ? '在线' : '离线' }}
+          </span>
         </div>
       </div>
       
@@ -103,6 +105,10 @@ const props = defineProps({
   chatUser: {
     type: Object,
     required: true
+  },
+  onlineUsers: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -117,6 +123,12 @@ const currentUserId = computed(() => {
 // 获取用户角色
 const currentUserRole = computed(() => {
   return JSON.parse(localStorage.getItem('userInfo'))?.role || ''
+})
+
+// 判断当前聊天用户是否在线
+const isUserOnline = computed(() => {
+  if (!props.onlineUsers || !props.chatUser) return false
+  return props.onlineUsers.includes(props.chatUser.id.toString())
 })
 
 // 获取用户姓名首字母
@@ -283,18 +295,35 @@ watch(
 
 .header-status {
   font-size: 12px;
-  color: #67c23a;
   display: flex;
   align-items: center;
 }
 
-.header-status::before {
+.header-status.online {
+  color: #67c23a;
+}
+
+.header-status.online::before {
   content: '';
   display: inline-block;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background-color: #67c23a;
+  margin-right: 4px;
+}
+
+.header-status.offline {
+  color: #909399;
+}
+
+.header-status.offline::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #909399;
   margin-right: 4px;
 }
 

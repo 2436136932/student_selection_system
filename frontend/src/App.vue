@@ -45,6 +45,7 @@
             </div>
             <div class="header-right">
               <div class="header-info">
+                <span class="online-count">系统当前在线人数：{{ onlineUserCount }}</span>
                 <span class="role-tag" :class="getRoleClass()">
                   {{ getRoleName() }}
                 </span>
@@ -154,6 +155,9 @@ const isDarkMode = ref(false)
 // 未读消息数量
 const unreadMessageCount = ref(0)
 
+// 在线人数
+const onlineUserCount = ref(0)
+
 // 菜单定义，包含每个菜单的权限信息
 const menuItems = [
   { index: '/home', icon: House, text: '首页', roles: ['admin', 'teacher', 'student'] },
@@ -200,6 +204,9 @@ const checkLoginStatus = () => {
   }
 }
 
+// 导入WebSocket服务
+import { initializeWebSocket as initWebSocket, triggerWebSocketConnection, closeWebSocket } from './utils/websocketService'
+
 // 组件挂载时检查登录状态和读取设置
 onMounted(() => {
   checkLoginStatus()
@@ -218,6 +225,14 @@ onMounted(() => {
   
   // 监听未读消息数量更新事件
   window.addEventListener('updateUnreadCount', getUnreadMessageCount)
+  
+  // 初始化WebSocket连接，用户一登录就建立连接
+  initWebSocket()
+  
+  // 获取在线人数
+  getOnlineUserCount()
+  // 每30秒更新一次在线人数
+  setInterval(getOnlineUserCount, 30000)
 })
 
 // 组件卸载时移除事件监听
@@ -226,25 +241,43 @@ onUnmounted(() => {
 })
 
 // 监听userInfo变化
-watch(userInfo, (newVal) => {
+watch(userInfo, (newVal, oldVal) => {
   if (newVal && newVal.username) {
     isLoggedIn.value = true
+    // 用户登录，触发WebSocket连接
+    console.log('检测到用户登录，初始化WebSocket连接')
+    triggerWebSocketConnection()
   } else {
     isLoggedIn.value = false
+    // 用户注销，关闭WebSocket连接
+    console.log('检测到用户注销，关闭WebSocket连接')
+    closeWebSocket()
   }
 }, { deep: true })
 
 // 监听localStorage变化
 window.addEventListener('storage', (event) => {
   if (event.key === 'userInfo') {
+    // 检查登录状态
     checkLoginStatus()
+    
+    // 获取最新的用户信息
+    const userInfoStr = localStorage.getItem('userInfo')
+    if (userInfoStr) {
+      // 用户已登录，触发WebSocket连接
+      console.log('检测到用户登录，触发WebSocket连接')
+      triggerWebSocketConnection()
+    } else {
+      // 用户已注销，关闭WebSocket连接
+      console.log('检测到用户注销，关闭WebSocket连接')
+      closeWebSocket()
+    }
   } else if (event.key === 'displaySettings') {
     // 重新读取显示设置
     const savedDisplaySettings = localStorage.getItem('displaySettings')
     if (savedDisplaySettings) {
       try {
         const displaySettings = JSON.parse(savedDisplaySettings)
-        showBreadcrumb.value = displaySettings.showBreadcrumb !== false
         isCompactMode.value = displaySettings.compactMode || false
         isDarkMode.value = displaySettings.darkMode || false
       } catch (e) {
@@ -317,6 +350,35 @@ const getUnreadMessageCount = async () => {
   }
 }
 
+// 获取在线人数
+const getOnlineUserCount = async () => {
+  console.log('开始获取在线人数...')
+  try {
+    // 同时调用两个端点进行验证
+    const [userIdsResponse, countResponse] = await Promise.all([
+      axios.get('/api/chats/online-users'),
+      axios.get('/api/chats/online-count')
+    ]);
+    
+    console.log('获取在线用户ID成功，响应数据:', userIdsResponse.data);
+    console.log('获取在线人数成功，响应数据:', countResponse.data);
+    
+    // 使用userIdsResponse.data.length获取在线人数
+    onlineUserCount.value = userIdsResponse.data.length || 0;
+    console.log('根据在线用户ID列表计算的在线人数:', onlineUserCount.value);
+    console.log('直接获取的在线人数:', countResponse.data?.onlineCount);
+    
+    // 如果直接获取的在线人数不为空，使用它进行验证
+    if (countResponse.data?.onlineCount !== undefined) {
+      console.log('在线人数验证:', onlineUserCount.value === countResponse.data.onlineCount ? '一致' : '不一致');
+    }
+  } catch (error) {
+    console.error('获取在线人数失败:', error);
+    console.error('错误详情:', error.response?.status, error.response?.data);
+    // 忽略错误，避免影响页面加载
+  }
+}
+
 // 获取可见菜单
 const getVisibleMenus = computed(() => {
   const currentRole = userInfo.value.role
@@ -354,6 +416,7 @@ const handleDropdownCommand = (command) => {
 // 退出登录
 const handleLogout = () => {
   localStorage.removeItem('userInfo')
+  localStorage.removeItem('token')
   isLoggedIn.value = false
   userInfo.value = {}
   ElMessage.success('退出登录成功')
@@ -869,6 +932,13 @@ html, body {
   display: flex;
   align-items: center;
   gap: 20px;
+}
+
+/* 在线人数样式 */
+.online-count {
+  font-size: 14px;
+  color: #606266;
+  margin-right: 15px;
 }
 
 /* 角色标签 */

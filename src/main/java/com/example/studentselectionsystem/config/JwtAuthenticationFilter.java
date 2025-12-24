@@ -35,8 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
-    @Value("${jwt.header}")
-    private String jwtHeader;
+    private final String jwtHeader = "Authorization";
 
     /**
      * 确定是否应该跳过过滤

@@ -2,8 +2,11 @@ package com.example.studentselectionsystem.websocket;
 
 import com.example.studentselectionsystem.entity.ChatMessage;
 import com.example.studentselectionsystem.service.ChatMessageService;
+import com.example.studentselectionsystem.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -11,6 +14,8 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,6 +34,14 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     // 聊天消息服务，用于保存消息到数据库
     @Autowired
     private ChatMessageService chatMessageService;
+    
+    // JWT工具类，用于验证JWT令牌
+    @Autowired
+    private JwtUtil jwtUtil;
+    
+    // 用户详情服务，用于获取用户信息
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     /**
      * 当WebSocket连接建立时调用
@@ -37,11 +50,36 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
      */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        // 从会话中获取用户ID，这里假设用户ID是通过URL参数传递的
+        // 从会话中获取用户ID和token，这里假设用户ID和token是通过URL参数传递的
+        System.out.println("WebSocket连接建立，会话ID: " + session.getId());
         String userId = getUserIdFromSession(session);
-        if (userId != null) {
-            sessions.put(userId, session);
-            System.out.println("用户 " + userId + " 连接成功，当前在线人数: " + sessions.size());
+        String token = getTokenFromSession(session);
+        
+        System.out.println("尝试建立WebSocket连接，userId: " + userId + ", token: " + (token != null ? "有token" : "无token"));
+        
+        if (userId != null && token != null) {
+            try {
+                // 验证token是否有效
+                String username = jwtUtil.extractUsername(token);
+                System.out.println("从token中提取的用户名: " + username);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                
+                if (jwtUtil.validateToken(token, userDetails)) {
+                    sessions.put(userId, session);
+                    System.out.println("用户 " + userId + " 连接成功，当前在线人数: " + sessions.size());
+                    System.out.println("当前在线用户ID列表: " + sessions.keySet());
+                } else {
+                    System.out.println("用户 " + userId + " token无效，拒绝连接");
+                    session.close();
+                }
+            } catch (Exception e) {
+                System.out.println("用户 " + userId + " token验证失败，拒绝连接: " + e.getMessage());
+                e.printStackTrace();
+                session.close();
+            }
+        } else {
+            System.out.println("用户ID或token缺失，拒绝连接");
+            session.close();
         }
     }
 
@@ -129,21 +167,58 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         // 从URL参数中获取用户ID
         Map<String, Object> attributes = session.getAttributes();
         String userId = (String) attributes.get("userId");
+        System.out.println("从attributes获取的userId: " + userId);
+        
         if (userId == null) {
             // 尝试从请求参数中获取用户ID
             String queryString = session.getUri().getQuery();
+            System.out.println("从URL获取到的queryString: " + queryString);
+            
             if (queryString != null) {
                 String[] params = queryString.split("&");
                 for (String param : params) {
+                    System.out.println("解析参数: " + param);
                     String[] keyValue = param.split("=");
-                    if (keyValue.length == 2 && "userId".equals(keyValue[0])) {
-                        userId = keyValue[1];
-                        break;
+                    if (keyValue.length == 2) {
+                        System.out.println("参数键: " + keyValue[0] + ", 值: " + keyValue[1]);
+                        if ("userId".equals(keyValue[0])) {
+                            userId = keyValue[1];
+                            System.out.println("解析到的userId: " + userId);
+                            break;
+                        }
                     }
                 }
             }
         }
         return userId;
+    }
+    
+    /**
+     * 从WebSocketSession中获取token
+     * @param session WebSocket会话
+     * @return token
+     */
+    private String getTokenFromSession(WebSocketSession session) {
+        // 尝试从请求参数中获取token
+        String queryString = session.getUri().getQuery();
+        System.out.println("从URL获取到的queryString: " + queryString);
+        
+        if (queryString != null) {
+            String[] params = queryString.split("&");
+            for (String param : params) {
+                System.out.println("解析参数: " + param);
+                String[] keyValue = param.split("=");
+                if (keyValue.length == 2) {
+                    System.out.println("参数键: " + keyValue[0] + ", 值: " + keyValue[1]);
+                    if ("token".equals(keyValue[0])) {
+                        String token = keyValue[1];
+                        System.out.println("解析到的token: " + token.substring(0, Math.min(10, token.length())) + "...");
+                        return token;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -151,6 +226,17 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
      * @return 在线用户数量
      */
     public int getOnlineUserCount() {
+        System.out.println("获取在线用户数量，当前sessions大小: " + sessions.size());
         return sessions.size();
+    }
+    
+    /**
+     * 获取当前在线用户ID列表
+     * @return 在线用户ID列表
+     */
+    public List<String> getOnlineUserIds() {
+        System.out.println("获取在线用户ID列表，当前sessions大小: " + sessions.size());
+        System.out.println("当前在线用户ID: " + sessions.keySet());
+        return new ArrayList<>(sessions.keySet());
     }
 }

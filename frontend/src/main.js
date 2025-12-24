@@ -11,7 +11,7 @@ axios.defaults.baseURL = 'http://localhost:8080'
 // 添加axios拦截器，自动为每个请求添加Authorization头，并过滤外部请求
 axios.interceptors.request.use(config => {
   // 只处理我们自己的API请求，过滤掉所有外部请求
-  if (!config.url.startsWith('/api') && !config.url.startsWith('http://localhost:8080')) {
+  if (!config.url.startsWith('/api')) {
     console.warn('Axios请求拦截器 - 过滤外部请求:', config.url)
     return Promise.reject(new Error('外部请求被拦截'))
   }

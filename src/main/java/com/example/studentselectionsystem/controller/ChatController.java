@@ -8,6 +8,7 @@ import com.example.studentselectionsystem.service.ChatSessionService;
 import com.example.studentselectionsystem.service.StudentService;
 import com.example.studentselectionsystem.service.TeacherService;
 import com.example.studentselectionsystem.service.UserService;
+import com.example.studentselectionsystem.websocket.ChatWebSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +45,9 @@ public class ChatController {
     
     @Autowired
     private TeacherService teacherService;
+    
+    @Autowired
+    private ChatWebSocketHandler chatWebSocketHandler;
 
     /**
      * 获取当前用户ID
@@ -473,6 +477,38 @@ public class ChatController {
             long unreadCount = chatMessageService.countUnreadMessagesByUserId(currentUserId);
             Map<String, Long> response = new HashMap<>();
             response.put("unreadCount", unreadCount);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    /**
+     * 获取当前在线用户ID列表
+     * @return 在线用户ID列表
+     */
+    @PreAuthorize("hasRole('STUDENT') or hasRole('TEACHER') or hasRole('ADMIN')")
+    @GetMapping("/online-users")
+    public ResponseEntity<List<String>> getOnlineUsers() {
+        try {
+            List<String> onlineUserIds = chatWebSocketHandler.getOnlineUserIds();
+            return new ResponseEntity<>(onlineUserIds, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    /**
+     * 获取当前在线人数
+     * @return 在线人数
+     */
+    @PreAuthorize("hasRole('STUDENT') or hasRole('TEACHER') or hasRole('ADMIN')")
+    @GetMapping("/online-count")
+    public ResponseEntity<Map<String, Integer>> getOnlineCount() {
+        try {
+            int count = chatWebSocketHandler.getOnlineUserCount();
+            Map<String, Integer> response = new HashMap<>();
+            response.put("onlineCount", count);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
