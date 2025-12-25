@@ -6,6 +6,7 @@ import com.example.studentselectionsystem.entity.User;
 import com.example.studentselectionsystem.repository.RoleRepository;
 import com.example.studentselectionsystem.repository.UserRepository;
 import com.example.studentselectionsystem.service.UserService;
+import com.example.studentselectionsystem.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private StudentService studentService;
 
     @Value("${file.storage.dir}")
     private String storageDir;
@@ -273,6 +277,36 @@ public class UserServiceImpl implements UserService {
             user.setUpdateTime(new Date());
             userRepository.updateById(user);
             return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isCurrentUserStudent(Long studentId) {
+        // 获取当前登录用户
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            // 检查是否为学生角色
+            boolean isStudent = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT") || a.getAuthority().equals("STUDENT"));
+            if (isStudent) {
+                try {
+                    String username = authentication.getName();
+                    // 通过用户名查询用户信息
+                    Optional<User> userOptional = findUserByUsername(username);
+                    if (userOptional.isPresent()) {
+                        User user = userOptional.get();
+                        // 通过用户ID查询学生信息
+                        Optional<com.example.studentselectionsystem.entity.Student> studentOptional = 
+                            studentService.findStudentByUserId(user.getId());
+                        if (studentOptional.isPresent()) {
+                            return studentOptional.get().getId().equals(studentId);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error("检查当前用户是否为指定学生失败: {}", e.getMessage());
+                }
+            }
         }
         return false;
     }

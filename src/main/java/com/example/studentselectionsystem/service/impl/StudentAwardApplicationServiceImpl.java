@@ -10,6 +10,7 @@ import com.example.studentselectionsystem.mapper.AwardMapper;
 import com.example.studentselectionsystem.service.StudentAwardApplicationService;
 import com.example.studentselectionsystem.service.StudentService;
 import com.example.studentselectionsystem.service.AwardService;
+import com.example.studentselectionsystem.service.StudentAwardRecordService;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
@@ -47,6 +48,9 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     
     @Autowired
     private SqlSessionFactory sqlSessionFactory;
+    
+    @Autowired
+    private StudentAwardRecordService studentAwardRecordService;
 
     @Override
     public StudentAwardApplication createApplication(StudentAwardApplication application) {
@@ -253,6 +257,8 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
                 application.setStatus(4); // 管理员审批拒绝
             } else if (status == 1) {
                 application.setStatus(3); // 管理员审批通过
+                // 管理员审批通过后，生成获奖记录
+                studentAwardRecordService.createRecordFromApplication(application.getId());
             }
             
             application.setUpdateTime(new Date());

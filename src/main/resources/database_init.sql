@@ -190,6 +190,25 @@ CREATE TABLE IF NOT EXISTS student_award_applications (
     FOREIGN KEY (award_id) REFERENCES awards(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='学生奖项申请表';
 
+-- 创建学生获奖记录表
+CREATE TABLE IF NOT EXISTS student_award_records (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '获奖记录ID',
+    student_id BIGINT NOT NULL COMMENT '学生ID',
+    award_id BIGINT NOT NULL COMMENT '奖项ID',
+    student_name VARCHAR(50) NOT NULL COMMENT '学生姓名',
+    student_number VARCHAR(20) NOT NULL COMMENT '学号',
+    class_name VARCHAR(50) NOT NULL COMMENT '班级',
+    major VARCHAR(100) NOT NULL COMMENT '专业',
+    award_name VARCHAR(100) NOT NULL COMMENT '奖项名称',
+    award_level VARCHAR(20) NOT NULL COMMENT '奖项级别（国家级、省级、校级）',
+    award_type VARCHAR(20) NOT NULL COMMENT '奖项类型（奖学金、优秀学生、优秀干部等）',
+    award_time DATETIME NOT NULL COMMENT '获奖时间',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (award_id) REFERENCES awards(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='学生获奖记录表';
+
 -- 创建轮播图表
 CREATE TABLE IF NOT EXISTS carousel (
     id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '轮播图ID',
@@ -252,6 +271,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- 先清空有外键依赖的表（按依赖关系从下往上清空）
 TRUNCATE TABLE selections;
 TRUNCATE TABLE scores;
+TRUNCATE TABLE student_award_records;
 TRUNCATE TABLE student_award_applications;
 
 -- 然后清空没有直接外键被引用的表

@@ -20,15 +20,30 @@
           @select="handleMenuSelect"
           :router="true"
         >
-          <el-menu-item
-            v-for="menu in getVisibleMenus"
-            :key="menu.index"
-            :index="menu.index"
-            class="menu-item"
-          >
-            <el-icon class="menu-icon"><component :is="menu.icon" /></el-icon>
-            <span class="menu-text" v-if="!isCollapse">{{ menu.text }}</span>
-          </el-menu-item>
+          <!-- 普通菜单项 -->
+          <template v-for="menu in getVisibleMenus" :key="menu.index">
+            <!-- 下拉菜单项 -->
+            <el-sub-menu v-if="menu.children" :index="menu.index">
+              <template #title>
+                <el-icon class="menu-icon"><component :is="menu.icon" /></el-icon>
+                <span class="menu-text" v-if="!isCollapse">{{ menu.text }}</span>
+              </template>
+              <el-menu-item
+                v-for="subMenu in menu.children"
+                :key="subMenu.index"
+                :index="subMenu.index"
+                class="menu-item"
+              >
+                <el-icon class="menu-icon"><component :is="subMenu.icon" /></el-icon>
+                <span class="menu-text" v-if="!isCollapse">{{ subMenu.text }}</span>
+              </el-menu-item>
+            </el-sub-menu>
+            <!-- 普通菜单项 -->
+            <el-menu-item v-else :index="menu.index" class="menu-item">
+              <el-icon class="menu-icon"><component :is="menu.icon" /></el-icon>
+              <span class="menu-text" v-if="!isCollapse">{{ menu.text }}</span>
+            </el-menu-item>
+          </template>
         </el-menu>
         <div class="sidebar-toggle-btn" @click="toggleCollapse">
           <el-icon v-if="isCollapse"><ArrowRight /></el-icon>
@@ -167,7 +182,16 @@ const menuItems = [
   { index: '/majors', icon: School, text: '专业管理', roles: ['admin', 'teacher', 'student'] },
   { index: '/scores', icon: DataLine, text: '成绩管理', roles: ['admin', 'teacher', 'student'] },
   { index: '/awards', icon: Medal, text: '评奖评优', roles: ['admin', 'teacher', 'student'] },
-  { index: '/student-award-applications', icon: DocumentCopy, text: '奖项申请', roles: ['admin', 'teacher', 'student'] },
+  { 
+    index: '/award-management', 
+    icon: DocumentChecked, 
+    text: '奖项管理', 
+    roles: ['admin', 'teacher', 'student'],
+    children: [
+      { index: '/student-award-applications', icon: DocumentCopy, text: '奖项申请', roles: ['admin', 'teacher', 'student'] },
+      { index: '/student-award-records', icon: DocumentChecked, text: '获奖记录', roles: ['admin', 'teacher', 'student'] }
+    ]
+  },
   { index: '/notices', icon: Bell, text: '通知管理', roles: ['admin'] },
   { index: '/users', icon: UserFilled, text: '用户管理', roles: ['admin'] },
   { index: '/carousel', icon: PictureRounded, text: '轮播图管理', roles: ['admin'] }
@@ -183,6 +207,7 @@ const menuMap = {
   '/scores': '成绩管理',
   '/awards': '评奖评优',
   '/student-award-applications': '奖项申请',
+  '/student-award-records': '获奖记录',
   '/notices': '通知管理',
   '/users': '用户管理',
   '/carousel': '轮播图管理',
@@ -613,9 +638,15 @@ html, body {
   border-right: none;
   min-height: calc(100vh - 65px);
   background-color: transparent;
+  --el-menu-bg-color: transparent;
+  --el-menu-text-color: rgba(255, 255, 255, 0.9);
+  --el-menu-active-color: white;
+  --el-menu-hover-bg-color: rgba(52, 152, 219, 0.3);
 }
 
-.sidebar-menu .el-menu-item {
+/* 主菜单项样式 */
+.sidebar-menu .el-menu-item,
+.sidebar-menu .el-sub-menu__title {
   color: rgba(255, 255, 255, 0.9);
   height: 50px;
   line-height: 50px;
@@ -624,17 +655,60 @@ html, body {
   border-radius: 8px;
   margin-bottom: 5px;
   transition: all 0.3s ease;
+  background-color: transparent;
+  border-bottom: none;
 }
 
-.sidebar-menu .el-menu-item:hover {
+/* 主菜单项hover样式 */
+.sidebar-menu .el-menu-item:hover,
+.sidebar-menu .el-sub-menu__title:hover {
   background-color: rgba(52, 152, 219, 0.3);
   color: white;
 }
 
+/* 主菜单项激活样式 */
 .sidebar-menu .el-menu-item.is-active {
   background-color: #3498db;
   color: white;
   box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+/* 子菜单容器样式 */
+.sidebar-menu .el-sub-menu {
+  background-color: transparent;
+}
+
+/* 子菜单弹出样式 */
+.sidebar-menu .el-sub-menu .el-menu {
+  background-color: #2c3e50;
+  border-radius: 8px;
+  margin: 0 10px;
+  padding: 5px 0;
+}
+
+/* 子菜单项样式 */
+.sidebar-menu .el-sub-menu .el-menu-item {
+  color: rgba(255, 255, 255, 0.9);
+  height: 45px;
+  line-height: 45px;
+  padding: 0 35px;
+  margin: 0 5px;
+  border-radius: 6px;
+  margin-bottom: 2px;
+  background-color: transparent;
+}
+
+/* 子菜单项hover样式 */
+.sidebar-menu .el-sub-menu .el-menu-item:hover {
+  background-color: rgba(52, 152, 219, 0.3);
+  color: white;
+}
+
+/* 子菜单项激活样式 */
+.sidebar-menu .el-sub-menu .el-menu-item.is-active {
+  background-color: #3498db;
+  color: white;
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
 }
 
 .menu-icon {

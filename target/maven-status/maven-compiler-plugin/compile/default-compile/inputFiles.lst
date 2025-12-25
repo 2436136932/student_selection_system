@@ -20,6 +20,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\RoleController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\ScoreController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\StudentAwardApplicationController.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\StudentAwardRecordController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\StudentController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\TeacherController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\UserController.java
@@ -40,6 +41,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\entity\SelectionProcess.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\entity\Student.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\entity\StudentAwardApplication.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\entity\StudentAwardRecord.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\entity\Teacher.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\entity\User.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\entity\VerificationCode.java
@@ -56,6 +58,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\SelectionMapper.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\SelectionProcessMapper.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\StudentAwardApplicationMapper.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\StudentAwardRecordMapper.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\StudentMapper.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\TeacherMapper.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\UserMapper.java
@@ -93,6 +96,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\ScoreServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\SelectionServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\StudentAwardApplicationServiceImpl.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\StudentAwardRecordServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\StudentServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\TeacherServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\UserServiceImpl.java
@@ -104,6 +108,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\ScoreService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\SelectionService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\StudentAwardApplicationService.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\StudentAwardRecordService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\StudentService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\TeacherService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\UserService.java

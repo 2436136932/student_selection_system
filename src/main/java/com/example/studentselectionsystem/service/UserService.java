@@ -73,6 +73,13 @@ public interface UserService {
      * @return 用户分页列表
      */
     IPage<User> findUsersByPage(Integer current, Integer size);
+    
+    /**
+     * 检查当前登录用户是否是指定ID的学生
+     * @param studentId 学生ID
+     * @return 是否是当前登录学生
+     */
+    boolean isCurrentUserStudent(Long studentId);
 
     /**
      * 为用户分配角色
