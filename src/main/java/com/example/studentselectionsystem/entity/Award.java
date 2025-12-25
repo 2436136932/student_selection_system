@@ -132,12 +132,6 @@ public class Award implements Serializable {
     @TableField(exist = false)
     private List<StudentAwardApplication> studentAwardApplications;
 
-    /**
-     * 奖项评选结果关联（不映射到数据库）
-     */
-    @TableField(exist = false)
-    private List<SelectionResult> selectionResults;
-
     // Getter and Setter methods
     public Long getId() {
         return id;
@@ -241,14 +235,6 @@ public class Award implements Serializable {
 
     public void setStudentAwardApplications(List<StudentAwardApplication> studentAwardApplications) {
         this.studentAwardApplications = studentAwardApplications;
-    }
-
-    public List<SelectionResult> getSelectionResults() {
-        return selectionResults;
-    }
-
-    public void setSelectionResults(List<SelectionResult> selectionResults) {
-        this.selectionResults = selectionResults;
     }
 
     public String getStatus() {

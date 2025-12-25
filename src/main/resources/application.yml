@@ -19,7 +19,7 @@ spring:
   sql:
     init:
       schema-locations: classpath:database_init.sql
-      mode: never
+      mode: always
 
   # Thymeleaf Configuration
   thymeleaf:

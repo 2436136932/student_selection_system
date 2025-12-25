@@ -46,10 +46,5 @@ public class Competition implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
-    /**
-     * 竞赛学生关联（不映射到数据库）
-     */
-    @TableField(exist = false)
-    private List<StudentCompetition> studentCompetitions;
 
 }

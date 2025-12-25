@@ -166,24 +166,6 @@ INSERT INTO majors (name, department) VALUES
 
 
 -- 学生奖项关联表
-CREATE TABLE IF NOT EXISTS student_awards (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '关联ID',
-    student_id BIGINT NOT NULL COMMENT '学生ID',
-    award_id BIGINT NOT NULL COMMENT '奖项ID',
-    award_year YEAR NOT NULL COMMENT '获奖年份',
-    award_date DATE NOT NULL COMMENT '获奖日期',
-    description TEXT COMMENT '获奖描述',
-    certificate_path VARCHAR(255) COMMENT '证书路径',
-    status TINYINT DEFAULT 1 COMMENT '状态：1-已确认，0-待审核',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    UNIQUE KEY uk_student_award_year (student_id, award_id, award_year),
-    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
-    FOREIGN KEY (award_id) REFERENCES awards(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='学生奖项关联表';
-
-
-
 -- 创建学生奖项申请表
 CREATE TABLE IF NOT EXISTS student_award_applications (
     application_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID',
@@ -207,32 +189,6 @@ CREATE TABLE IF NOT EXISTS student_award_applications (
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
     FOREIGN KEY (award_id) REFERENCES awards(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='学生奖项申请表';
-
--- 创建评选流程表
-CREATE TABLE IF NOT EXISTS selection_process (
-    process_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '流程ID',
-    award_id BIGINT NOT NULL COMMENT '奖项ID',
-    process_name VARCHAR(50) NOT NULL COMMENT '流程名称',
-    process_order INT NOT NULL COMMENT '流程顺序',
-    start_date DATETIME NOT NULL COMMENT '开始时间',
-    end_date DATETIME NOT NULL COMMENT '结束时间',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    FOREIGN KEY (award_id) REFERENCES awards(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评选流程表';
-
--- 创建评选结果表
-CREATE TABLE IF NOT EXISTS selection_result (
-    result_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '结果ID',
-    application_id BIGINT NOT NULL COMMENT '申请ID',
-    score DECIMAL(5,2) COMMENT '评分',
-    comment TEXT COMMENT '评语',
-    reviewer VARCHAR(50) NOT NULL COMMENT '评审人',
-    review_date DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '评审时间',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    FOREIGN KEY (application_id) REFERENCES student_award_applications(application_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评选结果表';
 
 -- 创建轮播图表
 CREATE TABLE IF NOT EXISTS carousel (
@@ -296,9 +252,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- 先清空有外键依赖的表（按依赖关系从下往上清空）
 TRUNCATE TABLE selections;
 TRUNCATE TABLE scores;
-TRUNCATE TABLE student_awards;
 TRUNCATE TABLE student_award_applications;
-TRUNCATE TABLE selection_result;
 
 -- 然后清空没有直接外键被引用的表
 TRUNCATE TABLE students;
@@ -408,9 +362,6 @@ CREATE INDEX idx_courses_semester ON courses(semester);
 CREATE INDEX idx_scores_student_id ON scores(student_id);
 CREATE INDEX idx_scores_course_id ON scores(course_id);
 CREATE INDEX idx_scores_total_score ON scores(total_score);
-CREATE INDEX idx_student_awards_student_id ON student_awards(student_id);
-CREATE INDEX idx_student_awards_award_id ON student_awards(award_id);
-CREATE INDEX idx_student_awards_award_year ON student_awards(award_year);
 
 CREATE INDEX idx_notices_publish_time ON notices(publish_time);
 CREATE INDEX idx_notices_status ON notices(status);
