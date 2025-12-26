@@ -13,67 +13,7 @@
       </el-carousel-item>
     </el-carousel>
     
-    <div class="dashboard">
-      <el-card class="dashboard-card" shadow="hover">
-        <template #header>
-          <div class="card-header">
-            <span>系统概览</span>
-          </div>
-        </template>
-        <div class="dashboard-stats">
-          <div class="stat-item">
-            <el-icon><User /></el-icon>
-            <div class="stat-content">
-              <div class="stat-value">{{ studentCount }}</div>
-              <div class="stat-label">学生总数</div>
-            </div>
-          </div>
-          <div class="stat-item">
-            <el-icon><Promotion /></el-icon>
-            <div class="stat-content">
-              <div class="stat-value">{{ awardCount }}</div>
-              <div class="stat-label">奖项总数</div>
-            </div>
-          </div>
-          <div class="stat-item">
-            <el-icon><Document /></el-icon>
-            <div class="stat-content">
-              <div class="stat-value">{{ applicationCount }}</div>
-              <div class="stat-label">申请总数</div>
-            </div>
-          </div>
-          <div class="stat-item">
-            <el-icon><Check /></el-icon>
-            <div class="stat-content">
-              <div class="stat-value">{{ approvedCount }}</div>
-              <div class="stat-label">已通过申请</div>
-            </div>
-          </div>
-        </div>
-      </el-card>
-    </div>
-
-    <!-- 最近评选活动 -->
-    <div class="recent-events" style="margin-top: 20px;">
-      <el-card shadow="hover">
-        <template #header>
-          <div class="card-header">
-            <span>最近评选活动</span>
-          </div>
-        </template>
-        <el-table :data="recentEvents" stripe style="width: 100%">
-          <el-table-column prop="awardName" label="活动名称" />
-          <el-table-column prop="currentStatus" label="状态" width="120">
-            <template #default="scope">
-              <el-tag :type="getStatusType(scope.row.currentStatus)" size="small">
-                {{ getStatusText(scope.row.currentStatus) }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="endTime" label="截止日期" width="150" />
-        </el-table>
-      </el-card>
-    </div>
+    
 
     <!-- 通知和提醒 -->
     <div class="notifications" style="margin-top: 20px;">
@@ -104,6 +44,28 @@
             </div>
           </el-list-item>
         </el-list>
+      </el-card>
+    </div>
+
+    <!-- 最近评选活动 -->
+    <div class="recent-events" style="margin-top: 20px;">
+      <el-card shadow="hover">
+        <template #header>
+          <div class="card-header">
+            <span>最近评选活动</span>
+          </div>
+        </template>
+        <el-table :data="recentEvents" stripe style="width: 100%">
+          <el-table-column prop="awardName" label="活动名称" />
+          <el-table-column prop="currentStatus" label="状态" width="120">
+            <template #default="scope">
+              <el-tag :type="getStatusType(scope.row.currentStatus)" size="small">
+                {{ getStatusText(scope.row.currentStatus) }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="endTime" label="截止日期" width="150" />
+        </el-table>
       </el-card>
     </div>
     
@@ -138,18 +100,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { User, Promotion, Document, Check, Bell, Notification, Warning, InfoFilled } from '@element-plus/icons-vue'
+import { Bell, Notification, Warning, InfoFilled } from '@element-plus/icons-vue'
 import { ElCarousel, ElCarouselItem } from 'element-plus'
 import axios from 'axios'
 
 // 轮播图数据
 const carousels = ref([])
-
-// 统计数据
-const studentCount = ref(0)
-const awardCount = ref(0)
-const applicationCount = ref(0)
-const approvedCount = ref(0)
 
 // 最近评选活动
 const recentEvents = ref([])
@@ -174,23 +130,7 @@ const handleNoticeDialogClose = () => {
   currentNotice.value = {}
 }
 
-// 获取统计数据
-const getStatistics = async () => {
-  try {
-    // 这里可以根据实际API调整
-    const studentRes = await axios.get('/api/students/count')
-    const awardRes = await axios.get('/api/awards/count')
-    const applicationRes = await axios.get('/api/student-award-applications/count')
-    const approvedRes = await axios.get('/api/student-award-applications/count?status=approved')
-    
-    studentCount.value = studentRes.data
-    awardCount.value = awardRes.data
-    applicationCount.value = applicationRes.data
-    approvedCount.value = approvedRes.data
-  } catch (error) {
-    console.error('获取统计数据失败:', error)
-  }
-}
+
 
 // 获取最近评选活动
 const getRecentEvents = async () => {
@@ -282,7 +222,6 @@ const getCarousels = async () => {
 
 onMounted(() => {
   getCarousels()
-  getStatistics()
   getRecentEvents()
   getRecentNotices()
 })
@@ -337,67 +276,6 @@ createAiChat({
 
 
 /* 页面标题已使用全局样式定义 */
-
-.dashboard {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.dashboard-card {
-  flex: 1;
-  min-width: 250px;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.dashboard-stats {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.stat-item {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 15px;
-  border-radius: 8px;
-  background-color: #f5f7fa;
-  transition: all 0.3s ease;
-}
-
-.stat-item:hover {
-  background-color: #e6f7ff;
-  transform: translateY(-2px);
-}
-
-.stat-item .el-icon {
-  font-size: 32px;
-  color: #409eff;
-}
-
-.stat-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-value {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-}
-
-.stat-label {
-  font-size: 14px;
-  color: #666;
-  margin-top: 5px;
-}
 
 /* 最近评选活动样式 */
 .recent-events {

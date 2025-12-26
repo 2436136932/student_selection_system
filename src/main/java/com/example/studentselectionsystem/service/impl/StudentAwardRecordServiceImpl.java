@@ -227,4 +227,20 @@ public class StudentAwardRecordServiceImpl extends ServiceImpl<StudentAwardRecor
         studentAwardRecordMapper.insert(record);
         return record;
     }
+
+    @Override
+    public Map<String, Long> getAwardsByMajor() {
+        Map<String, Long> distribution = new java.util.HashMap<>();
+        
+        // 查询所有获奖记录
+        List<StudentAwardRecord> records = studentAwardRecordMapper.selectList(null);
+        
+        // 按专业统计获奖数量
+        for (StudentAwardRecord record : records) {
+            String major = record.getMajor();
+            distribution.put(major, distribution.getOrDefault(major, 0L) + 1L);
+        }
+        
+        return distribution;
+    }
 }

@@ -206,12 +206,12 @@ public class AwardServiceImpl implements AwardService {
 
     @Override
     public boolean deleteAward(String awardId) {
-        return awardMapper.deleteById(Integer.parseInt(awardId)) > 0;
+        return awardMapper.deleteById(Long.parseLong(awardId)) > 0;
     }
-
+    
     @Override
     public Optional<com.example.studentselectionsystem.model.Award> getAwardById(String awardId) {
-        com.example.studentselectionsystem.entity.Award entityAward = awardMapper.selectById(Integer.parseInt(awardId));
+        com.example.studentselectionsystem.entity.Award entityAward = awardMapper.selectById(Long.parseLong(awardId));
         if (entityAward != null) {
             // 更新奖项的当前状态
             updateAwardCurrentStatus(entityAward);
@@ -318,7 +318,7 @@ public class AwardServiceImpl implements AwardService {
     @Override
     public boolean publishAward(String awardId) {
         // 根据ID查询奖项
-        com.example.studentselectionsystem.entity.Award entityAward = awardMapper.selectById(Integer.parseInt(awardId));
+        com.example.studentselectionsystem.entity.Award entityAward = awardMapper.selectById(Long.parseLong(awardId));
         if (entityAward == null) {
             return false;
         }
@@ -332,4 +332,6 @@ public class AwardServiceImpl implements AwardService {
         // 保存更新
         return awardMapper.updateById(entityAward) > 0;
     }
+    
+    
 }

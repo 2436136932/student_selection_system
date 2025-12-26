@@ -96,6 +96,37 @@
           </div>
         </el-card>
 
+        <!-- 菜单顺序管理 -->
+        <el-card class="setting-item-card" shadow="hover" style="margin-top: 20px;">
+          <template #header>
+            <div class="card-header">
+              <el-icon><Menu /></el-icon>
+              <span>菜单顺序管理</span>
+            </div>
+          </template>
+
+          <div class="menu-order-section">
+            <div class="menu-order-description">
+              <p>拖拽调整左侧菜单栏的显示顺序</p>
+            </div>
+            
+            <div class="menu-order-container" ref="menuOrderContainer">
+              <div 
+                v-for="menu in menuItems" 
+                :key="menu.index" 
+                class="menu-item-order"
+                :data-index="menu.index"
+              >
+                <el-icon class="drag-icon"><Menu /></el-icon>
+                <div class="menu-item-content">
+                  <el-icon class="menu-item-icon"><component :is="menu.icon" /></el-icon>
+                  <span class="menu-item-text">{{ menu.text }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </el-card>
+
         <!-- 登录信息 -->
         <el-card class="setting-item-card" shadow="hover" style="margin-top: 20px;">
           <template #header>
@@ -128,8 +159,14 @@
 <script setup>
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Setting, Brush, Monitor, User } from '@element-plus/icons-vue'
+import { 
+  Setting, Brush, Monitor, User, Menu, 
+  House, User as UserIcon, Briefcase, School, DataLine, 
+  DocumentChecked, Medal, DocumentCopy, Bell, UserFilled, 
+  PictureRounded
+} from '@element-plus/icons-vue'
 import { getUserInfo } from '../utils/role'
+import Sortable from 'sortablejs'
 
 // 主题选项
 const themeOptions = ref([
@@ -158,6 +195,74 @@ const loginInfo = ref({
   loginTime: localStorage.getItem('loginTime') || '未知',
   lastLoginTime: localStorage.getItem('lastLoginTime') || '未知'
 })
+
+// 菜单顺序管理
+// 菜单定义，与App.vue保持一致
+const menuItems = ref([
+  { index: '/home', icon: House, text: '首页', roles: ['admin', 'teacher', 'student'] },
+  { index: '/students', icon: UserIcon, text: '学生管理', roles: ['admin', 'teacher'] },
+  { index: '/teachers', icon: Briefcase, text: '教师管理', roles: ['admin'] },
+  { index: '/courses', icon: School, text: '课程管理', roles: ['admin', 'teacher', 'student'] },
+  { index: '/majors', icon: School, text: '专业管理', roles: ['admin', 'teacher', 'student'] },
+  { index: '/scores', icon: DataLine, text: '成绩管理', roles: ['admin', 'teacher', 'student'] },
+  { 
+    index: '/award-management', 
+    icon: DocumentChecked, 
+    text: '奖项管理', 
+    roles: ['admin', 'teacher', 'student'],
+    children: [
+      { index: '/awards', icon: Medal, text: '评奖评优', roles: ['admin', 'teacher', 'student'] },
+      { index: '/student-award-applications', icon: DocumentCopy, text: '奖项申请', roles: ['admin', 'teacher', 'student'] },
+      { index: '/student-award-records', icon: DocumentChecked, text: '获奖记录', roles: ['admin', 'teacher', 'student'] }
+    ]
+  },
+  { index: '/statistics', icon: DataLine, text: '数据统计', roles: ['admin', 'teacher'] },
+  { index: '/notices', icon: Bell, text: '通知管理', roles: ['admin'] },
+  { index: '/users', icon: UserFilled, text: '用户管理', roles: ['admin'] },
+  { index: '/carousel', icon: PictureRounded, text: '轮播图管理', roles: ['admin'] }
+])
+
+// 菜单顺序容器引用
+const menuOrderContainer = ref(null)
+
+// 初始化拖拽排序
+const initSortable = () => {
+  if (menuOrderContainer.value) {
+    const sortable = Sortable.create(menuOrderContainer.value, {
+      animation: 150,
+      handle: '.drag-icon',
+      ghostClass: 'ghost',
+      onEnd: (evt) => {
+        // 拖拽结束后更新菜单顺序
+        const newOrder = Array.from(menuOrderContainer.value.children).map(item => item.dataset.index)
+        // 更新menuItems顺序
+        const reorderedItems = newOrder.map(index => 
+          menuItems.value.find(item => item.index === index)
+        ).filter(Boolean)
+        menuItems.value = reorderedItems
+      }
+    })
+  }
+}
+
+// 保存菜单顺序
+const saveMenuOrder = () => {
+  // 保存菜单顺序到localStorage
+  const menuOrder = menuItems.value.map(item => item.index)
+  localStorage.setItem('menuOrder', JSON.stringify(menuOrder))
+  ElMessage.success('菜单顺序已保存')
+  // 触发storage事件，让App.vue感知到变化
+  window.dispatchEvent(new Event('storage'))
+}
+
+// 恢复默认菜单顺序
+const resetMenuOrder = () => {
+  // 根据用户角色过滤菜单
+  filterMenusByRole()
+  // 重新初始化拖拽
+  initSortable()
+  ElMessage.info('已恢复默认菜单顺序')
+}
 
 // 选中的主题
 const selectedTheme = ref('default')
@@ -200,6 +305,9 @@ const saveSettings = () => {
   // 保存显示设置
   localStorage.setItem('displaySettings', JSON.stringify(displaySettings))
   
+  // 保存菜单顺序
+  saveMenuOrder()
+  
   ElMessage.success('设置已保存')
 }
 
@@ -214,6 +322,9 @@ const resetSettings = () => {
     compactMode: false,
     darkMode: false
   })
+  
+  // 恢复默认菜单顺序
+  resetMenuOrder()
   
   ElMessage.info('已恢复默认设置')
 }
@@ -251,7 +362,62 @@ onMounted(() => {
   initSettings()
   // 获取用户信息
   userInfo.value = getUserInfo()
+  // 根据用户角色过滤菜单
+  filterMenusByRole()
+  // 初始化拖拽排序
+  initSortable()
+  // 从localStorage加载菜单顺序
+  const savedMenuOrder = localStorage.getItem('menuOrder')
+  if (savedMenuOrder) {
+    try {
+      const menuOrder = JSON.parse(savedMenuOrder)
+      // 根据保存的顺序重新排列菜单
+      const reorderedItems = menuOrder.map(index => 
+        menuItems.value.find(item => item.index === index)
+      ).filter(Boolean)
+      // 如果有有效数据，使用保存的顺序
+      if (reorderedItems.length > 0) {
+        menuItems.value = reorderedItems
+      }
+    } catch (error) {
+      console.error('解析菜单顺序失败:', error)
+    }
+  }
 })
+
+// 根据用户角色过滤菜单
+const filterMenusByRole = () => {
+  const currentRole = userInfo.value.role
+  if (currentRole) {
+    // 根据用户角色过滤菜单
+    const defaultMenus = [
+      { index: '/home', icon: House, text: '首页', roles: ['admin', 'teacher', 'student'] },
+      { index: '/students', icon: UserIcon, text: '学生管理', roles: ['admin', 'teacher'] },
+      { index: '/teachers', icon: Briefcase, text: '教师管理', roles: ['admin'] },
+      { index: '/courses', icon: School, text: '课程管理', roles: ['admin', 'teacher', 'student'] },
+      { index: '/majors', icon: School, text: '专业管理', roles: ['admin', 'teacher', 'student'] },
+      { index: '/scores', icon: DataLine, text: '成绩管理', roles: ['admin', 'teacher', 'student'] },
+      { 
+        index: '/award-management', 
+        icon: DocumentChecked, 
+        text: '奖项管理', 
+        roles: ['admin', 'teacher', 'student'],
+        children: [
+          { index: '/awards', icon: Medal, text: '评奖评优', roles: ['admin', 'teacher', 'student'] },
+          { index: '/student-award-applications', icon: DocumentCopy, text: '奖项申请', roles: ['admin', 'teacher', 'student'] },
+          { index: '/student-award-records', icon: DocumentChecked, text: '获奖记录', roles: ['admin', 'teacher', 'student'] }
+        ]
+      },
+      { index: '/statistics', icon: DataLine, text: '数据统计', roles: ['admin', 'teacher'] },
+      { index: '/notices', icon: Bell, text: '通知管理', roles: ['admin'] },
+      { index: '/users', icon: UserFilled, text: '用户管理', roles: ['admin'] },
+      { index: '/carousel', icon: PictureRounded, text: '轮播图管理', roles: ['admin'] }
+    ]
+    
+    // 过滤出当前用户有权限的菜单
+    menuItems.value = defaultMenus.filter(menu => menu.roles.includes(currentRole))
+  }
+}
 </script>
 
 <style scoped>
@@ -398,6 +564,72 @@ onMounted(() => {
   display: flex;
   justify-content: flex-start;
   margin-top: 30px;
+}
+
+/* 菜单顺序管理样式 */
+.menu-order-section {
+  padding: 20px 0;
+}
+
+.menu-order-description {
+  margin-bottom: 20px;
+  color: #606266;
+}
+
+.menu-order-container {
+  border: 1px solid #e6a23c;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #f5f7fa;
+  min-height: 400px;
+}
+
+.menu-item-order {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 8px;
+  background-color: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  cursor: move;
+  transition: all 0.3s ease;
+}
+
+.menu-item-order:hover {
+  border-color: #409eff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.menu-item-order.ghost {
+  opacity: 0.5;
+  background-color: #c6e2ff;
+}
+
+.drag-icon {
+  font-size: 18px;
+  color: #909399;
+  margin-right: 12px;
+  cursor: move;
+  width: 20px;
+  text-align: center;
+}
+
+.menu-item-content {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.menu-item-icon {
+  font-size: 18px;
+  color: #409eff;
+  margin-right: 10px;
+}
+
+.menu-item-text {
+  font-size: 14px;
+  color: #303133;
 }
 
 /* 响应式设计 */

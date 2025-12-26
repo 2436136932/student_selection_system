@@ -540,4 +540,123 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
                         .eq(StudentAwardApplication::getStatus, 3)
         );
     }
+
+    @Override
+    public java.util.Map<String, Long> getAwardLevelDistribution() {
+        java.util.Map<String, Long> distribution = new java.util.HashMap<>();
+        
+        // 查询所有奖项申请
+        List<StudentAwardApplication> applications = studentAwardApplicationMapper.selectList(null);
+        
+        // 遍历申请，统计不同级别奖项的数量
+        for (StudentAwardApplication application : applications) {
+            // 查询奖项信息
+            Award award = awardMapper.selectById(application.getAwardId());
+            if (award != null) {
+                String awardLevel = award.getAwardLevel();
+                distribution.put(awardLevel, distribution.getOrDefault(awardLevel, 0L) + 1L);
+            }
+        }
+        
+        return distribution;
+    }
+
+    @Override
+    public java.util.Map<String, Long> getApplicationStatusDistribution() {
+        java.util.Map<String, Long> distribution = new java.util.HashMap<>();
+        
+        // 状态映射
+        java.util.Map<Integer, String> statusMap = new java.util.HashMap<>();
+        statusMap.put(0, "待审核");
+        statusMap.put(1, "教师审核通过，待管理员审批");
+        statusMap.put(2, "教师审核拒绝");
+        statusMap.put(3, "管理员审批通过");
+        statusMap.put(4, "管理员审批拒绝");
+        
+        // 统计不同状态的申请数量
+        for (Integer status : statusMap.keySet()) {
+            long count = studentAwardApplicationMapper.selectCount(
+                    new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
+                            .eq(StudentAwardApplication::getStatus, status)
+            );
+            distribution.put(statusMap.get(status), count);
+        }
+        
+        return distribution;
+    }
+
+    @Override
+    public java.util.Map<String, Long> getApprovalTimeAnalysis() {
+        java.util.Map<String, Long> timeAnalysis = new java.util.HashMap<>();
+        
+        // 查询所有已完成审批的申请
+        List<StudentAwardApplication> applications = studentAwardApplicationMapper.selectList(
+                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
+                        .in(StudentAwardApplication::getStatus, 2, 3, 4) // 2: 教师拒绝, 3: 管理员通过, 4: 管理员拒绝
+                        .isNotNull(StudentAwardApplication::getApplicationTime)
+                        .isNotNull(StudentAwardApplication::getAdminApprovalTime)
+        );
+        
+        long totalApplicationToTeacher = 0;
+        long totalTeacherToAdmin = 0;
+        long totalAdminToFinal = 0;
+        int validCount = 0;
+        
+        for (StudentAwardApplication application : applications) {
+            // 计算申请到教师审批的时间差
+            if (application.getApplicationTime() != null && application.getTeacherApprovalTime() != null) {
+                totalApplicationToTeacher += application.getTeacherApprovalTime().getTime() - application.getApplicationTime().getTime();
+            }
+            
+            // 计算教师审批到管理员审批的时间差
+            if (application.getTeacherApprovalTime() != null && application.getAdminApprovalTime() != null) {
+                totalTeacherToAdmin += application.getAdminApprovalTime().getTime() - application.getTeacherApprovalTime().getTime();
+            }
+            
+            // 计算管理员审批到最终结果的时间差（这里假设管理员审批时间就是最终结果时间）
+            if (application.getAdminApprovalTime() != null) {
+                totalAdminToFinal += 0; // 管理员审批时间就是最终结果时间，所以时间差为0
+            }
+            
+            validCount++;
+        }
+        
+        // 计算平均时间（转换为分钟）
+        timeAnalysis.put("申请到教师审批", validCount > 0 ? totalApplicationToTeacher / validCount / (1000 * 60) : 0);
+        timeAnalysis.put("教师审批到管理员审批", validCount > 0 ? totalTeacherToAdmin / validCount / (1000 * 60) : 0);
+        timeAnalysis.put("管理员审批到最终结果", validCount > 0 ? totalAdminToFinal / validCount / (1000 * 60) : 0);
+        
+        return timeAnalysis;
+    }
+
+    @Override
+    public java.util.Map<String, Long> getApplicationTrend() {
+        java.util.Map<String, Long> trend = new java.util.LinkedHashMap<>();
+        
+        // 查询所有申请
+        List<StudentAwardApplication> applications = studentAwardApplicationMapper.selectList(
+                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
+                        .isNotNull(StudentAwardApplication::getApplicationTime)
+                        .orderByAsc(StudentAwardApplication::getApplicationTime)
+        );
+        
+        // 按月份统计申请数量
+        for (StudentAwardApplication application : applications) {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM");
+            String month = sdf.format(application.getApplicationTime());
+            trend.put(month, trend.getOrDefault(month, 0L) + 1L);
+        }
+        
+        return trend;
+    }
+
+    @Override
+    public long getTotalApplicationCount() {
+        return countApplications();
+    }
+
+    @Override
+    public long getApprovedApplicationCount() {
+        return countApprovedApplications();
+    }
 }

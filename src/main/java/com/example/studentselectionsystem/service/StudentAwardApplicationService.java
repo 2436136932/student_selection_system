@@ -158,4 +158,40 @@ public interface StudentAwardApplicationService {
      * @return 管理员审核通过的申请数
      */
     long countAdminApprovedApplicationsByAwardId(Long awardId);
+    
+    /**
+     * 获取奖项级别分布统计
+     * @return 奖项级别分布数据
+     */
+    java.util.Map<String, Long> getAwardLevelDistribution();
+    
+    /**
+     * 获取奖项申请状态分布统计
+     * @return 申请状态分布数据
+     */
+    java.util.Map<String, Long> getApplicationStatusDistribution();
+    
+    /**
+     * 获取审批流程时间分析统计
+     * @return 审批流程时间分析数据
+     */
+    java.util.Map<String, Long> getApprovalTimeAnalysis();
+    
+    /**
+     * 获取奖项申请趋势统计
+     * @return 奖项申请趋势数据
+     */
+    java.util.Map<String, Long> getApplicationTrend();
+    
+    /**
+     * 获取总申请数
+     * @return 总申请数
+     */
+    long getTotalApplicationCount();
+    
+    /**
+     * 获取已批准申请数
+     * @return 已批准申请数
+     */
+    long getApprovedApplicationCount();
 }

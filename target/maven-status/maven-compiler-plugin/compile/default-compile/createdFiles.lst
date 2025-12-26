@@ -63,6 +63,7 @@ com\example\studentselectionsystem\entity\Course.class
 com\example\studentselectionsystem\mapper\ScoreMapper.class
 com\example\studentselectionsystem\mapper\SelectionMapper.class
 com\example\studentselectionsystem\config\CustomUserDetailsService.class
+com\example\studentselectionsystem\controller\StatisticsController.class
 com\example\studentselectionsystem\controller\PermissionController.class
 com\example\studentselectionsystem\mapper\CompetitionMapper.class
 com\example\studentselectionsystem\mapper\RoleMapper.class

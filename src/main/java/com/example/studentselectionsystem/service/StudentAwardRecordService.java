@@ -85,4 +85,10 @@ public interface StudentAwardRecordService {
      * @return 创建的获奖记录
      */
     StudentAwardRecord createRecordFromApplication(Long applicationId);
+    
+    /**
+     * 获取各专业获奖情况统计
+     * @return 各专业获奖数量分布
+     */
+    Map<String, Long> getAwardsByMajor();
 }

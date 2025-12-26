@@ -192,6 +192,7 @@ const menuItems = [
       { index: '/student-award-records', icon: DocumentChecked, text: '获奖记录', roles: ['admin', 'teacher', 'student'] }
     ]
   },
+  { index: '/statistics', icon: DataLine, text: '数据统计', roles: ['admin', 'teacher'] },
   { index: '/notices', icon: Bell, text: '通知管理', roles: ['admin'] },
   { index: '/users', icon: UserFilled, text: '用户管理', roles: ['admin'] },
   { index: '/carousel', icon: PictureRounded, text: '轮播图管理', roles: ['admin'] }
@@ -208,6 +209,7 @@ const menuMap = {
   '/awards': '评奖评优',
   '/student-award-applications': '奖项申请',
   '/student-award-records': '获奖记录',
+  '/statistics': '数据统计',
   '/notices': '通知管理',
   '/users': '用户管理',
   '/carousel': '轮播图管理',
@@ -309,6 +311,9 @@ window.addEventListener('storage', (event) => {
         console.error('解析显示设置失败:', e)
       }
     }
+  } else if (event.key === 'menuOrder') {
+    // 菜单顺序发生变化，Vue会自动重新计算getVisibleMenus，无需手动刷新
+    console.log('菜单顺序已更新')
   }
 })
 
@@ -404,10 +409,43 @@ const getOnlineUserCount = async () => {
   }
 }
 
-// 获取可见菜单
+// 根据用户角色过滤可见菜单，并支持自定义顺序
 const getVisibleMenus = computed(() => {
   const currentRole = userInfo.value.role
-  return menuItems.filter(menu => menu.roles.includes(currentRole))
+  // 先根据用户角色过滤菜单
+  const filteredMenus = menuItems.filter(menu => menu.roles.includes(currentRole))
+  
+  // 读取localStorage中的菜单顺序
+  const savedMenuOrder = localStorage.getItem('menuOrder')
+  if (savedMenuOrder) {
+    try {
+      const menuOrder = JSON.parse(savedMenuOrder)
+      // 创建菜单索引映射
+      const menuMap = new Map()
+      filteredMenus.forEach(menu => menuMap.set(menu.index, menu))
+      
+      // 按照保存的顺序排列菜单
+      const orderedMenus = []
+      menuOrder.forEach(index => {
+        const menu = menuMap.get(index)
+        if (menu) {
+          orderedMenus.push(menu)
+          menuMap.delete(index)
+        }
+      })
+      
+      // 添加剩余的菜单（未在配置中定义的菜单）
+      menuMap.forEach(menu => orderedMenus.push(menu))
+      
+      return orderedMenus
+    } catch (error) {
+      console.error('解析菜单顺序失败:', error)
+      return filteredMenus
+    }
+  }
+  
+  // 没有保存的顺序，返回默认顺序
+  return filteredMenus
 })
 
 // 获取角色样式类
