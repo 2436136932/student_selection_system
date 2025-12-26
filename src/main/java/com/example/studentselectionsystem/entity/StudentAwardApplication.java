@@ -144,4 +144,165 @@ public class StudentAwardApplication implements Serializable {
      */
     @TableField("material_type")
     private String materialType;
+
+    // 手动添加getter/setter方法，确保编译通过
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(Long studentId) {
+        this.studentId = studentId;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    public Long getAwardId() {
+        return awardId;
+    }
+
+    public void setAwardId(Long awardId) {
+        this.awardId = awardId;
+    }
+
+    public Award getAward() {
+        return award;
+    }
+
+    public void setAward(Award award) {
+        this.award = award;
+    }
+
+    public Date getApplicationTime() {
+        return applicationTime;
+    }
+
+    public void setApplicationTime(Date applicationTime) {
+        this.applicationTime = applicationTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Integer getTeacherApprovalStatus() {
+        return teacherApprovalStatus;
+    }
+
+    public void setTeacherApprovalStatus(Integer teacherApprovalStatus) {
+        this.teacherApprovalStatus = teacherApprovalStatus;
+    }
+
+    public Date getTeacherApprovalTime() {
+        return teacherApprovalTime;
+    }
+
+    public void setTeacherApprovalTime(Date teacherApprovalTime) {
+        this.teacherApprovalTime = teacherApprovalTime;
+    }
+
+    public String getTeacherApprovalComments() {
+        return teacherApprovalComments;
+    }
+
+    public void setTeacherApprovalComments(String teacherApprovalComments) {
+        this.teacherApprovalComments = teacherApprovalComments;
+    }
+
+    public Integer getAdminApprovalStatus() {
+        return adminApprovalStatus;
+    }
+
+    public void setAdminApprovalStatus(Integer adminApprovalStatus) {
+        this.adminApprovalStatus = adminApprovalStatus;
+    }
+
+    public Date getAdminApprovalTime() {
+        return adminApprovalTime;
+    }
+
+    public void setAdminApprovalTime(Date adminApprovalTime) {
+        this.adminApprovalTime = adminApprovalTime;
+    }
+
+    public String getAdminApprovalComments() {
+        return adminApprovalComments;
+    }
+
+    public void setAdminApprovalComments(String adminApprovalComments) {
+        this.adminApprovalComments = adminApprovalComments;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getMaterialPath() {
+        return materialPath;
+    }
+
+    public void setMaterialPath(String materialPath) {
+        this.materialPath = materialPath;
+    }
+
+    public String getMaterialName() {
+        return materialName;
+    }
+
+    public void setMaterialName(String materialName) {
+        this.materialName = materialName;
+    }
+
+    public Long getMaterialSize() {
+        return materialSize;
+    }
+
+    public void setMaterialSize(Long materialSize) {
+        this.materialSize = materialSize;
+    }
+
+    public String getMaterialType() {
+        return materialType;
+    }
+
+    public void setMaterialType(String materialType) {
+        this.materialType = materialType;
+    }
 }

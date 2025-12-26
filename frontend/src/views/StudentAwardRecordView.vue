@@ -448,6 +448,31 @@ onMounted(() => {
   align-items: center;
 }
 
+/* 为搜索表单中的按钮添加间距 */
+.search-form .el-form-item .el-button {
+  margin-right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 确保最后一个按钮没有右边距 */
+.search-form .el-form-item .el-button:last-child {
+  margin-right: 0;
+}
+
+/* 为导出Excel的下拉按钮添加间距 */
+.search-form .el-form-item .el-dropdown {
+  margin-right: 10px;
+}
+
+/* 确保按钮文字居中 */
+.search-form .el-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .table-card {
   margin-bottom: 20px;
 }

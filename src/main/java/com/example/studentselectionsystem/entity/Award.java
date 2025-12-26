@@ -121,6 +121,12 @@ public class Award implements Serializable {
     private String approvingTeacherName;
 
     /**
+     * 邮件是否已发送（0：未发送，1：已发送）
+     */
+    @TableField("email_sent")
+    private Integer emailSent;
+
+    /**
      * 奖项评选流程关联（不映射到数据库）
      */
     @TableField(exist = false)
@@ -275,5 +281,13 @@ public class Award implements Serializable {
 
     public void setApprovingTeacherName(String approvingTeacherName) {
         this.approvingTeacherName = approvingTeacherName;
+    }
+
+    public Integer getEmailSent() {
+        return emailSent;
+    }
+
+    public void setEmailSent(Integer emailSent) {
+        this.emailSent = emailSent;
     }
 }

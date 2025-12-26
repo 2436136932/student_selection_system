@@ -47,7 +47,8 @@ public class VerificationCodeServiceImpl extends ServiceImpl<VerificationCodeMap
         // 发送邮件
         String subject = "学生评奖评优系统 - 密码重置验证码";
         String content = "您的验证码是：" + code + "，有效期为5分钟，请尽快使用。";
-        return emailService.sendEmail(email, subject, content);
+        emailService.sendEmail(email, subject, content);
+        return true;
     }
 
     @Override

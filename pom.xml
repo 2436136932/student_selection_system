@@ -110,7 +110,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.32</version>
+            <version>1.18.34</version>
             <optional>true</optional>
         </dependency>
 
@@ -167,14 +167,16 @@
                     <release>21</release>
                     <compilerArgs>
                         <arg>--enable-preview</arg>
+                        <arg>-Xlint:none</arg>
                     </compilerArgs>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.32</version>
+                            <version>1.18.34</version>
                         </path>
                     </annotationProcessorPaths>
+                    <fork>true</fork>
                 </configuration>
             </plugin>
 

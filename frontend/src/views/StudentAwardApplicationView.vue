@@ -1,6 +1,7 @@
 <template>
   <div class="application-container">
     <h2>学生奖项申请</h2>
+    <p class="note">如对结果存疑，可在聊天中心咨询相关人员</p>
     <el-card shadow="hover">
       <template #header>
         <div class="card-header">
@@ -1020,6 +1021,13 @@ onMounted(() => {
 <style scoped>
 .application-container {
   padding: 20px;
+}
+
+.note {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+  margin-bottom: 15px;
 }
 
 .card-header {

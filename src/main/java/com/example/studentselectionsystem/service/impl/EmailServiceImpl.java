@@ -34,4 +34,17 @@ public class EmailServiceImpl implements EmailService {
             return false;
         }
     }
+
+    @Override
+    public void sendAwardNotificationEmail(String studentName, String awardName, String awardLevel, String email) {
+        String subject = "恭喜您获得" + awardName + "通知";
+        String content = "尊敬的" + studentName + "同学：\n\n" +
+                "恭喜您获得\"" + awardName + "\"（\"" + awardLevel + "\"）！\n\n" +
+                "请您及时登录学生评奖评优系统查看详细获奖信息。\n\n" +
+                "系统地址：http://localhost:5173/\n\n" +
+                "此邮件为系统自动发送，请勿回复。\n\n" +
+                "学生评奖评优系统\n" +
+                new java.util.Date().toString();
+        sendEmail(email, subject, content);
+    }
 }

@@ -121,6 +121,7 @@ CREATE TABLE IF NOT EXISTS awards (
     current_stage VARCHAR(20) DEFAULT '未开始' COMMENT '当前阶段：学生申请/教师审批/管理员审批/结果公示',
     approving_teacher_id BIGINT COMMENT '审批教师ID',
     approving_teacher_name VARCHAR(50) COMMENT '审批教师姓名',
+    email_sent INT DEFAULT 0 COMMENT '邮件是否已发送：0-未发送，1-已发送',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='奖项表';
