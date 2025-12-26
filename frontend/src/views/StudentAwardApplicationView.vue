@@ -1,7 +1,7 @@
 <template>
   <div class="application-container">
     <h2>学生奖项申请</h2>
-    <p class="note">如对结果存疑，可在聊天中心咨询相关人员</p>
+    <p class="note" @click="goToChatCenter" style="cursor: pointer; color: #3498db;">如对结果存疑，可在聊天中心咨询相关人员</p>
     <el-card shadow="hover">
       <template #header>
         <div class="card-header">
@@ -292,11 +292,15 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Edit, Delete, Plus, Check, Close, Upload, Download, Picture } from '@element-plus/icons-vue'
 import axios from 'axios'
 // 导入材料预览组件
 import MaterialPreview from '../components/MaterialPreview.vue'
+
+// 初始化路由
+const router = useRouter()
 
 // 获取用户信息
 const getUserInfo = () => {
@@ -995,6 +999,11 @@ const handleRejectApplication = (row) => {
   }).catch(() => {
     // 取消操作
   })
+}
+
+// 跳转到聊天中心
+const goToChatCenter = () => {
+  router.push('/chat')
 }
 
 // 初始化数据

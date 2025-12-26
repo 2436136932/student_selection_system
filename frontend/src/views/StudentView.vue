@@ -4,7 +4,7 @@
     <el-card shadow="hover">
       <template #header>
         <div class="card-header">
-          <el-button v-if="hasRole('admin')" type="primary" @click="handleAdd">
+          <el-button v-if="hasRole(['admin', 'teacher'])" type="primary" @click="handleAdd">
             <el-icon><Plus /></el-icon> 新增学生
           </el-button>
         </div>
@@ -38,7 +38,7 @@
           <el-table-column prop="phone" label="手机号" width="150"></el-table-column>
           <el-table-column prop="email" label="邮箱" width="200"></el-table-column>
           <el-table-column prop="userId" label="用户ID" width="100"></el-table-column>
-          <el-table-column label="操作" width="150" fixed="right" v-if="hasRole('admin')">
+          <el-table-column label="操作" width="150" fixed="right" v-if="hasRole(['admin', 'teacher'])">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
               <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
@@ -139,7 +139,11 @@ const getUserInfo = () => {
 // 检查用户是否有指定角色
 const hasRole = (role) => {
   const userInfo = getUserInfo()
-  return userInfo.role === role
+  // 支持检查单个角色或角色列表
+  if (Array.isArray(role)) {
+    return role.includes(userInfo.role)
+  }
+  return userInfo.role === role || userInfo.role === `ROLE_${role.toUpperCase()}`
 }
 
 // 检查用户是否是管理员或教师

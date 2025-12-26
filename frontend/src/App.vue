@@ -176,18 +176,18 @@ const onlineUserCount = ref(0)
 // 菜单定义，包含每个菜单的权限信息
 const menuItems = [
   { index: '/home', icon: House, text: '首页', roles: ['admin', 'teacher', 'student'] },
-  { index: '/students', icon: User, text: '学生管理', roles: ['admin'] },
+  { index: '/students', icon: User, text: '学生管理', roles: ['admin', 'teacher'] },
   { index: '/teachers', icon: Briefcase, text: '教师管理', roles: ['admin'] },
   { index: '/courses', icon: School, text: '课程管理', roles: ['admin', 'teacher', 'student'] },
   { index: '/majors', icon: School, text: '专业管理', roles: ['admin', 'teacher', 'student'] },
   { index: '/scores', icon: DataLine, text: '成绩管理', roles: ['admin', 'teacher', 'student'] },
-  { index: '/awards', icon: Medal, text: '评奖评优', roles: ['admin', 'teacher', 'student'] },
   { 
     index: '/award-management', 
     icon: DocumentChecked, 
     text: '奖项管理', 
     roles: ['admin', 'teacher', 'student'],
     children: [
+      { index: '/awards', icon: Medal, text: '评奖评优', roles: ['admin', 'teacher', 'student'] },
       { index: '/student-award-applications', icon: DocumentCopy, text: '奖项申请', roles: ['admin', 'teacher', 'student'] },
       { index: '/student-award-records', icon: DocumentChecked, text: '获奖记录', roles: ['admin', 'teacher', 'student'] }
     ]
