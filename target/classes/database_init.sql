@@ -1,7 +1,4 @@
--- 创建数据库
-DROP DATABASE IF EXISTS student_selection_system;
-CREATE DATABASE IF NOT EXISTS student_selection_system DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
+-- 确保使用正确的数据库
 USE student_selection_system;
 
 -- 用户表（用于系统登录）
