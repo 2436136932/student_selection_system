@@ -136,7 +136,7 @@ public class StatisticsController {
     @GetMapping("/application-trend")
     public ResponseEntity<Map<String, Object>> getApplicationTrend() {
         try {
-            Map<String, Long> trend = studentAwardApplicationService.getApplicationTrend();
+            Map<String, Long> trend = studentAwardRecordService.getAwardTrend();
             return ResponseEntity.ok(Map.of("data", trend));
         } catch (Exception e) {
             logger.error("获取奖项申请趋势统计失败: {}", e.getMessage(), e);

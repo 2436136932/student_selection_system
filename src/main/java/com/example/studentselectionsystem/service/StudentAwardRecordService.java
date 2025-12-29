@@ -91,4 +91,10 @@ public interface StudentAwardRecordService {
      * @return 各专业获奖数量分布
      */
     Map<String, Long> getAwardsByMajor();
+    
+    /**
+     * 获取奖项记录趋势统计
+     * @return 奖项记录趋势数据
+     */
+    Map<String, Long> getAwardTrend();
 }

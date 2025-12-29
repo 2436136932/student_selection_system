@@ -39,8 +39,14 @@ const drawChart = async () => {
     console.log('获取到的奖项申请趋势数据:', data)
     
     // 处理空数据情况
-    const categories = data ? Object.keys(data) : []
-    const values = data ? Object.values(data) : []
+    let categories = data ? Object.keys(data) : []
+    let values = data ? Object.values(data) : []
+    
+    // 如果没有数据，添加默认的空数据提示
+    if (categories.length === 0 || values.length === 0) {
+      categories = ['暂无数据']
+      values = [0]
+    }
     
     console.log('奖项申请趋势图表分类:', categories)
     console.log('奖项申请趋势图表数值:', values)

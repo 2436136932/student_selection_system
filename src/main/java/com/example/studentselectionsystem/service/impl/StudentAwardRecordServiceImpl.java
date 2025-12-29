@@ -253,4 +253,58 @@ public class StudentAwardRecordServiceImpl extends ServiceImpl<StudentAwardRecor
         
         return distribution;
     }
+    
+    @Override
+    public Map<String, Long> getAwardTrend() {
+        Map<String, Long> trend = new java.util.LinkedHashMap<>();
+        
+        try {
+            // 查询所有获奖记录
+            List<StudentAwardRecord> records = studentAwardRecordMapper.selectList(null);
+            
+            // 打印查询结果，用于调试
+            System.out.println("所有获奖记录: " + records);
+            
+            // 手动按月份统计
+            java.util.Map<String, Long> monthMap = new java.util.HashMap<>();
+            for (StudentAwardRecord record : records) {
+                // 使用COALESCE(award_time, created_at)的逻辑
+                Date date = record.getAwardTime() != null ? record.getAwardTime() : record.getCreatedAt();
+                
+                // 格式化日期为yyyy-MM
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM");
+                String month = sdf.format(date);
+                
+                // 统计数量
+                monthMap.put(month, monthMap.getOrDefault(month, 0L) + 1L);
+            }
+            
+            // 打印月份统计结果，用于调试
+            System.out.println("月份统计结果: " + monthMap);
+            
+            // 将结果转换为有序的LinkedHashMap，按月份排序
+            List<String> sortedMonths = new java.util.ArrayList<>(monthMap.keySet());
+            java.util.Collections.sort(sortedMonths);
+            for (String month : sortedMonths) {
+                trend.put(month, monthMap.get(month));
+            }
+        } catch (Exception e) {
+            System.err.println("获取奖项记录趋势失败: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        // 如果没有数据，添加最近6个月的默认数据，值为0
+        if (trend.isEmpty()) {
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            for (int i = 5; i >= 0; i--) {
+                java.util.Calendar tempCal = java.util.Calendar.getInstance();
+                tempCal.add(java.util.Calendar.MONTH, -i);
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM");
+                String month = sdf.format(tempCal.getTime());
+                trend.put(month, 0L);
+            }
+        }
+        
+        return trend;
+    }
 }

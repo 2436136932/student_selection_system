@@ -627,42 +627,87 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     public java.util.Map<String, Long> getApprovalTimeAnalysis() {
         java.util.Map<String, Long> timeAnalysis = new java.util.HashMap<>();
         
-        // 查询所有已完成审批的申请
+        // 查询所有申请，放宽条件，不限制状态
         List<StudentAwardApplication> applications = studentAwardApplicationMapper.selectList(
                 new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
-                        .in(StudentAwardApplication::getStatus, 2, 3, 4) // 2: 教师拒绝, 3: 管理员通过, 4: 管理员拒绝
-                        .isNotNull(StudentAwardApplication::getApplicationTime)
-                        .isNotNull(StudentAwardApplication::getAdminApprovalTime)
         );
+        
+        logger.info("查询到的申请总数: {}", applications.size());
+        
+        // 提取所有申请的奖项ID，去重后查询所有奖项
+        java.util.Set<Long> awardIds = new java.util.HashSet<>();
+        for (StudentAwardApplication application : applications) {
+            awardIds.add(application.getAwardId());
+        }
+        
+        logger.info("涉及的奖项ID: {}", awardIds);
+        
+        // 构建奖项ID到奖项对象的映射
+        java.util.Map<Long, Award> awardMap = new java.util.HashMap<>();
+        if (!awardIds.isEmpty()) {
+            List<Award> awards = awardMapper.selectBatchIds(awardIds);
+            for (Award award : awards) {
+                awardMap.put(award.getId(), award);
+                logger.info("奖项ID: {}, endTime: {}", award.getId(), award.getEndTime());
+            }
+        }
         
         long totalApplicationToTeacher = 0;
         long totalTeacherToAdmin = 0;
         long totalAdminToFinal = 0;
-        int validCount = 0;
+        int appToTeacherCount = 0;
+        int teacherToAdminCount = 0;
+        int adminToFinalCount = 0;
         
         for (StudentAwardApplication application : applications) {
+            logger.info("处理申请ID: {}, awardId: {}, applicationTime: {}, teacherApprovalTime: {}, adminApprovalTime: {}", 
+                application.getId(), application.getAwardId(), application.getApplicationTime(), 
+                application.getTeacherApprovalTime(), application.getAdminApprovalTime());
+            
             // 计算申请到教师审批的时间差
             if (application.getApplicationTime() != null && application.getTeacherApprovalTime() != null) {
-                totalApplicationToTeacher += application.getTeacherApprovalTime().getTime() - application.getApplicationTime().getTime();
+                long timeDiff = application.getTeacherApprovalTime().getTime() - application.getApplicationTime().getTime();
+                totalApplicationToTeacher += timeDiff;
+                appToTeacherCount++;
+                logger.info("申请到教师审批时间差: {}毫秒, 当前计数: {}", timeDiff, appToTeacherCount);
             }
             
             // 计算教师审批到管理员审批的时间差
             if (application.getTeacherApprovalTime() != null && application.getAdminApprovalTime() != null) {
-                totalTeacherToAdmin += application.getAdminApprovalTime().getTime() - application.getTeacherApprovalTime().getTime();
+                long timeDiff = application.getAdminApprovalTime().getTime() - application.getTeacherApprovalTime().getTime();
+                totalTeacherToAdmin += timeDiff;
+                teacherToAdminCount++;
+                logger.info("教师审批到管理员审批时间差: {}毫秒, 当前计数: {}", timeDiff, teacherToAdminCount);
             }
             
-            // 计算管理员审批到最终结果的时间差（这里假设管理员审批时间就是最终结果时间）
+            // 计算管理员审批到最终结果的时间差：使用奖项的endTime减去管理员审批时间
             if (application.getAdminApprovalTime() != null) {
-                totalAdminToFinal += 0; // 管理员审批时间就是最终结果时间，所以时间差为0
+                Award award = awardMap.get(application.getAwardId());
+                if (award != null && award.getEndTime() != null) {
+                    long timeDiff = award.getEndTime().getTime() - application.getAdminApprovalTime().getTime();
+                    totalAdminToFinal += timeDiff;
+                    adminToFinalCount++;
+                    logger.info("管理员审批到最终结果时间差: {}毫秒, 当前计数: {}", timeDiff, adminToFinalCount);
+                } else {
+                    logger.info("管理员审批到最终结果时间差计算失败: award={}, award.endTime={}", award, award != null ? award.getEndTime() : null);
+                }
             }
-            
-            validCount++;
         }
         
-        // 计算平均时间（转换为分钟）
-        timeAnalysis.put("申请到教师审批", validCount > 0 ? totalApplicationToTeacher / validCount / (1000 * 60) : 0);
-        timeAnalysis.put("教师审批到管理员审批", validCount > 0 ? totalTeacherToAdmin / validCount / (1000 * 60) : 0);
-        timeAnalysis.put("管理员审批到最终结果", validCount > 0 ? totalAdminToFinal / validCount / (1000 * 60) : 0);
+        // 分别计算各阶段的平均时间（转换为分钟，四舍五入）
+        double avgAppToTeacher = appToTeacherCount > 0 ? (double) totalApplicationToTeacher / appToTeacherCount / (1000 * 60) : 0;
+        double avgTeacherToAdmin = teacherToAdminCount > 0 ? (double) totalTeacherToAdmin / teacherToAdminCount / (1000 * 60) : 0;
+        double avgAdminToFinal = adminToFinalCount > 0 ? (double) totalAdminToFinal / adminToFinalCount / (1000 * 60) : 0;
+        
+        logger.info("平均时间计算结果: 申请到教师审批={}分钟, 教师审批到管理员审批={}分钟, 管理员审批到最终结果={}分钟", 
+            avgAppToTeacher, avgTeacherToAdmin, avgAdminToFinal);
+        
+        // 向上取整到整数分钟，确保不足1分钟的也显示为1分钟
+        timeAnalysis.put("申请到教师审批", Math.max(1, Math.round(avgAppToTeacher)));
+        timeAnalysis.put("教师审批到管理员审批", Math.max(1, Math.round(avgTeacherToAdmin)));
+        timeAnalysis.put("管理员审批到最终结果", Math.round(avgAdminToFinal));
+        
+        logger.info("最终返回的审批时间分析数据: {}", timeAnalysis);
         
         return timeAnalysis;
     }
@@ -675,10 +720,9 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
             // 使用MyBatis Plus的SQL查询直接按月份统计申请数量
             List<java.util.Map<String, Object>> monthCounts = studentAwardApplicationMapper.selectMaps(
                     new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<StudentAwardApplication>()
-                            .select("DATE_FORMAT(application_time, '%Y-%m') as month, count(*) as count")
-                            .isNotNull("application_time")
-                            .groupBy("DATE_FORMAT(application_time, '%Y-%m')")
-                            .orderByAsc("DATE_FORMAT(application_time, '%Y-%m')")
+                            .select("DATE_FORMAT(COALESCE(application_time, created_at), '%Y-%m') as month, count(*) as count")
+                            .groupBy("DATE_FORMAT(COALESCE(application_time, created_at), '%Y-%m')")
+                            .orderByAsc("DATE_FORMAT(COALESCE(application_time, created_at), '%Y-%m')")
             );
             
             // 构建月份计数映射
@@ -689,6 +733,18 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
             }
         } catch (Exception e) {
             logger.error("获取奖项申请趋势失败: {}", e.getMessage(), e);
+        }
+        
+        // 如果没有数据，添加最近6个月的默认数据，值为0
+        if (trend.isEmpty()) {
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            for (int i = 5; i >= 0; i--) {
+                java.util.Calendar tempCal = java.util.Calendar.getInstance();
+                tempCal.add(java.util.Calendar.MONTH, -i);
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM");
+                String month = sdf.format(tempCal.getTime());
+                trend.put(month, 0L);
+            }
         }
         
         return trend;

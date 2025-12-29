@@ -227,7 +227,7 @@ onMounted(() => {
 })
 
 
-// 在HTML中引入AI通义千问的脚本
+// 在HomeView中引入AI通义千问的脚本
 createAiChat({
        appId:"2003270009308119042",
        // 支持top-left左上, top-right右上, bottom-left左下, bottom-right右下
