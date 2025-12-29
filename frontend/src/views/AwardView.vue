@@ -35,7 +35,7 @@
           </div>
           <div class="award-card-content">
             <div class="award-date">
-              {{ award.startTime ? new Date(award.startTime).toLocaleDateString() : '未设置' }} 至 {{ award.endTime ? new Date(award.endTime).toLocaleDateString() : '未设置' }}
+              {{ award.startTime ? award.startTime.split(' ')[0] : '未设置' }} 至 {{ award.endTime ? award.endTime.split(' ')[0] : '未设置' }}
             </div>
             <div class="award-quota">
               名额: {{ award.quota || '不限' }}
@@ -881,14 +881,8 @@ export default {
       // 深拷贝行数据，避免直接修改原数据
       const formData = JSON.parse(JSON.stringify(row))
       
-      // 确保时间格式正确，与后端期望的yyyy-MM-dd HH:mm:ss格式一致
-      if (formData.startTime) {
-        formData.startTime = new Date(formData.startTime).toISOString().slice(0, 19).replace('T', ' ')
-      }
-      if (formData.endTime) {
-        formData.endTime = new Date(formData.endTime).toISOString().slice(0, 19).replace('T', ' ')
-      }
-      
+      // 直接使用后端返回的时间字符串，不进行额外转换
+      // 后端已配置为返回yyyy-MM-dd HH:mm:ss格式的时间，与前端日期选择器期望的格式一致
       Object.assign(form, formData)
       dialogVisible.value = true
     }

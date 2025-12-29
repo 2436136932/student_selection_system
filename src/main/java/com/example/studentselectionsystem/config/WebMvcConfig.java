@@ -13,12 +13,16 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     /**
      * 配置静态资源访问路径
-     * 将/uploads目录映射为静态资源路径，允许前端直接访问上传的图片文件
+     * 将/uploads目录和/api/files目录映射为静态资源路径，允许前端直接访问上传的图片文件
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // 配置/uploads目录为静态资源路径
         registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:G:/javacode/student-selection-system/uploads/");
+        
+        // 配置/api/files目录为静态资源路径，匹配FileServiceImpl中的fileBaseUrl
+        registry.addResourceHandler("/api/files/**")
                 .addResourceLocations("file:G:/javacode/student-selection-system/uploads/");
     }
 

@@ -232,13 +232,23 @@ public class StudentAwardRecordServiceImpl extends ServiceImpl<StudentAwardRecor
     public Map<String, Long> getAwardsByMajor() {
         Map<String, Long> distribution = new java.util.HashMap<>();
         
-        // 查询所有获奖记录
-        List<StudentAwardRecord> records = studentAwardRecordMapper.selectList(null);
-        
-        // 按专业统计获奖数量
-        for (StudentAwardRecord record : records) {
-            String major = record.getMajor();
-            distribution.put(major, distribution.getOrDefault(major, 0L) + 1L);
+        try {
+            // 使用MyBatis Plus的SQL查询直接统计各专业获奖数量
+            List<java.util.Map<String, Object>> majorCounts = studentAwardRecordMapper.selectMaps(
+                    new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<StudentAwardRecord>()
+                            .select("major, count(*) as count")
+                            .groupBy("major")
+            );
+            
+            // 构建专业计数映射
+            for (java.util.Map<String, Object> majorCount : majorCounts) {
+                String major = majorCount.get("major") != null ? majorCount.get("major").toString() : "未分类";
+                Long count = Long.valueOf(majorCount.get("count").toString());
+                distribution.put(major, count);
+            }
+        } catch (Exception e) {
+            System.err.println("获取各专业获奖情况失败: " + e.getMessage());
+            e.printStackTrace();
         }
         
         return distribution;

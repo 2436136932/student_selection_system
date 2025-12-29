@@ -545,17 +545,35 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     public java.util.Map<String, Long> getAwardLevelDistribution() {
         java.util.Map<String, Long> distribution = new java.util.HashMap<>();
         
-        // 查询所有奖项申请
-        List<StudentAwardApplication> applications = studentAwardApplicationMapper.selectList(null);
-        
-        // 遍历申请，统计不同级别奖项的数量
-        for (StudentAwardApplication application : applications) {
-            // 查询奖项信息
-            Award award = awardMapper.selectById(application.getAwardId());
-            if (award != null) {
-                String awardLevel = award.getAwardLevel();
-                distribution.put(awardLevel, distribution.getOrDefault(awardLevel, 0L) + 1L);
+        try {
+            // 使用MyBatis Plus的SQL查询直接统计奖项级别分布
+            // 1. 先查询所有奖项的级别和ID
+            List<Award> awards = awardMapper.selectList(null);
+            
+            // 2. 构建奖项ID到级别的映射
+            java.util.Map<Long, String> awardLevelMap = new java.util.HashMap<>();
+            for (Award award : awards) {
+                awardLevelMap.put(award.getId(), award.getAwardLevel());
             }
+            
+            // 3. 查询所有申请的奖项ID分布
+            List<java.util.Map<String, Object>> awardIdCounts = studentAwardApplicationMapper.selectMaps(
+                    new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<StudentAwardApplication>()
+                            .select("award_id, count(*) as count")
+                            .groupBy("award_id")
+            );
+            
+            // 4. 统计不同级别奖项的数量
+            for (java.util.Map<String, Object> awardIdCount : awardIdCounts) {
+                Long awardId = Long.valueOf(awardIdCount.get("award_id").toString());
+                Long count = Long.valueOf(awardIdCount.get("count").toString());
+                String awardLevel = awardLevelMap.get(awardId);
+                if (awardLevel != null) {
+                    distribution.put(awardLevel, distribution.getOrDefault(awardLevel, 0L) + count);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("获取奖项级别分布失败: {}", e.getMessage(), e);
         }
         
         return distribution;
@@ -573,13 +591,33 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
         statusMap.put(3, "管理员审批通过");
         statusMap.put(4, "管理员审批拒绝");
         
-        // 统计不同状态的申请数量
-        for (Integer status : statusMap.keySet()) {
-            long count = studentAwardApplicationMapper.selectCount(
-                    new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
-                            .eq(StudentAwardApplication::getStatus, status)
+        try {
+            // 使用一个查询获取所有状态的数量
+            List<java.util.Map<String, Object>> statusCounts = studentAwardApplicationMapper.selectMaps(
+                    new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<StudentAwardApplication>()
+                            .select("status, count(*) as count")
+                            .groupBy("status")
             );
-            distribution.put(statusMap.get(status), count);
+            
+            // 构建状态计数映射
+            java.util.Map<Integer, Long> statusCountMap = new java.util.HashMap<>();
+            for (java.util.Map<String, Object> statusCount : statusCounts) {
+                Integer status = Integer.valueOf(statusCount.get("status").toString());
+                Long count = Long.valueOf(statusCount.get("count").toString());
+                statusCountMap.put(status, count);
+            }
+            
+            // 填充所有状态的计数，包括0计数的状态
+            for (Integer status : statusMap.keySet()) {
+                Long count = statusCountMap.getOrDefault(status, 0L);
+                distribution.put(statusMap.get(status), count);
+            }
+        } catch (Exception e) {
+            logger.error("获取申请状态分布失败: {}", e.getMessage(), e);
+            // 发生错误时，使用默认值
+            for (Integer status : statusMap.keySet()) {
+                distribution.put(statusMap.get(status), 0L);
+            }
         }
         
         return distribution;
@@ -633,18 +671,24 @@ public class StudentAwardApplicationServiceImpl implements StudentAwardApplicati
     public java.util.Map<String, Long> getApplicationTrend() {
         java.util.Map<String, Long> trend = new java.util.LinkedHashMap<>();
         
-        // 查询所有申请
-        List<StudentAwardApplication> applications = studentAwardApplicationMapper.selectList(
-                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<StudentAwardApplication>()
-                        .isNotNull(StudentAwardApplication::getApplicationTime)
-                        .orderByAsc(StudentAwardApplication::getApplicationTime)
-        );
-        
-        // 按月份统计申请数量
-        for (StudentAwardApplication application : applications) {
-            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM");
-            String month = sdf.format(application.getApplicationTime());
-            trend.put(month, trend.getOrDefault(month, 0L) + 1L);
+        try {
+            // 使用MyBatis Plus的SQL查询直接按月份统计申请数量
+            List<java.util.Map<String, Object>> monthCounts = studentAwardApplicationMapper.selectMaps(
+                    new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<StudentAwardApplication>()
+                            .select("DATE_FORMAT(application_time, '%Y-%m') as month, count(*) as count")
+                            .isNotNull("application_time")
+                            .groupBy("DATE_FORMAT(application_time, '%Y-%m')")
+                            .orderByAsc("DATE_FORMAT(application_time, '%Y-%m')")
+            );
+            
+            // 构建月份计数映射
+            for (java.util.Map<String, Object> monthCount : monthCounts) {
+                String month = monthCount.get("month").toString();
+                Long count = Long.valueOf(monthCount.get("count").toString());
+                trend.put(month, count);
+            }
+        } catch (Exception e) {
+            logger.error("获取奖项申请趋势失败: {}", e.getMessage(), e);
         }
         
         return trend;

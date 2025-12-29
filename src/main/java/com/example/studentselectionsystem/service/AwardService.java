@@ -67,7 +67,7 @@ public interface AwardService {
      * @return 获奖次数
      */
     int getAwardCountByStudentId(String studentId);
-
+    
     /**
      * 获取奖项总数
      * @return 奖项总数

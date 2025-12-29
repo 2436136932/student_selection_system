@@ -375,8 +375,11 @@ const isImageFile = (fileName) => {
 // 显示图片预览
 const showImagePreview = async (imageUrl, title = '图片预览') => {
   try {
-    // 使用下载接口获取图片内容
-    const response = await fetch(`http://localhost:8080/api/chats/files/download?fileUrl=${encodeURIComponent(imageUrl)}`, {
+    // 直接使用下载接口获取图片内容，不依赖于imageUrl的格式
+    const url = new URL('http://localhost:8080/api/chats/files/download')
+    url.searchParams.append('fileUrl', imageUrl)
+    
+    const response = await fetch(url.toString(), {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`

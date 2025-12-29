@@ -119,7 +119,8 @@ public class SecurityConfig {
                     "/api/student-award-applications/award/*/count",
                     "/api/student-award-applications/award/*/approved-count",
                     "/api/student-award-applications/award/*/teacher-approved-count",
-                    "/api/student-award-applications/award/*/admin-approved-count"
+                    "/api/student-award-applications/award/*/admin-approved-count",
+                    "/api/statistics/**"
                 ).permitAll()
                 // 管理员接口需要ADMIN角色
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
