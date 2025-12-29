@@ -83,6 +83,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\ChatSessionService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\CourseService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\EmailService.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\FileService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\AwardServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\AwardTypeServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\CarouselServiceImpl.java
@@ -90,6 +91,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\ChatSessionServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\CourseServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\EmailServiceImpl.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\FileServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\MajorServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\NoticeServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\PermissionServiceImpl.java

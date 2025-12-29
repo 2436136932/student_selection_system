@@ -60,6 +60,30 @@ public class ChatMessage implements Serializable {
     private String readStatus;
 
     /**
+     * 消息类型：text/image/emoji/file
+     */
+    @TableField("message_type")
+    private String messageType = "text";
+
+    /**
+     * 文件名
+     */
+    @TableField("file_name")
+    private String fileName;
+
+    /**
+     * 文件URL
+     */
+    @TableField("file_url")
+    private String fileUrl;
+
+    /**
+     * 文件大小（字节）
+     */
+    @TableField("file_size")
+    private Long fileSize;
+
+    /**
      * 发送时间
      */
     @TableField(value = "created_at", updateStrategy = FieldStrategy.NEVER)
@@ -96,6 +120,22 @@ public class ChatMessage implements Serializable {
         return readStatus;
     }
 
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public Long getFileSize() {
+        return fileSize;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -127,6 +167,22 @@ public class ChatMessage implements Serializable {
 
     public void setReadStatus(String readStatus) {
         this.readStatus = readStatus;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
+
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
     }
 
     public void setCreatedAt(Date createdAt) {

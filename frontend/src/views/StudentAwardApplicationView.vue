@@ -1033,10 +1033,14 @@ onMounted(() => {
 }
 
 .note {
-  font-size: 12px;
-  color: #666;
+  font-size: 13px;
+  color: #606266;
   margin-top: 5px;
   margin-bottom: 15px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(41, 128, 185, 0.1) 100%);
+  border-radius: 8px;
+  border-left: 3px solid #3498db;
 }
 
 .card-header {
@@ -1047,14 +1051,132 @@ onMounted(() => {
 
 .search-form {
   margin-bottom: 20px;
-  padding: 10px;
-  background-color: #f5f7fa;
-  border-radius: 8px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ecf0f1 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(52, 152, 219, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
+/* 表格样式优化 */
+.el-table {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.el-table:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.el-table__header-wrapper th {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 16px;
+  border-bottom: none;
+}
+
+.el-table__body-wrapper tr {
+  transition: background-color 0.2s ease;
+}
+
+.el-table__body-wrapper tr:hover > td {
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.08) 0%, rgba(52, 152, 219, 0.12) 100%);
+}
+
+.el-table__body-wrapper td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+/* 状态标签优化 */
+.el-tag {
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.el-tag:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.el-tag--info {
+  background: linear-gradient(135deg, #909399 0%, #606266 100%);
+  border: none;
+  color: white;
+}
+
+.el-tag--success {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  border: none;
+  color: white;
+}
+
+.el-tag--warning {
+  background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+  border: none;
+  color: white;
+}
+
+.el-tag--danger {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  border: none;
+  color: white;
+}
+
+.el-tag--primary {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  border: none;
+  color: white;
+}
+
+/* 分页器优化 */
 .pagination {
   margin-top: 20px;
   text-align: right;
+}
+
+.el-pagination {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.el-pagination button {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.el-pagination button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  border-color: #3498db;
+}
+
+.el-pagination button.is-active {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  border-color: #3498db;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.el-pagination .el-input__wrapper {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 @media (max-width: 768px) {
@@ -1063,8 +1185,21 @@ onMounted(() => {
   }
   
   .search-form {
-    flex-direction: column;
-    align-items: stretch;
+    padding: 12px;
+  }
+  
+  .el-table {
+    font-size: 12px;
+  }
+  
+  .el-table__header-wrapper th {
+    padding: 12px;
+    font-size: 12px;
+  }
+  
+  .el-table__body-wrapper td {
+    padding: 10px 12px;
+    font-size: 12px;
   }
 }
 </style>

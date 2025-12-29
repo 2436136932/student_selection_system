@@ -29,9 +29,37 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Override
     public ChatMessage sendChatMessage(ChatMessage chatMessage) {
         // 设置创建时间
-        chatMessage.setCreatedAt(new Date());
+        Date now = new Date();
+        chatMessage.setCreatedAt(now);
         chatMessage.setReadStatus("unread");
+        
+        // 如果消息类型为空，默认为text
+        if (chatMessage.getMessageType() == null) {
+            chatMessage.setMessageType("text");
+        }
+        
         chatMessageRepository.insert(chatMessage);
+        
+        // 更新会话的最后一条消息
+        Optional<ChatSession> optionalSession = chatSessionService.findChatSessionById(chatMessage.getSessionId());
+        if (optionalSession.isPresent()) {
+            ChatSession chatSession = optionalSession.get();
+            // 根据消息类型设置最后一条消息内容
+            String lastMessageContent;
+            if ("image".equals(chatMessage.getMessageType())) {
+                lastMessageContent = "[图片]";
+            } else if ("file".equals(chatMessage.getMessageType())) {
+                lastMessageContent = "[文件] " + chatMessage.getFileName();
+            } else if ("emoji".equals(chatMessage.getMessageType())) {
+                lastMessageContent = chatMessage.getContent();
+            } else {
+                lastMessageContent = chatMessage.getContent();
+            }
+            chatSession.setLastMessage(lastMessageContent);
+            chatSession.setLastMessageTime(now);
+            chatSessionService.updateChatSession(chatSession.getId(), chatSession);
+        }
+        
         return chatMessage;
     }
 

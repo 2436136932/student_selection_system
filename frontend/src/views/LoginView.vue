@@ -1152,7 +1152,7 @@ body, input {
 .btn {
   width: 100%;
   max-width: 380px;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  background: #409eff;
   border: none;
   outline: none;
   height: 55px;
@@ -1163,19 +1163,19 @@ body, input {
   margin: 20px 0;
   cursor: pointer;
   transition: var(--transition);
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
   font-size: 1rem;
   letter-spacing: 1px;
 }
 
 .btn:hover {
-  background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
-  box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
-  transform: translateY(-3px);
+  background: #66b1ff;
+  box-shadow: 0 6px 16px rgba(64, 158, 255, 0.4);
+  transform: translateY(-2px);
 }
 
 .btn:active {
-  transform: translateY(-1px);
+  transform: translateY(0);
 }
 
 /* 角色选择器样式 */
@@ -1253,14 +1253,14 @@ body, input {
 
 /* 按钮激活效果 */
 .role-selector :deep(.el-radio-button.is-active .el-radio-button__inner) {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+  background: #409eff !important;
   color: var(--white-color) !important;
-  box-shadow: 0 4px 16px rgba(52, 152, 219, 0.3) !important;
+  box-shadow: 0 4px 16px rgba(64, 158, 255, 0.3) !important;
 }
 
 /* 确保激活状态的按钮样式正确 */
 .role-selector :deep(.el-radio-button__orig-radio:checked + .el-radio-button__inner) {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+  background: #409eff !important;
   color: var(--white-color) !important;
 }
 
@@ -1268,7 +1268,7 @@ body, input {
 .role-selector :deep(.el-radio-button--default.is-active .el-radio-button__inner) {
   border-color: transparent !important;
   color: var(--white-color) !important;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+  background: #409eff !important;
 }
 
 .role-selector :deep(.el-radio-button--default:not(.is-active) .el-radio-button__inner) {
@@ -1687,15 +1687,15 @@ body, input {
 }
 
 .dialog-footer .el-button--primary {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+  background: #409eff !important;
   border: none !important;
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3) !important;
   color: var(--white-color) !important;
 }
 
 .dialog-footer .el-button--primary:hover {
-  background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%) !important;
-  box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4) !important;
+  background: #66b1ff !important;
+  box-shadow: 0 6px 16px rgba(64, 158, 255, 0.4) !important;
   transform: translateY(-1px) !important;
 }
 

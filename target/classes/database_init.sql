@@ -245,6 +245,10 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     sender_type VARCHAR(20) NOT NULL COMMENT '发送者类型：student/teacher/admin',
     content TEXT NOT NULL COMMENT '消息内容',
     read_status VARCHAR(20) DEFAULT 'unread' COMMENT '阅读状态：read/unread',
+    message_type VARCHAR(20) DEFAULT 'text' COMMENT '消息类型：text/image/emoji/file',
+    file_name VARCHAR(255) COMMENT '文件名',
+    file_url VARCHAR(255) COMMENT '文件URL',
+    file_size BIGINT COMMENT '文件大小（字节）',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '发送时间',
     FOREIGN KEY (session_id) REFERENCES chat_sessions(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='聊天消息表';

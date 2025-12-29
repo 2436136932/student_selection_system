@@ -1,4 +1,5 @@
 com\example\studentselectionsystem\entity\Role.class
+com\example\studentselectionsystem\service\impl\FileServiceImpl.class
 com\example\studentselectionsystem\service\RoleService.class
 com\example\studentselectionsystem\model\Award.class
 com\example\studentselectionsystem\service\impl\CourseServiceImpl.class
@@ -68,6 +69,7 @@ com\example\studentselectionsystem\controller\PermissionController.class
 com\example\studentselectionsystem\mapper\CompetitionMapper.class
 com\example\studentselectionsystem\mapper\RoleMapper.class
 com\example\studentselectionsystem\repository\ChatSessionRepository.class
+com\example\studentselectionsystem\service\FileService.class
 com\example\studentselectionsystem\repository\StudentRepository.class
 com\example\studentselectionsystem\controller\UserController$PasswordChangeRequest.class
 com\example\studentselectionsystem\mapper\PermissionMapper.class

@@ -425,24 +425,28 @@ const handleSearch = () => {
 .chat-item {
   display: flex;
   align-items: center;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 14px 16px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-bottom: 8px;
-  background-color: #ffffff;
-  border: 1px solid #e8e8e8;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 1px solid rgba(52, 152, 219, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .chat-item:hover {
-  background-color: #f5f7fa;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #f0f7ff 0%, #e3f2fd 100%);
+  border-color: rgba(52, 152, 219, 0.3);
+  box-shadow: 0 4px 16px rgba(52, 152, 219, 0.15);
+  transform: translateX(4px);
 }
 
 .chat-item.active {
-  background-color: #ecf5ff;
-  border-color: #d9ecff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  border-color: #3498db;
+  box-shadow: 0 4px 16px rgba(52, 152, 219, 0.25);
+  transform: translateX(4px);
 }
 
 .chat-item-avatar {

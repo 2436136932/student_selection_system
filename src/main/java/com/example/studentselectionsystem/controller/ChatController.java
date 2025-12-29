@@ -5,18 +5,24 @@ import com.example.studentselectionsystem.entity.ChatSession;
 import com.example.studentselectionsystem.entity.User;
 import com.example.studentselectionsystem.service.ChatMessageService;
 import com.example.studentselectionsystem.service.ChatSessionService;
+import com.example.studentselectionsystem.service.FileService;
 import com.example.studentselectionsystem.service.StudentService;
 import com.example.studentselectionsystem.service.TeacherService;
 import com.example.studentselectionsystem.service.UserService;
 import com.example.studentselectionsystem.websocket.ChatWebSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,6 +54,9 @@ public class ChatController {
     
     @Autowired
     private ChatWebSocketHandler chatWebSocketHandler;
+    
+    @Autowired
+    private FileService fileService;
 
     /**
      * 获取当前用户ID
@@ -511,6 +520,87 @@ public class ChatController {
             response.put("onlineCount", count);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * 上传文件
+     * @param file 要上传的文件
+     * @return 文件信息
+     */
+    @PreAuthorize("hasRole('STUDENT') or hasRole('TEACHER') or hasRole('ADMIN')")
+    @PostMapping("/files/upload")
+    public ResponseEntity<Map<String, Object>> uploadFile(@RequestParam("file") MultipartFile file) {
+        try {
+            String fileUrl = fileService.uploadFile(file);
+            Long fileSize = file.getSize();
+            String fileName = file.getOriginalFilename();
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("fileUrl", fileUrl);
+            response.put("fileName", fileName);
+            response.put("fileSize", fileSize);
+            response.put("message", "文件上传成功");
+            
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * 上传图片
+     * @param file 要上传的图片文件
+     * @return 图片信息
+     */
+    @PreAuthorize("hasRole('STUDENT') or hasRole('TEACHER') or hasRole('ADMIN')")
+    @PostMapping("/files/upload-image")
+    public ResponseEntity<Map<String, Object>> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            String fileUrl = fileService.uploadImage(file);
+            Long fileSize = file.getSize();
+            String fileName = file.getOriginalFilename();
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("fileUrl", fileUrl);
+            response.put("fileName", fileName);
+            response.put("fileSize", fileSize);
+            response.put("message", "图片上传成功");
+            
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * 下载文件
+     * @param fileUrl 文件URL
+     * @return 文件流
+     */
+    @PreAuthorize("hasRole('STUDENT') or hasRole('TEACHER') or hasRole('ADMIN')")
+    @GetMapping("/files/download")
+    public ResponseEntity<InputStreamResource> downloadFile(@RequestParam("fileUrl") String fileUrl) {
+        try {
+            // 从URL中提取文件名
+            String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+            
+            // 获取文件输入流
+            InputStream inputStream = fileService.downloadFile(fileUrl);
+            InputStreamResource resource = new InputStreamResource(inputStream);
+            
+            // 设置响应头
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
+            headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE);
+            headers.add(HttpHeaders.CONTENT_LENGTH, String.valueOf(fileService.getFileSize(fileUrl)));
+            
+            return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

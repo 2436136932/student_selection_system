@@ -4,6 +4,7 @@ import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
 import axios from 'axios'
+import './styles/global.css'
 
 // 配置axios基础URL，指向后端服务
 axios.defaults.baseURL = 'http://localhost:8080'
