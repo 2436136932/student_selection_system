@@ -135,4 +135,22 @@ public class NoticeController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    /**
+     * 批量删除通知
+     */
+    @DeleteMapping("/batch")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Boolean> batchDeleteNotices(@RequestBody List<Integer> noticeIds) {
+        try {
+            boolean success = noticeService.batchDeleteNotices(noticeIds);
+            if (success) {
+                return new ResponseEntity<>(true, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

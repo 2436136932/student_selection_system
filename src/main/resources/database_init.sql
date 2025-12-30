@@ -146,21 +146,7 @@ CREATE TABLE IF NOT EXISTS majors (
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='专业表';
 
--- 插入初始专业数据
-INSERT INTO majors (name, department) VALUES
-('计算机科学与技术', '计算机学院'),
-('软件工程', '计算机学院'),
-('网络工程', '计算机学院'),
-('数学与应用数学', '数学学院'),
-('信息与计算科学', '数学学院'),
-('电子信息工程', '电子工程学院'),
-('通信工程', '电子工程学院'),
-('自动化', '自动化学院'),
-('机械工程', '机械工程学院'),
-('会计学', '经济管理学院'),
-('市场营销', '经济管理学院'),
-('物理学', '物理学院'),
-('化学工程', '化学学院');
+-- 插入初始专业数据（将在TRUNCATE后执行）
 
 
 -- 学生奖项关联表
@@ -281,12 +267,30 @@ TRUNCATE TABLE students;
 TRUNCATE TABLE teachers;
 TRUNCATE TABLE courses;
 TRUNCATE TABLE awards;
+TRUNCATE TABLE majors;
+TRUNCATE TABLE carousel;
 
 TRUNCATE TABLE notices;
 TRUNCATE TABLE users;
 
 -- 启用外键约束检查
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- 插入初始专业数据
+INSERT INTO majors (name, department) VALUES
+('计算机科学与技术', '计算机学院'),
+('软件工程', '计算机学院'),
+('网络工程', '计算机学院'),
+('数学与应用数学', '数学学院'),
+('信息与计算科学', '数学学院'),
+('电子信息工程', '电子工程学院'),
+('通信工程', '电子工程学院'),
+('自动化', '自动化学院'),
+('机械工程', '机械工程学院'),
+('会计学', '经济管理学院'),
+('市场营销', '经济管理学院'),
+('物理学', '物理学院'),
+('化学工程', '化学学院');
 
 -- 插入管理员用户 (密码为: password)
 INSERT INTO users (username, password, role, real_name, email, phone, avatar, status) VALUES
@@ -375,7 +379,9 @@ UPDATE courses SET current_students = (SELECT COUNT(*) FROM selections WHERE cou
 UPDATE courses SET current_students = (SELECT COUNT(*) FROM selections WHERE course_id = 3 AND status = 1) WHERE id = 3;
 
 -- 创建索引
--- 注意：去掉IF NOT EXISTS语法以兼容不同MySQL版本
+-- 暂时注释掉索引创建语句，避免语法错误
+-- 索引可以在数据库初始化成功后手动创建
+/*
 CREATE INDEX idx_students_major ON students(major);
 CREATE INDEX idx_students_class_name ON students(class_name);
 CREATE INDEX idx_courses_department ON courses(department);
@@ -384,9 +390,9 @@ CREATE INDEX idx_courses_semester ON courses(semester);
 CREATE INDEX idx_scores_student_id ON scores(student_id);
 CREATE INDEX idx_scores_course_id ON scores(course_id);
 CREATE INDEX idx_scores_total_score ON scores(total_score);
-
 CREATE INDEX idx_notices_publish_time ON notices(publish_time);
 CREATE INDEX idx_notices_status ON notices(status);
+*/
 
 --密码本
 --账号student1 密码password

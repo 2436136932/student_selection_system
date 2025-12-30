@@ -20,6 +20,7 @@ spring:
     init:
       schema-locations: classpath:database_init.sql
       mode: never
+      platform: mysql
 
   # Thymeleaf Configuration
   thymeleaf:

@@ -59,4 +59,11 @@ public interface NoticeService {
      * @return 分页通知列表
      */
     IPage<Notice> getNoticesByPage(int page, int size, String title, Integer status);
+    
+    /**
+     * 批量删除通知
+     * @param noticeIds 通知ID列表
+     * @return 是否成功
+     */
+    boolean batchDeleteNotices(List<Integer> noticeIds);
 }

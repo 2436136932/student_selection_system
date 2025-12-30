@@ -721,7 +721,7 @@
 
 <script>
 import { ref, reactive, onMounted, computed } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { hasRole, getUserInfo } from '../utils/role'
 import axios from 'axios'
 import router from '../router'
@@ -890,11 +890,24 @@ export default {
     // 删除奖项
     const handleDelete = async (row) => {
       try {
+        // 二次确认
+        await ElMessageBox.confirm(
+          `确定要删除奖项 "${row.awardName}" 吗？`,
+          '删除确认',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }
+        )
+        
         await axios.delete(`/api/awards/${row.awardId}`)
         ElMessage.success('奖项删除成功')
         getAwards()
       } catch (error) {
-        ElMessage.error('删除失败，请重试')
+        if (error.name !== 'ElMessageBoxCancel') {
+          ElMessage.error('删除失败，请重试')
+        }
       }
     }
 

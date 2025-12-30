@@ -86,4 +86,12 @@ public class NoticeServiceImpl implements NoticeService {
         
         return noticeMapper.selectPage(noticePage, queryWrapper);
     }
+    
+    @Override
+    public boolean batchDeleteNotices(List<Integer> noticeIds) {
+        if (noticeIds == null || noticeIds.isEmpty()) {
+            return false;
+        }
+        return SqlHelper.retBool(noticeMapper.deleteBatchIds(noticeIds));
+    }
 }

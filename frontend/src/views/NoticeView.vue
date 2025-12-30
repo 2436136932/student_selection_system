@@ -135,7 +135,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Search, Edit, Delete } from '@element-plus/icons-vue'
 import axios from 'axios'
 
@@ -311,6 +311,17 @@ const handleSubmit = async () => {
 // 删除通知
 const handleDelete = async (noticeId) => {
   try {
+    // 二次确认
+    await ElMessageBox.confirm(
+      '确定要删除这条通知吗？',
+      '删除确认',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+    
     const response = await axios.delete(`/api/notices/${noticeId}`)
     if (response.data) {
       ElMessage.success('通知删除成功')
@@ -319,8 +330,10 @@ const handleDelete = async (noticeId) => {
       ElMessage.error('通知删除失败')
     }
   } catch (error) {
-    console.error('删除通知错误:', error)
-    ElMessage.error('通知删除失败，请重试')
+    if (error.name !== 'ElMessageBoxCancel') {
+      console.error('删除通知错误:', error)
+      ElMessage.error('通知删除失败，请重试')
+    }
   }
 }
 
@@ -332,16 +345,30 @@ const handleBatchDelete = async () => {
   }
 
   try {
-    // 由于后端没有批量删除接口，这里需要逐个删除
-    for (const notice of selectedNotices.value) {
-      await axios.delete(`/api/notices/${notice.id}`)
-    }
+    // 二次确认
+    await ElMessageBox.confirm(
+      `确定要删除选中的 ${selectedNotices.value.length} 条通知吗？`,
+      '批量删除确认',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+    
+    // 使用新的批量删除接口
+    const noticeIds = selectedNotices.value.map(notice => notice.id)
+    await axios.delete('/api/notices/batch', {
+      data: noticeIds // 使用data传递删除的ID列表
+    })
     ElMessage.success('批量删除成功')
     getNotices()
     selectedNotices.value = []
   } catch (error) {
-    console.error('批量删除错误:', error)
-    ElMessage.error('批量删除失败，请重试')
+    if (error.name !== 'ElMessageBoxCancel') {
+      console.error('批量删除错误:', error)
+      ElMessage.error('批量删除失败，请重试')
+    }
   }
 }
 
