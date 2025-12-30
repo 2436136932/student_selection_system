@@ -17,6 +17,7 @@ public class Carousel {
     private String title;
     private String description;
     private Integer sortOrder;
+    private Integer intervalTime;
     private Integer status;
     private Date createdAt;
     private Date updatedAt;
@@ -60,6 +61,14 @@ public class Carousel {
 
     public void setSortOrder(Integer sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public Integer getIntervalTime() {
+        return intervalTime;
+    }
+
+    public void setIntervalTime(Integer intervalTime) {
+        this.intervalTime = intervalTime;
     }
 
     public Integer getStatus() {

@@ -2,7 +2,7 @@
   <div class="home-container">
     <h1>欢迎使用学生评奖评优系统</h1>
     <!-- 轮播图组件 -->
-    <el-carousel height="80vh" arrow="always" indicator-position="outside" :interval="3000">
+    <el-carousel height="80vh" arrow="always" indicator-position="outside" :interval="carouselInterval">
       <el-carousel-item v-for="carousel in carousels" :key="carousel.id">
         <div class="carousel-item" :style="{ backgroundImage: `url(${getImageUrl(carousel.imageUrl)})` }">
           <div class="carousel-content">
@@ -106,6 +106,9 @@ import axios from 'axios'
 
 // 轮播图数据
 const carousels = ref([])
+
+// 轮播图切换时间（毫秒）
+const carouselInterval = ref(3000)
 
 // 最近评选活动
 const recentEvents = ref([])
@@ -215,6 +218,10 @@ const getCarousels = async () => {
   try {
     const res = await axios.get('/api/carousels/active')
     carousels.value = res.data
+    // 如果轮播图数据不为空，使用第一张轮播图的切换时间
+    if (carousels.value.length > 0) {
+      carouselInterval.value = carousels.value[0].intervalTime || 3000
+    }
   } catch (error) {
     console.error('获取轮播图数据失败:', error)
   }

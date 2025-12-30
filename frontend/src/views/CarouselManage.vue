@@ -25,6 +25,11 @@
       <el-table-column prop="description" label="描述" />
       <el-table-column prop="imageUrl" label="图片URL" show-overflow-tooltip />
       <el-table-column prop="sortOrder" label="排序" width="100" />
+      <el-table-column prop="intervalTime" label="切换时间(秒)" width="150">
+        <template #default="scope">
+          {{ (scope.row.intervalTime || 3000) / 1000 }}
+        </template>
+      </el-table-column>
       <el-table-column prop="status" label="状态" width="100">
         <template #default="scope">
           <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
@@ -105,6 +110,16 @@
         <el-form-item label="排序">
           <el-input-number v-model="editingCarousel.sortOrder" :min="0" />
         </el-form-item>
+        <el-form-item label="切换时间">
+          <el-input-number 
+            v-model="intervalSeconds" 
+            :min="1" 
+            :max="60" 
+            :precision="0" 
+            placeholder="请输入切换时间（秒）"
+          />
+          <span style="margin-left: 10px;">秒</span>
+        </el-form-item>
         <el-form-item label="状态">
           <el-radio-group v-model="editingCarousel.status">
             <el-radio :label="1">启用</el-radio>
@@ -151,8 +166,12 @@ const editingCarousel = reactive({
   description: '',
   imageUrl: '',
   sortOrder: 0,
+  intervalTime: 3000,
   status: 1
 })
+
+// 切换时间（秒），用于表单显示和输入
+const intervalSeconds = ref(3)
 
 // 分页事件处理
 const handleSizeChange = (size) => {
@@ -234,6 +253,8 @@ const getCarousels = async () => {
 // 打开编辑对话框
 const handleEdit = (carousel) => {
   Object.assign(editingCarousel, carousel)
+  // 将毫秒转换为秒显示在表单中
+  intervalSeconds.value = carousel.intervalTime ? carousel.intervalTime / 1000 : 3
   dialogVisible.value = true
 }
 
@@ -266,6 +287,9 @@ const handleDelete = (carousel) => {
 // 保存轮播图
 const handleSave = async () => {
   try {
+    // 将秒转换为毫秒
+    editingCarousel.intervalTime = intervalSeconds.value * 1000
+    
     if (editingCarousel.id) {
       // 编辑模式
       await axios.put(`/api/carousels/${editingCarousel.id}`, editingCarousel)
@@ -292,8 +316,11 @@ const resetForm = () => {
     description: '',
     imageUrl: '',
     sortOrder: 0,
+    intervalTime: 3000,
     status: 1
   })
+  // 重置秒数
+  intervalSeconds.value = 3
 }
 
 // 对话框关闭时重置表单

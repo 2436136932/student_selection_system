@@ -19,7 +19,7 @@ spring:
   sql:
     init:
       schema-locations: classpath:database_init.sql
-      mode: never
+      mode: always
       platform: mysql
 
   # Thymeleaf Configuration
@@ -104,8 +104,8 @@ logging:
     org.springframework.web: info
     org.apache.catalina: info
     org.springframework.security: info
-    org.springframework.boot.sql.init: debug
-    org.springframework.jdbc: debug
+    org.springframework.boot.sql.init: trace
+    org.springframework.jdbc: trace
     com.baomidou: debug
   file:
     name: logs/student-selection-system.log

@@ -1,6 +1,31 @@
 -- 确保使用正确的数据库
 USE student_selection_system;
 
+-- 禁用外键约束检查
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- 先删除有外键依赖的表（按依赖关系从下往上删除）
+DROP TABLE IF EXISTS chat_messages;
+DROP TABLE IF EXISTS chat_sessions;
+DROP TABLE IF EXISTS student_award_records;
+DROP TABLE IF EXISTS student_award_applications;
+DROP TABLE IF EXISTS selections;
+DROP TABLE IF EXISTS scores;
+
+-- 然后删除被依赖的表
+DROP TABLE IF EXISTS students;
+DROP TABLE IF EXISTS teachers;
+DROP TABLE IF EXISTS courses;
+DROP TABLE IF EXISTS awards;
+DROP TABLE IF EXISTS notices;
+DROP TABLE IF EXISTS carousel;
+DROP TABLE IF EXISTS majors;
+DROP TABLE IF EXISTS verification_codes;
+DROP TABLE IF EXISTS users;
+
+-- 启用外键约束检查
+SET FOREIGN_KEY_CHECKS = 1;
+
 -- 用户表（用于系统登录）
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '用户ID',
@@ -200,6 +225,7 @@ CREATE TABLE IF NOT EXISTS carousel (
     title VARCHAR(100) COMMENT '标题',
     description VARCHAR(255) COMMENT '描述',
     sort_order INT DEFAULT 0 COMMENT '排序顺序',
+    interval_time INT DEFAULT 3000 COMMENT '切换时间（毫秒）',
     status TINYINT DEFAULT 1 COMMENT '状态：1-启用，0-禁用',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
@@ -247,34 +273,14 @@ CREATE TABLE IF NOT EXISTS verification_codes (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='验证码表';
 
 -- 插入轮播图初始数据
-INSERT INTO carousel (image_url, title, description, sort_order, status) VALUES
-('https://picsum.photos/800/400?random=1', '欢迎使用学生评选系统', '学生评选系统提供奖学金、助学金等多种评选功能', 1, 1),
-('https://picsum.photos/800/400?random=2', '评选流程说明', '了解详细的评选流程和规则', 2, 1),
-('https://picsum.photos/800/400?random=3', '最新通知', '查看系统发布的最新通知和公告', 3, 1);
+INSERT INTO carousel (image_url, title, description, sort_order, interval_time, status) VALUES
+('https://picsum.photos/1200/800?random=1', '欢迎使用学生评选系统', '学生评选系统提供奖学金、助学金等多种评选功能', 1, 3000, 1),
+('https://picsum.photos/1200/800?random=2', '评选流程说明', '了解详细的评选流程和规则', 2, 4000, 1),
+('https://picsum.photos/1200/800?random=3', '最新通知', '查看系统发布的最新通知和公告', 3, 5000, 1),
+('https://picsum.photos/1200/800?random=4', '优秀学生展示', '表彰各类优秀学生，激励大家共同进步', 4, 6000, 1),
+('https://picsum.photos/1200/800?random=5', '活动预告', '即将开展的各类学生活动，欢迎积极参与', 5, 7000, 1);
 
--- 插入初始数据（先清空相关表）
--- 禁用外键约束检查
-SET FOREIGN_KEY_CHECKS = 0;
-
--- 先清空有外键依赖的表（按依赖关系从下往上清空）
-TRUNCATE TABLE selections;
-TRUNCATE TABLE scores;
-TRUNCATE TABLE student_award_records;
-TRUNCATE TABLE student_award_applications;
-
--- 然后清空没有直接外键被引用的表
-TRUNCATE TABLE students;
-TRUNCATE TABLE teachers;
-TRUNCATE TABLE courses;
-TRUNCATE TABLE awards;
-TRUNCATE TABLE majors;
-TRUNCATE TABLE carousel;
-
-TRUNCATE TABLE notices;
-TRUNCATE TABLE users;
-
--- 启用外键约束检查
-SET FOREIGN_KEY_CHECKS = 1;
+-- 插入初始数据
 
 -- 插入初始专业数据
 INSERT INTO majors (name, department) VALUES
