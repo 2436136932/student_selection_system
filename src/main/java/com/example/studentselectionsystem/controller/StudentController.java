@@ -123,6 +123,17 @@ public class StudentController {
         return optionalStudent.map(student -> new ResponseEntity<>(student, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    
+    /**
+     * 根据用户ID查找学生
+     */
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
+    public ResponseEntity<Student> findStudentByUserId(@PathVariable Long userId) {
+        Optional<Student> optionalStudent = studentService.findStudentByUserId(userId);
+        return optionalStudent.map(student -> new ResponseEntity<>(student, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 
     /**
      * 根据姓名查找学生

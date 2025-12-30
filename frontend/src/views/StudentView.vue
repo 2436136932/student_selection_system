@@ -254,11 +254,38 @@ const handleCurrentChange = (current) => {
   getStudents()
 }
 
+// 格式化日期为yyyy-MM-dd字符串
+const formatDate = (date) => {
+  if (!date) return null;
+  
+  // 如果已经是字符串，直接返回（假设格式正确）
+  if (typeof date === 'string') {
+    return date;
+  }
+  
+  // 如果是Date对象，格式化
+  if (date instanceof Date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  
+  // 其他情况返回null
+  return null;
+};
+
 // 新增/编辑学生
 const handleSubmit = () => {
+  // 创建表单副本，保留Date对象
+  const submitData = { ...form };
+  
+  // 直接格式化birthDate（此时仍是Date对象）
+  submitData.birthDate = formatDate(submitData.birthDate);
+  
   if (form.id) {
     // 编辑学生
-    axios.put(`/api/students/${form.id}`, form)
+    axios.put(`/api/students/${form.id}`, submitData)
       .then(response => {
         ElMessage.success('编辑学生成功')
         dialogVisible.value = false
@@ -270,8 +297,8 @@ const handleSubmit = () => {
       })
   } else {
     // 新增学生
-        console.log('提交的表单数据:', form)
-        axios.post('/api/students', form)
+        console.log('提交的表单数据:', submitData)
+        axios.post('/api/students', submitData)
           .then(response => {
             console.log('新增学生响应:', response)
             ElMessage.success('新增学生成功')
@@ -345,9 +372,19 @@ const findUserByStudentName = async () => {
 const handleEdit = (row) => {
   // 先重置表单
   resetStudentForm()
-  // 再赋值编辑数据
-  Object.assign(form, row)
-  dialogVisible.value = true
+  
+  // 深拷贝行数据
+  const editData = JSON.parse(JSON.stringify(row));
+  
+  // 将birthDate字符串转换为Date对象
+  if (editData.birthDate && typeof editData.birthDate === 'string') {
+    // 使用Date.parse解析字符串，确保解析的是本地时间而非UTC时间
+    editData.birthDate = new Date(editData.birthDate + 'T00:00:00+08:00');
+  }
+  
+  // 赋值编辑数据
+  Object.assign(form, editData);
+  dialogVisible.value = true;
 }
 
 // 删除学生

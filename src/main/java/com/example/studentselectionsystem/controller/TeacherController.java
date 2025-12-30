@@ -100,6 +100,17 @@ public class TeacherController {
         return optionalTeacher.map(teacher -> new ResponseEntity<>(teacher, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    
+    /**
+     * 根据用户ID查找教师
+     */
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+    public ResponseEntity<Teacher> findTeacherByUserId(@PathVariable Long userId) {
+        Optional<Teacher> optionalTeacher = teacherService.findTeacherByUserId(userId);
+        return optionalTeacher.map(teacher -> new ResponseEntity<>(teacher, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 
     /**
      * 根据工号查找教师
@@ -231,12 +242,11 @@ public class TeacherController {
             @RequestParam(defaultValue = "1") Integer current,
             @RequestParam(defaultValue = "10") Integer size) {
         try {
-            // 首先根据用户ID查找教师信息
-            Optional<Teacher> optionalTeacher = teacherService.findTeacherByUserId(id);
+            // 直接根据教师ID查找教师信息
+            Optional<Teacher> optionalTeacher = teacherService.findTeacherById(id);
             if (optionalTeacher.isPresent()) {
-                Teacher teacher = optionalTeacher.get();
                 // 使用教师ID查询课程
-                IPage<Course> courses = courseService.findCoursesByTeacherId(teacher.getId(), current, size);
+                IPage<Course> courses = courseService.findCoursesByTeacherId(id, current, size);
                 return new ResponseEntity<>(courses, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);

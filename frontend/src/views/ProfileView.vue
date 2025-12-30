@@ -51,6 +51,56 @@
                 {{ userInfo.status === 1 ? '启用' : '禁用' }}
               </el-tag>
             </div>
+            
+            <!-- 教师额外信息 -->
+            <div v-if="userInfo.role === 'teacher'" class="info-item">
+              <span class="label">工号：</span>
+              <span class="value">{{ teacherInfo?.teacherNumber || '-' }}</span>
+            </div>
+            <div v-if="userInfo.role === 'teacher'" class="info-item">
+              <span class="label">性别：</span>
+              <span class="value">{{ teacherInfo?.gender || '-' }}</span>
+            </div>
+            <div v-if="userInfo.role === 'teacher'" class="info-item">
+              <span class="label">职称：</span>
+              <span class="value">{{ teacherInfo?.title || '-' }}</span>
+            </div>
+            <div v-if="userInfo.role === 'teacher'" class="info-item">
+              <span class="label">所属部门：</span>
+              <span class="value">{{ teacherInfo?.department || '-' }}</span>
+            </div>
+            
+            <!-- 学生额外信息 -->
+            <div v-if="userInfo.role === 'student'" class="info-item">
+              <span class="label">学号：</span>
+              <span class="value">{{ studentInfo?.studentNumber || '-' }}</span>
+            </div>
+            <div v-if="userInfo.role === 'student'" class="info-item">
+              <span class="label">性别：</span>
+              <span class="value">{{ studentInfo?.gender || '-' }}</span>
+            </div>
+            <div v-if="userInfo.role === 'student'" class="info-item">
+              <span class="label">出生日期：</span>
+              <span class="value">{{ studentInfo?.birthDate || '-' }}</span>
+            </div>
+            <div v-if="userInfo.role === 'student'" class="info-item">
+              <span class="label">专业：</span>
+              <span class="value">{{ studentInfo?.major || '-' }}</span>
+            </div>
+            <div v-if="userInfo.role === 'student'" class="info-item">
+              <span class="label">班级：</span>
+              <span class="value">{{ studentInfo?.className || '-' }}</span>
+            </div>
+            <div v-if="userInfo.role === 'student'" class="info-item">
+              <span class="label">入学年份：</span>
+              <span class="value">{{ studentInfo?.admissionYear || '-' }}</span>
+            </div>
+            <div v-if="userInfo.role === 'student'" class="info-item">
+              <span class="label">在读状态：</span>
+              <el-tag :type="studentInfo?.status === 1 ? 'success' : 'info'">
+                {{ studentInfo?.status === 1 ? '在读' : '毕业' }}
+              </el-tag>
+            </div>
           </div>
         </div>
 
@@ -186,6 +236,12 @@ const userInfo = ref({
   avatar: null
 })
 
+// 教师详细信息
+const teacherInfo = ref(null)
+
+// 学生详细信息
+const studentInfo = ref(null)
+
 // 表单数据
 const formRef = ref(null)
 const form = reactive({
@@ -281,6 +337,17 @@ const getUserInfo = async () => {
     // 设置头像预览
     if (userInfo.value.avatar) {
       previewImage.value = userInfo.value.avatar
+    }
+    
+    // 根据用户角色获取额外信息
+    if (userData.role === 'teacher') {
+      // 获取教师详细信息 - 根据user_id查询，而不是id
+      const teacherResponse = await axios.get(`/api/teachers/user/${userData.id}`)
+      teacherInfo.value = teacherResponse.data
+    } else if (userData.role === 'student') {
+      // 获取学生详细信息 - 根据user_id查询，而不是id
+      const studentResponse = await axios.get(`/api/students/user/${userData.id}`)
+      studentInfo.value = studentResponse.data
     }
     
     // 调试信息

@@ -72,15 +72,34 @@ public class UserServiceImpl implements UserService {
         if (optionalUser.isPresent()) {
             User existingUser = optionalUser.get();
             // 更新用户信息
-            existingUser.setRealName(user.getRealName());
-            existingUser.setEmail(user.getEmail());
-            existingUser.setPhone(user.getPhone());
-            existingUser.setStatus(user.getStatus());
+            
+            // 只有当前端明确发送了realName字段时才更新
+            if (user.getRealName() != null) {
+                existingUser.setRealName(user.getRealName());
+            }
+            
+            // 只有当前端明确发送了email字段时才更新
+            if (user.getEmail() != null) {
+                existingUser.setEmail(user.getEmail());
+            }
+            
+            // 只有当前端明确发送了phone字段时才更新
+            if (user.getPhone() != null) {
+                existingUser.setPhone(user.getPhone());
+            }
+            
+            // 只有当前端明确发送了status字段时才更新（避免意外修改状态）
+            if (user.getStatus() != null) {
+                existingUser.setStatus(user.getStatus());
+            }
+            
             existingUser.setUpdateTime(new Date());
+            
             // 如果更新了密码，则重新加密
             if (user.getPassword() != null && !user.getPassword().isEmpty()) {
                 existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
             }
+            
             userRepository.updateById(existingUser);
             return existingUser;
         }
