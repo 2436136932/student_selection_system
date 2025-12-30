@@ -14,6 +14,7 @@
             :users="users" 
             :currentSession="currentSession"
             :chatSessions="chatSessions"
+            :online-users="onlineUsers"
             @select-user="selectUser"
           />
         </div>
@@ -61,6 +62,7 @@ import { initializeWebSocket as initWebSocket } from '../utils/websocketService'
 
 // 初始化聊天功能
 onMounted(() => {
+  console.log('ChatView组件已挂载，开始初始化聊天功能...')
   fetchUsers()
   fetchChatSessions()
   fetchOnlineUsers()
@@ -68,6 +70,7 @@ onMounted(() => {
   initWebSocket(handleWebSocketMessage)
   // 每30秒获取一次在线用户列表
   setInterval(fetchOnlineUsers, 30000)
+  console.log('聊天功能初始化完成')
 })
 
 // 消息处理函数
@@ -102,6 +105,8 @@ const handleWebSocketMessage = (event) => {
 // 获取所有用户
 const fetchUsers = async () => {
   try {
+    console.log('开始获取用户列表...')
+    console.log('当前token:', localStorage.getItem('token'))
     const response = await fetch('http://localhost:8080/api/chats/users', {
       method: 'GET',
       headers: {
@@ -110,11 +115,26 @@ const fetchUsers = async () => {
       }
     })
     
+    console.log('获取用户列表响应状态:', response.status)
     if (response.ok) {
       const data = await response.json()
+      console.log('获取用户列表成功:', data)
+      // 打印每个学生用户的详细信息，检查是否包含学号
+      data.forEach(user => {
+        if (user.role === 'student') {
+          console.log(`学生用户: ${user.realName}, 学号: ${user.studentNumber || '未找到'}`)
+        }
+      })
       users.value = data
     } else {
       console.error('获取用户列表失败:', response.statusText)
+      // 获取错误详情
+      try {
+        const errorData = await response.json()
+        console.error('获取用户列表失败详情:', errorData)
+      } catch (e) {
+        console.error('无法解析错误响应:', e)
+      }
     }
   } catch (error) {
     console.error('获取用户列表异常:', error)

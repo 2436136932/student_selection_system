@@ -111,8 +111,15 @@ public class ChatController {
             Long currentUserId = getCurrentUserId();
             System.out.println("当前用户ID: " + currentUserId);
             
+            // 使用userService查询所有用户
+            System.out.println("使用userService查询所有用户...");
             List<User> users = userService.findAllUsers();
-            System.out.println("获取到的用户列表数量: " + users.size());
+            System.out.println("userService查询获取到的用户列表数量: " + users.size());
+            
+            // 打印所有用户详情
+            for (User user : users) {
+                System.out.println("用户详情: ID=" + user.getId() + ", 用户名=" + user.getUsername() + ", 角色=" + user.getRole() + ", 真实姓名=" + user.getRealName() + ", 状态=" + user.getStatus());
+            }
             
             List<Map<String, Object>> userList = new ArrayList<>();
             
@@ -156,9 +163,10 @@ public class ChatController {
                         
                         if (studentOptional.isPresent()) {
                             com.example.studentselectionsystem.entity.Student student = studentOptional.get();
-                            System.out.println("学生专业: " + student.getMajor() + ", 班级: " + student.getClassName());
+                            System.out.println("学生专业: " + student.getMajor() + ", 班级: " + student.getClassName() + ", 学号: " + student.getStudentNumber());
                             userMap.put("major", student.getMajor());
                             userMap.put("className", student.getClassName());
+                            userMap.put("studentNumber", student.getStudentNumber());
                         } else {
                             System.out.println("未找到学生信息，用户ID: " + user.getId());
                         }
@@ -357,9 +365,10 @@ public class ChatController {
                             
                             if (studentOptional.isPresent()) {
                                 com.example.studentselectionsystem.entity.Student student = studentOptional.get();
-                                System.out.println("学生专业: " + student.getMajor() + ", 班级: " + student.getClassName());
+                                System.out.println("学生专业: " + student.getMajor() + ", 班级: " + student.getClassName() + ", 学号: " + student.getStudentNumber());
                                 sessionMap.put("otherUserMajor", student.getMajor());
                                 sessionMap.put("otherUserClassName", student.getClassName());
+                                sessionMap.put("otherUserStudentNumber", student.getStudentNumber());
                             } else {
                                 System.out.println("未找到学生信息，用户ID: " + user.getId());
                             }

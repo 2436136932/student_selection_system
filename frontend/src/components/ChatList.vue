@@ -51,9 +51,33 @@
             @click="handleSelectUser(user)"
           >
             <div class="chat-item-avatar">
-              <el-avatar size="large">
-                {{ getUserInitial(user) }}
-              </el-avatar>
+              <el-popover
+                placement="right"
+                trigger="hover"
+                :width="280"
+              >
+                <template #reference>
+                  <el-avatar size="large">
+                    {{ getUserInitial(user) }}
+                  </el-avatar>
+                </template>
+                <div class="user-info-popover">
+                  <div class="user-info-item">
+                    <span class="label">姓名：</span>
+                    <span class="value">{{ user.realName || user.username }}</span>
+                  </div>
+                  <div class="user-info-item">
+                    <span class="label">角色：</span>
+                    <span class="value">{{ getRoleName(user.role) }}</span>
+                  </div>
+                  <div class="user-info-item">
+                    <span class="label">状态：</span>
+                    <span class="value status" :class="user.id === 1 ? 'online' : 'offline'">
+                      {{ user.id === 1 ? '在线' : '离线' }}
+                    </span>
+                  </div>
+                </div>
+              </el-popover>
               <!-- 未读消息提示 -->
               <el-badge 
                 v-if="getUnreadCount(user) > 0" 
@@ -106,9 +130,37 @@
             @click="handleSelectUser(user)"
           >
             <div class="chat-item-avatar">
-              <el-avatar size="large">
-                {{ getUserInitial(user) }}
-              </el-avatar>
+              <el-popover
+                placement="right"
+                trigger="hover"
+                :width="280"
+              >
+                <template #reference>
+                  <el-avatar size="large">
+                    {{ getUserInitial(user) }}
+                  </el-avatar>
+                </template>
+                <div class="user-info-popover">
+                  <div class="user-info-item">
+                    <span class="label">姓名：</span>
+                    <span class="value">{{ user.realName || user.username }}</span>
+                  </div>
+                  <div class="user-info-item">
+                    <span class="label">角色：</span>
+                    <span class="value">{{ getRoleName(user.role) }}</span>
+                  </div>
+                  <div class="user-info-item">
+                    <span class="label">部门：</span>
+                    <span class="value">{{ user.department || '暂无部门信息' }}</span>
+                  </div>
+                  <div class="user-info-item">
+                    <span class="label">状态：</span>
+                    <span class="value status" :class="onlineUsers.includes(user.id.toString()) ? 'online' : 'offline'">
+                      {{ onlineUsers.includes(user.id.toString()) ? '在线' : '离线' }}
+                    </span>
+                  </div>
+                </div>
+              </el-popover>
               <!-- 未读消息提示 -->
               <el-badge 
                 v-if="getUnreadCount(user) > 0" 
@@ -161,9 +213,45 @@
             @click="handleSelectUser(user)"
           >
             <div class="chat-item-avatar">
-              <el-avatar size="large">
-                {{ getUserInitial(user) }}
-              </el-avatar>
+              <el-popover
+                placement="right"
+                trigger="hover"
+                :width="280"
+              >
+                <template #reference>
+                  <el-avatar size="large">
+                    {{ getUserInitial(user) }}
+                  </el-avatar>
+                </template>
+                <div class="user-info-popover">
+                  <div class="user-info-item">
+                    <span class="label">姓名：</span>
+                    <span class="value">{{ user.realName || user.username }}</span>
+                  </div>
+                  <div class="user-info-item">
+                    <span class="label">角色：</span>
+                    <span class="value">{{ getRoleName(user.role) }}</span>
+                  </div>
+                  <div class="user-info-item">
+                    <span class="label">专业：</span>
+                    <span class="value">{{ user.major || '暂无专业信息' }}</span>
+                  </div>
+                  <div class="user-info-item">
+                    <span class="label">班级：</span>
+                    <span class="value">{{ user.className || '暂无班级信息' }}</span>
+                  </div>
+                  <div class="user-info-item">
+                    <span class="label">学号：</span>
+                    <span class="value">{{ user.studentNumber || '暂无学号信息' }}</span>
+                  </div>
+                  <div class="user-info-item">
+                    <span class="label">状态：</span>
+                    <span class="value status" :class="onlineUsers.includes(user.id.toString()) ? 'online' : 'offline'">
+                      {{ onlineUsers.includes(user.id.toString()) ? '在线' : '离线' }}
+                    </span>
+                  </div>
+                </div>
+              </el-popover>
               <!-- 未读消息提示 -->
               <el-badge 
                 v-if="getUnreadCount(user) > 0" 
@@ -216,6 +304,10 @@ const props = defineProps({
     default: null
   },
   chatSessions: {
+    type: Array,
+    default: () => []
+  },
+  onlineUsers: {
     type: Array,
     default: () => []
   }
@@ -420,6 +512,58 @@ const handleSearch = () => {
   flex: 1;
   overflow-y: auto;
   padding: 10px;
+  /* 自定义滚动条样式 - 确保滚动条总是显示 */
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #3498db #f1f1f1;
+  /* 增加内边距，让滚动条更明显 */
+  padding-right: 12px;
+}
+
+/* WebKit浏览器滚动条样式 */
+.chat-list-content::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  /* 确保滚动条轨道总是显示 */
+  background: #f1f1f1;
+}
+
+.chat-list-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 5px;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.chat-list-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  border-radius: 5px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
+  /* 确保滚动条滑块总是可见 */
+  min-height: 20px;
+}
+
+.chat-list-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #2980b9, #3498db);
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.4);
+  transform: scaleY(1.1);
+}
+
+.chat-list-content::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(135deg, #1f618d, #2980b9);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Firefox浏览器滚动条样式 */
+.chat-list-content {
+  scrollbar-width: thin;
+  scrollbar-color: #3498db #f1f1f1;
+}
+
+/* 增加滚动条容器的可见性 */
+.chat-list {
+  border-right: 1px solid #e8e8e8;
+  position: relative;
 }
 
 .chat-item {
@@ -513,5 +657,108 @@ const handleSearch = () => {
 
 .empty-sessions {
   padding: 40px 20px;
+}
+
+/* 用户信息悬浮窗样式 */
+.user-info-popover {
+  padding: 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(52, 152, 219, 0.1);
+  transition: all 0.3s ease;
+}
+
+.user-info-popover:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.user-info-item {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.user-info-item:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.user-info-item .label {
+  font-weight: 600;
+  color: #4a5568;
+  margin-right: 12px;
+  width: 70px;
+  text-align: right;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.user-info-item .value {
+  color: #1a202c;
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.user-info-item .status {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.user-info-item .status.online {
+  color: #67c23a;
+  animation: pulse 2s infinite;
+}
+
+.user-info-item .status.online::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #67c23a;
+  margin-right: 6px;
+  box-shadow: 0 0 0 2px rgba(103, 194, 58, 0.2);
+  animation: onlinePulse 2s infinite;
+}
+
+.user-info-item .status.offline {
+  color: #909399;
+}
+
+.user-info-item .status.offline::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #909399;
+  margin-right: 6px;
+}
+
+/* 动画效果 */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes onlinePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(103, 194, 58, 0.7);
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 6px rgba(103, 194, 58, 0);
+  }
 }
 </style>

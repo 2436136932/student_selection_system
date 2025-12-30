@@ -3,9 +3,71 @@
     <!-- 聊天窗口头部 -->
     <div class="chat-window-header">
       <div class="header-left">
-        <el-avatar size="large">
-          {{ getInitials(props.chatUser.realName || props.chatUser.username) }}
-        </el-avatar>
+        <el-popover
+          placement="right"
+          trigger="hover"
+          :width="280"
+        >
+          <template #reference>
+            <el-avatar size="large">
+              {{ getInitials(props.chatUser.realName || props.chatUser.username) }}
+            </el-avatar>
+          </template>
+          <div class="user-info-popover">
+            <div class="user-info-item">
+              <span class="label">姓名：</span>
+              <span class="value">{{ props.chatUser.realName || props.chatUser.username }}</span>
+            </div>
+            <div class="user-info-item">
+              <span class="label">角色：</span>
+              <span class="value">
+                {{ props.chatUser.role === 'admin' ? '管理员' : 
+                   props.chatUser.role === 'teacher' ? '教师' : 
+                   props.chatUser.role === 'student' ? '学生' : props.chatUser.role }}
+              </span>
+            </div>
+            <template v-if="props.chatUser.role === 'admin'">
+              <div class="user-info-item">
+                <span class="label">状态：</span>
+                <span class="value status" :class="isUserOnline ? 'online' : 'offline'">
+                  {{ isUserOnline ? '在线' : '离线' }}
+                </span>
+              </div>
+            </template>
+            <template v-else-if="props.chatUser.role === 'teacher'">
+              <div class="user-info-item">
+                <span class="label">部门：</span>
+                <span class="value">{{ props.chatUser.department || '暂无部门信息' }}</span>
+              </div>
+              <div class="user-info-item">
+                <span class="label">状态：</span>
+                <span class="value status" :class="isUserOnline ? 'online' : 'offline'">
+                  {{ isUserOnline ? '在线' : '离线' }}
+                </span>
+              </div>
+            </template>
+            <template v-else-if="props.chatUser.role === 'student'">
+              <div class="user-info-item">
+                <span class="label">专业：</span>
+                <span class="value">{{ props.chatUser.major || '暂无专业信息' }}</span>
+              </div>
+              <div class="user-info-item">
+                <span class="label">班级：</span>
+                <span class="value">{{ props.chatUser.className || '暂无班级信息' }}</span>
+              </div>
+              <div class="user-info-item">
+                <span class="label">学号：</span>
+                <span class="value">{{ props.chatUser.studentNumber || '暂无学号信息' }}</span>
+              </div>
+              <div class="user-info-item">
+                <span class="label">状态：</span>
+                <span class="value status" :class="isUserOnline ? 'online' : 'offline'">
+                  {{ isUserOnline ? '在线' : '离线' }}
+                </span>
+              </div>
+            </template>
+          </div>
+        </el-popover>
         <div class="header-info">
           <h3 class="header-name">{{ props.chatUser.realName || props.chatUser.username }}</h3>
           <div class="header-details">
@@ -90,61 +152,61 @@
     </div>
     
     <!-- 消息输入区域 -->
-      <div class="chat-input-area">
-        <div class="input-toolbar">
-          <el-button type="text" @click="triggerFileUpload" class="toolbar-btn">
-            <el-icon><Document /></el-icon>
-          </el-button>
-        </div>
-        <div class="input-hint">
-          <small>按 Enter 发送消息，Shift + Enter 换行</small>
-        </div>
-        <div class="input-wrapper">
-          <el-input
-            v-model="inputMessage"
-            type="textarea"
-            :rows="2"
-            placeholder="输入消息..."
-            resize="none"
-            @keyup.enter.exact="handleSendMessage"
-            @keyup.enter.shift="handleEnterShift"
-            class="message-input"
-          ></el-input>
-          <el-button 
-            type="primary" 
-            @click="handleSendMessage" 
-            :disabled="!inputMessage.trim()" 
-            size="default"
-            class="send-button"
-          >
-            <el-icon style="margin-right: 4px;"><Right /></el-icon>
-            发送
-          </el-button>
-        </div>
-        
-        <!-- 文件上传 -->
-        <input
-          ref="fileInputRef"
-          type="file"
-          accept="*"
-          @change="handleFileSelect"
-          style="display: none"
-        />
+    <div class="chat-input-area">
+      <div class="input-toolbar">
+        <el-button type="text" @click="triggerFileUpload" class="toolbar-btn">
+          <el-icon><Document /></el-icon>
+        </el-button>
+      </div>
+      <div class="input-hint">
+        <small>按 Enter 发送消息，Shift + Enter 换行</small>
+      </div>
+      <div class="input-wrapper">
+        <el-input
+          v-model="inputMessage"
+          type="textarea"
+          :rows="2"
+          placeholder="输入消息..."
+          resize="none"
+          @keyup.enter.exact="handleSendMessage"
+          @keyup.enter.shift="handleEnterShift"
+          class="message-input"
+        ></el-input>
+        <el-button 
+          type="primary" 
+          @click="handleSendMessage" 
+          :disabled="!inputMessage.trim()" 
+          size="default"
+          class="send-button"
+        >
+          <el-icon style="margin-right: 4px;"><Right /></el-icon>
+          发送
+        </el-button>
       </div>
       
-      <!-- 图片预览对话框 -->
-      <el-dialog
-        v-model="previewVisible"
-        title="图片预览"
-        width="80%"
-        :close-on-click-modal="true"
-      >
-        <div class="preview-container">
-          <img :src="previewImageUrl" :alt="previewTitle" class="preview-image" />
-          <div class="preview-footer">{{ previewTitle }}</div>
-        </div>
-      </el-dialog>
+      <!-- 文件上传 -->
+      <input
+        ref="fileInputRef"
+        type="file"
+        accept="*"
+        @change="handleFileSelect"
+        style="display: none"
+      />
     </div>
+    
+    <!-- 图片预览对话框 -->
+    <el-dialog
+      v-model="previewVisible"
+      title="图片预览"
+      width="80%"
+      :close-on-click-modal="true"
+    >
+      <div class="preview-container">
+        <img :src="previewImageUrl" :alt="previewTitle" class="preview-image" />
+        <div class="preview-footer">{{ previewTitle }}</div>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 <script setup>
@@ -552,6 +614,52 @@ watch(
   padding: 20px;
   background-color: #f5f7fa;
   min-height: 0; /* 解决flex子元素溢出问题 */
+  /* 自定义滚动条样式 - 确保滚动条总是显示 */
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #3498db #f1f1f1;
+  /* 增加内边距，让滚动条更明显 */
+  padding-right: 15px;
+}
+
+/* WebKit浏览器滚动条样式 */
+.chat-messages::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  /* 确保滚动条轨道总是显示 */
+  background: #f1f1f1;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 5px;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  border-radius: 5px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
+  /* 确保滚动条滑块总是可见 */
+  min-height: 20px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #2980b9, #3498db);
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.4);
+  transform: scaleY(1.1);
+}
+
+.chat-messages::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(135deg, #1f618d, #2980b9);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Firefox浏览器滚动条样式 */
+.chat-messages {
+  scrollbar-width: thin;
+  scrollbar-color: #3498db #f1f1f1;
 }
 
 .message-item {
@@ -873,6 +981,109 @@ watch(
   100% {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* 用户信息悬浮窗样式 */
+.user-info-popover {
+  padding: 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(52, 152, 219, 0.1);
+  transition: all 0.3s ease;
+}
+
+.user-info-popover:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.user-info-item {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.user-info-item:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.user-info-item .label {
+  font-weight: 600;
+  color: #4a5568;
+  margin-right: 12px;
+  width: 70px;
+  text-align: right;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.user-info-item .value {
+  color: #1a202c;
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.user-info-item .status {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.user-info-item .status.online {
+  color: #67c23a;
+  animation: pulse 2s infinite;
+}
+
+.user-info-item .status.online::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #67c23a;
+  margin-right: 6px;
+  box-shadow: 0 0 0 2px rgba(103, 194, 58, 0.2);
+  animation: onlinePulse 2s infinite;
+}
+
+.user-info-item .status.offline {
+  color: #909399;
+}
+
+.user-info-item .status.offline::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #909399;
+  margin-right: 6px;
+}
+
+/* 动画效果 */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes onlinePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(103, 194, 58, 0.7);
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 6px rgba(103, 194, 58, 0);
   }
 }
 
