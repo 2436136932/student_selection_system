@@ -14,6 +14,7 @@
             v-model="searchParams.studentNumber" 
             placeholder="请输入学号"
             clearable
+            :disabled="hasRole('student')"
             style="width: 180px"
           ></el-input>
         </el-form-item>
@@ -24,6 +25,7 @@
             v-model="searchParams.className" 
             placeholder="请输入班级"
             clearable
+            :disabled="hasRole('student')"
             style="width: 150px"
           ></el-input>
         </el-form-item>
@@ -34,6 +36,7 @@
             v-model="searchParams.major" 
             placeholder="请输入专业"
             clearable
+            :disabled="hasRole('student')"
             style="width: 200px"
           ></el-input>
         </el-form-item>
@@ -297,9 +300,12 @@ const getAwardRecords = async () => {
       params.endTime = searchParams.awardTimeRange[1]
     }
 
-    // 根据用户角色设置学生ID
-    if (userInfo.value.role === 'student') {
-      params.studentId = userInfo.value.id
+    // 根据用户角色设置学生ID和学号
+    const userInfo = getUserInfo()
+    if (hasRole('student')) {
+      params.studentId = userInfo.id || ''
+      // 自动填充学生学号到搜索参数中
+      searchParams.studentNumber = userInfo.studentNumber || ''
     }
 
     const response = await axios.get('/api/student-award-records/condition', { params })
@@ -326,17 +332,42 @@ const handleSearch = () => {
   getAwardRecords()
 }
 
+// 获取用户信息
+const getUserInfo = () => {
+  const userInfoStr = localStorage.getItem('userInfo')
+  return userInfoStr ? JSON.parse(userInfoStr) : {}
+}
+
+// 检查用户是否有指定角色
+const hasRole = (role) => {
+  const userInfo = getUserInfo()
+  const userRole = userInfo.role || ''
+  // 支持中文角色名称和多个角色
+  const roleMap = {
+    'admin': ['admin', '管理员'],
+    'teacher': ['teacher', '教师'],
+    'student': ['student', '学生']
+  }
+  
+  const allowedRoles = roleMap[role] || [role]
+  return allowedRoles.includes(userRole)
+}
+
 // 重置搜索
 const resetSearch = () => {
+  // 保存学生角色的关键搜索参数
+  const { studentNumber, className, major } = searchParams
+  
   // 重置搜索参数
   Object.assign(searchParams, {
     awardName: '',
     awardLevel: '',
     awardType: '',
     awardTimeRange: [],
-    studentNumber: '',
-    className: '',
-    major: ''
+    // 如果是学生角色，保留学号、班级和专业
+    studentNumber: hasRole('student') ? studentNumber : '',
+    className: hasRole('student') ? className : '',
+    major: hasRole('student') ? major : ''
   })
   // 重置分页
   pagination.currentPage = 1

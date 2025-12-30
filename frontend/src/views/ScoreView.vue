@@ -27,6 +27,20 @@
           <el-form-item>
             <el-button type="primary" @click="handleSearch">搜索</el-button>
             <el-button @click="resetForm">重置</el-button>
+            <el-dropdown @command="handleSort">
+              <el-button type="warning">
+                排序
+                <el-icon class="el-icon--right">
+                  <arrow-down></arrow-down>
+                </el-icon>
+              </el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="descending">从高到低排序</el-dropdown-item>
+                  <el-dropdown-item command="ascending">从低到高排序</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </el-form-item>
         </el-form>
 
@@ -86,6 +100,12 @@
                 <p>有效成绩数: {{ statistics.validCount }}</p>
                 <p>平均分: {{ statistics.averageScore ? statistics.averageScore.toFixed(2) : '0.00' }}</p>
               </div>
+              
+              <!-- 评分等级分布图表 -->
+              <div v-if="statisticsDetails" style="margin-top: 20px">
+                <h4 style="margin-bottom: 10px">评分等级分布</h4>
+                <div ref="chartRef" style="width: 100%; height: 300px;"></div>
+              </div>
             </div>
           </el-card>
         </div>
@@ -139,9 +159,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import axios from 'axios'
+import * as echarts from 'echarts'
+import { ArrowDown } from '@element-plus/icons-vue'
 
 // 获取用户信息
 const getUserInfo = () => {
@@ -170,7 +192,11 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const dialogVisible = ref(false)
 const statistics = ref(null)
+const statisticsDetails = ref([])
 const currentScoreId = ref(null)
+const chartRef = ref(null)
+let chartInstance = null
+const sortDirection = ref(null) // null: 未排序, 'descending': 从高到低, 'ascending': 从低到高
 
 const searchForm = reactive({
   studentNumber: '',
@@ -269,6 +295,50 @@ const calculateGrade = () => {
   }
 }
 
+// 冒泡排序算法
+const bubbleSort = (arr, direction) => {
+  // 创建数组副本，避免修改原数组
+  const sortedArr = [...arr]
+  const n = sortedArr.length
+  
+  // 冒泡排序主逻辑
+  for (let i = 0; i < n - 1; i++) {
+    for (let j = 0; j < n - i - 1; j++) {
+      // 获取当前元素和下一个元素的总分
+      const currentScore = sortedArr[j].totalScore || 0
+      const nextScore = sortedArr[j + 1].totalScore || 0
+      
+      // 根据排序方向决定比较逻辑
+      if (direction === 'ascending') {
+        // 升序排序（从低到高），如果当前元素大于下一个元素，则交换
+        if (currentScore > nextScore) {
+          // 交换元素
+          const temp = sortedArr[j]
+          sortedArr[j] = sortedArr[j + 1]
+          sortedArr[j + 1] = temp
+        }
+      } else if (direction === 'descending') {
+        // 降序排序（从高到低），如果当前元素小于下一个元素，则交换
+        if (currentScore < nextScore) {
+          // 交换元素
+          const temp = sortedArr[j]
+          sortedArr[j] = sortedArr[j + 1]
+          sortedArr[j + 1] = temp
+        }
+      }
+    }
+  }
+  
+  return sortedArr
+}
+
+// 处理排序事件
+const handleSort = (command) => {
+  sortDirection.value = command
+  // 对当前的scores数组进行排序
+  scores.value = bubbleSort(scores.value, command)
+}
+
 // 获取成绩列表
 const getScores = () => {
   // 如果是学生角色，自动填充当前学生学号
@@ -288,7 +358,12 @@ const getScores = () => {
       courseName: searchForm.courseName
     }
   }).then(response => {
-    scores.value = response.data.records
+    let records = response.data.records
+    // 如果有排序方向，则对数据进行排序
+    if (sortDirection.value) {
+      records = bubbleSort(records, sortDirection.value)
+    }
+    scores.value = records
     total.value = response.data.total
     console.log('获取到成绩列表：', scores.value.length, '条记录')
   }).catch(error => {
@@ -300,6 +375,7 @@ const getScores = () => {
 // 搜索
 const handleSearch = () => {
   currentPage.value = 1
+  sortDirection.value = null // 搜索新数据时重置排序状态
   getScores()
 }
 
@@ -318,6 +394,7 @@ const resetForm = () => {
     console.log('非学生角色，重置所有搜索条件')
   }
   currentPage.value = 1
+  sortDirection.value = null // 重置表单时重置排序状态
   getScores()
 }
 
@@ -439,7 +516,114 @@ const getStatistics = () => {
     ElMessage.error('获取成绩统计失败')
     console.error('Error fetching statistics:', error)
   })
+  
+  // 获取详细的评分数据，用于图表展示
+  axios.get('/api/scores/page', {
+    params: {
+      current: 1,
+      size: 100, // 假设最多显示100条记录
+      studentNumber: statisticsForm.studentNumber,
+      courseCode: statisticsForm.courseCode
+    }
+  }).then(response => {
+    statisticsDetails.value = response.data.records
+    // 更新图表
+    updateChart()
+  }).catch(error => {
+    ElMessage.error('获取评分详情失败')
+    console.error('Error fetching statistics details:', error)
+  })
 }
+
+// 更新评分等级分布图表
+const updateChart = () => {
+  if (!chartRef.value) return
+  
+  // 初始化图表
+  if (!chartInstance) {
+    chartInstance = echarts.init(chartRef.value)
+  }
+  
+  // 统计各个等级的数量
+  const gradeCount = {
+    'A': 0,
+    'B': 0,
+    'C': 0,
+    'D': 0,
+    'F': 0
+  }
+  
+  statisticsDetails.value.forEach(score => {
+    if (score.grade && gradeCount.hasOwnProperty(score.grade)) {
+      gradeCount[score.grade]++
+    }
+  })
+  
+  // 准备图表数据
+  const chartData = [
+    { name: 'A', value: gradeCount['A'] },
+    { name: 'B', value: gradeCount['B'] },
+    { name: 'C', value: gradeCount['C'] },
+    { name: 'D', value: gradeCount['D'] },
+    { name: 'F', value: gradeCount['F'] }
+  ]
+  
+  // 图表配置
+  const option = {
+    title: {
+      text: '评分等级分布',
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'item',
+      formatter: '{b}: {c} ({d}%)'
+    },
+    legend: {
+      orient: 'vertical',
+      left: 'left',
+      data: ['A', 'B', 'C', 'D', 'F']
+    },
+    series: [
+      {
+        name: '评分等级',
+        type: 'pie',
+        radius: ['40%', '70%'],
+        center: ['50%', '60%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 10,
+          borderColor: '#fff',
+          borderWidth: 2
+        },
+        label: {
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 20,
+            fontWeight: 'bold'
+          }
+        },
+        labelLine: {
+          show: false
+        },
+        data: chartData
+      }
+    ]
+  }
+  
+  // 设置图表配置
+  chartInstance.setOption(option)
+}
+
+// 监听窗口大小变化，调整图表大小
+window.addEventListener('resize', () => {
+  if (chartInstance) {
+    chartInstance.resize()
+  }
+})
 
 // 初始化数据
 onMounted(() => {

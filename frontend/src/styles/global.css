@@ -178,6 +178,9 @@ a:hover {
   border-radius: var(--radius-md);
   transition: all var(--transition-base);
   box-shadow: var(--shadow-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .el-button:hover {

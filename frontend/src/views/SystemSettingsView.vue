@@ -204,7 +204,7 @@ const menuItems = ref([
   { index: '/teachers', icon: Briefcase, text: '教师管理', roles: ['admin'] },
   { index: '/courses', icon: School, text: '课程管理', roles: ['admin', 'teacher', 'student'] },
   { index: '/majors', icon: School, text: '专业管理', roles: ['admin', 'teacher', 'student'] },
-  { index: '/scores', icon: DataLine, text: '成绩管理', roles: ['admin', 'teacher', 'student'] },
+  { index: '/scores', icon: DataLine, text: '评分管理', roles: ['admin', 'teacher', 'student'] },
   { 
     index: '/award-management', 
     icon: DocumentChecked, 
@@ -396,7 +396,7 @@ const filterMenusByRole = () => {
       { index: '/teachers', icon: Briefcase, text: '教师管理', roles: ['admin'] },
       { index: '/courses', icon: School, text: '课程管理', roles: ['admin', 'teacher', 'student'] },
       { index: '/majors', icon: School, text: '专业管理', roles: ['admin', 'teacher', 'student'] },
-      { index: '/scores', icon: DataLine, text: '成绩管理', roles: ['admin', 'teacher', 'student'] },
+      { index: '/scores', icon: DataLine, text: '评分管理', roles: ['admin', 'teacher', 'student'] },
       { 
         index: '/award-management', 
         icon: DocumentChecked, 
