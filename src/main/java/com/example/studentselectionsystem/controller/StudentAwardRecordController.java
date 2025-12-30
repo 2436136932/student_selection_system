@@ -2,8 +2,11 @@ package com.example.studentselectionsystem.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.studentselectionsystem.entity.Student;
 import com.example.studentselectionsystem.entity.StudentAwardRecord;
+import com.example.studentselectionsystem.entity.User;
 import com.example.studentselectionsystem.service.StudentAwardRecordService;
+import com.example.studentselectionsystem.service.StudentService;
 import com.example.studentselectionsystem.service.UserService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -11,13 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 学生获奖记录控制器
@@ -32,6 +39,9 @@ public class StudentAwardRecordController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private StudentService studentService;
 
     /**
      * 根据ID获取获奖记录
@@ -89,9 +99,30 @@ public class StudentAwardRecordController {
             @RequestParam(required = false) String className,
             @RequestParam(required = false) String major) {
 
-        // 学生只能查看自己的获奖记录
-        // 这里假设通过权限控制已经确保学生只能查询自己的记录
-        // 实际实现中可能需要进一步限制
+        // 处理学生角色的特殊逻辑
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isStudent = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT") || a.getAuthority().equals("STUDENT"));
+        
+        if (isStudent) {
+            // 如果是学生角色，通过用户ID获取对应的学生ID
+            String username = authentication.getName();
+            Optional<User> userOptional = userService.findUserByUsername(username);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                Optional<Student> studentOptional = studentService.findStudentByUserId(user.getId());
+                if (studentOptional.isPresent()) {
+                    // 使用学生ID代替前端传递的user_id
+                    studentId = studentOptional.get().getId();
+                } else {
+                    // 如果找不到对应的学生，返回空结果
+                    Page<StudentAwardRecord> emptyPage = new Page<>(page, size);
+                    emptyPage.setRecords(new ArrayList<>());
+                    emptyPage.setTotal(0);
+                    return new ResponseEntity<>(emptyPage, HttpStatus.OK);
+                }
+            }
+        }
 
         Page<StudentAwardRecord> pageParam = new Page<>(page, size);
         IPage<StudentAwardRecord> recordsPage = studentAwardRecordService.findRecordsByCondition(
@@ -116,6 +147,28 @@ public class StudentAwardRecordController {
                               @RequestParam(required = false) String major,
                               @RequestParam(required = false) boolean isExportAll,
                               @RequestParam(required = false) String recordIds) throws IOException {
+
+        // 处理学生角色的特殊逻辑
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isStudent = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT") || a.getAuthority().equals("STUDENT"));
+        
+        if (isStudent) {
+            // 如果是学生角色，通过用户ID获取对应的学生ID
+            String username = authentication.getName();
+            Optional<User> userOptional = userService.findUserByUsername(username);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                Optional<Student> studentOptional = studentService.findStudentByUserId(user.getId());
+                if (studentOptional.isPresent()) {
+                    // 使用学生ID代替前端传递的user_id
+                    studentId = studentOptional.get().getId();
+                } else {
+                    // 如果找不到对应的学生，导出空记录
+                    studentId = null;
+                }
+            }
+        }
 
         // 设置查询参数
         Map<String, Object> params = new HashMap<>();
