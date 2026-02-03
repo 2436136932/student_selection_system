@@ -189,7 +189,8 @@ const menuItems = [
     children: [
       { index: '/awards', icon: Medal, text: '评奖评优', roles: ['admin', 'teacher', 'student'] },
       { index: '/student-award-applications', icon: DocumentCopy, text: '奖项申请', roles: ['admin', 'teacher', 'student'] },
-      { index: '/student-award-records', icon: DocumentChecked, text: '获奖记录', roles: ['admin', 'teacher', 'student'] }
+      { index: '/student-award-records', icon: DocumentChecked, text: '获奖记录', roles: ['admin', 'teacher', 'student'] },
+      { index: '/award-recommendation', icon: Medal, text: 'AI智能推荐', roles: ['student'] }
     ]
   },
   { index: '/statistics', icon: DataLine, text: '数据统计', roles: ['admin', 'teacher'] },
@@ -209,6 +210,7 @@ const menuMap = {
   '/awards': '评奖评优',
   '/student-award-applications': '奖项申请',
   '/student-award-records': '获奖记录',
+  '/award-recommendation': 'AI智能推荐',
   '/statistics': '数据统计',
   '/notices': '通知管理',
   '/users': '用户管理',

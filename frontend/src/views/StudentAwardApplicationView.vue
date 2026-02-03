@@ -291,7 +291,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Edit, Delete, Plus, Check, Close, Upload, Download, Picture } from '@element-plus/icons-vue'
@@ -590,12 +590,14 @@ const getApplications = () => {
 
 // 获取奖项列表
 const getAwards = () => {
-  axios.get('/api/awards').then(response => {
+  return axios.get('/api/awards').then(response => {
     // 后端返回的是分页对象，需要获取records数组
     awards.value = response.data.records || response.data.content || response.data
+    return awards.value
   }).catch(error => {
     ElMessage.error('获取奖项列表失败')
     console.error('Error fetching awards:', error)
+    throw error
   })
 }
 
@@ -1008,19 +1010,42 @@ const goToChatCenter = () => {
 
 // 初始化数据
 onMounted(() => {
-  // 检查是否有从奖项管理页面传递过来的奖项ID
-  const currentAwardId = localStorage.getItem('currentAwardId')
-  const currentAwardName = localStorage.getItem('currentAwardName')
-  if (currentAwardId) {
-    // 如果有，自动填充奖项名称并执行搜索
-    searchForm.awardName = currentAwardName
-    handleSearch()
-    // 清除localStorage中的数据，避免下次页面加载时自动过滤
-    localStorage.removeItem('currentAwardId')
-    localStorage.removeItem('currentAwardName')
-  } else {
+  // 检查是否有从路由 query 传递的 awardId
+  const route = router.currentRoute.value
+  const awardIdFromQuery = route.query.awardId
+  
+  if (awardIdFromQuery) {
+    // 如果有 awardId，自动打开申请对话框并预选择奖项
+    getAwards().then(() => {
+      // 等待奖项列表加载完成后，设置选中的奖项
+      applicationForm.awardId = parseInt(awardIdFromQuery)
+      dialogVisible.value = true
+      
+      // 立即清除 URL 中的 query 参数，这样关闭对话框后不会再次打开
+      router.replace({ path: route.path })
+    }).catch(error => {
+      // 如果加载奖项失败，也要清除 URL 参数
+      console.error('加载奖项列表失败:', error)
+      router.replace({ path: route.path })
+    })
+    // 同时加载申请列表
     getApplications()
+  } else {
+    // 检查是否有从奖项管理页面传递过来的奖项ID（localStorage）
+    const currentAwardId = localStorage.getItem('currentAwardId')
+    const currentAwardName = localStorage.getItem('currentAwardName')
+    if (currentAwardId) {
+      // 如果有，自动填充奖项名称并执行搜索
+      searchForm.awardName = currentAwardName
+      handleSearch()
+      // 清除localStorage中的数据，避免下次页面加载时自动过滤
+      localStorage.removeItem('currentAwardId')
+      localStorage.removeItem('currentAwardName')
+    } else {
+      getApplications()
+    }
   }
+  
   if (isStudent.value) {
     getAwards()
   }

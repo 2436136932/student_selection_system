@@ -105,6 +105,12 @@ const router = createRouter({
       name: 'Statistics',
       component: () => import('../views/StatisticsView.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/award-recommendation',
+      name: 'AwardRecommendation',
+      component: () => import('../views/AwardRecommendationView.vue'),
+      meta: { requiresAuth: true, role: 'student' }
     }
   ]
 })

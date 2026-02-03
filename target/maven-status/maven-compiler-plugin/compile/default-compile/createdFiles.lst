@@ -99,6 +99,8 @@ com\example\studentselectionsystem\service\impl\AwardTypeServiceImpl.class
 com\example\studentselectionsystem\config\StaticResourceConfig.class
 com\example\studentselectionsystem\entity\Carousel.class
 com\example\studentselectionsystem\service\impl\ChatMessageServiceImpl.class
+com\example\studentselectionsystem\controller\AwardRecommendationController.class
+com\example\studentselectionsystem\service\AwardRecommendationService.class
 com\example\studentselectionsystem\service\impl\StudentAwardApplicationServiceImpl$1.class
 com\example\studentselectionsystem\service\impl\RoleServiceImpl.class
 com\example\studentselectionsystem\service\MajorService.class
