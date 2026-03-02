@@ -373,9 +373,12 @@ const handleCloseSession = (sessionId) => {
 .chat-list-panel {
   width: 320px;
   border-right: 1px solid #e8e8e8;
-  overflow-y: auto;
+  overflow: hidden;
   background-color: #ffffff;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .chat-window-panel {

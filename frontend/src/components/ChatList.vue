@@ -24,7 +24,7 @@
     </div>
     
     <!-- 会话列表内容 -->
-    <div class="chat-list-content">
+    <div class="chat-list-content" ref="chatListContent">
       <!-- 按角色分组的折叠列表 -->
       <el-collapse v-model="activeNames" accordion>
         <!-- 管理员组 -->
@@ -285,12 +285,17 @@
       <div v-if="filteredUsers.length === 0" class="empty-sessions">
         <el-empty description="暂无匹配用户" />
       </div>
+      
+      <!-- 添加一些占位内容，确保内容超出容器高度 -->
+      <div v-if="filteredUsers.length > 0 && filteredUsers.length < 5" class="scroll-placeholder">
+        <div v-for="i in (5 - filteredUsers.length)" :key="i" class="placeholder-item"></div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 
 // 接收父组件传递的属性
@@ -446,6 +451,33 @@ const handleSearch = () => {
   // 搜索逻辑由computed属性自动处理
   console.log('搜索关键词:', searchKeyword.value)
 }
+
+// 引用DOM元素
+const chatListContent = ref(null)
+
+// 在组件挂载后强制设置滚动条
+onMounted(() => {
+  // 确保内容区域有足够的高度来显示滚动条
+  setTimeout(() => {
+    if (chatListContent.value) {
+      // 获取容器高度
+      const containerHeight = chatListContent.value.clientHeight
+      // 获取内容高度
+      const contentHeight = chatListContent.value.scrollHeight
+      
+      // 如果内容高度小于容器高度，增加最小高度以确保滚动条可见
+      if (contentHeight <= containerHeight) {
+        chatListContent.value.style.minHeight = `${containerHeight + 100}px`
+      }
+      
+      // 强制显示滚动条
+      chatListContent.value.style.overflowY = 'scroll'
+      
+      console.log('聊天列表容器高度:', containerHeight)
+      console.log('聊天列表内容高度:', contentHeight)
+    }
+  }, 1000)
+})
 </script>
 
 <style scoped>
@@ -510,37 +542,50 @@ const handleSearch = () => {
 
 .chat-list-content {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
   padding: 10px;
-  /* 自定义滚动条样式 - 确保滚动条总是显示 */
-  overflow-y: scroll;
-  scrollbar-width: thin;
-  scrollbar-color: #3498db #f1f1f1;
-  /* 增加内边距，让滚动条更明显 */
   padding-right: 12px;
+  /* 确保内容区域有足够的高度来触发滚动 */
+  min-height: 0;
+  /* 强制显示滚动条 */
+  -webkit-overflow-scrolling: touch;
+  /* 设置固定高度，确保滚动条可见 */
+  height: calc(100vh - 200px);
+  max-height: calc(100vh - 200px);
+  /* 确保内容超出时显示滚动条 */
+  overflow-y: overlay;
 }
 
 /* WebKit浏览器滚动条样式 */
 .chat-list-content::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-  /* 确保滚动条轨道总是显示 */
-  background: #f1f1f1;
+  width: 14px !important;
+  height: 14px !important;
+  background: #f1f1f1 !important;
+  display: block !important;
+  visibility: visible !important;
+  appearance: none !important;
 }
 
 .chat-list-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 5px;
-  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.1);
+  background: #f1f1f1 !important;
+  border-radius: 7px !important;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.1) !important;
+  display: block !important;
+  visibility: visible !important;
+  border: 1px solid #e0e0e0 !important;
 }
 
 .chat-list-content::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #3498db, #2980b9);
-  border-radius: 5px;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
-  /* 确保滚动条滑块总是可见 */
-  min-height: 20px;
+  background: linear-gradient(135deg, #3498db, #2980b9) !important;
+  border-radius: 7px !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3) !important;
+  min-height: 40px !important;
+  display: block !important;
+  visibility: visible !important;
+  border: 2px solid #f1f1f1 !important;
+  appearance: none !important;
 }
 
 .chat-list-content::-webkit-scrollbar-thumb:hover {
@@ -560,10 +605,24 @@ const handleSearch = () => {
   scrollbar-color: #3498db #f1f1f1;
 }
 
+/* 强制显示滚动条的额外样式 */
+.chat-list-content {
+  /* 确保内容区域有足够的高度来触发滚动 */
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+  /* 强制显示滚动条 */
+  -webkit-overflow-scrolling: touch;
+  /* 确保滚动条始终可见 */
+  --scrollbar-width: 12px;
+  --scrollbar-height: 12px;
+}
+
 /* 增加滚动条容器的可见性 */
 .chat-list {
   border-right: 1px solid #e8e8e8;
   position: relative;
+  height: 100%;
+  overflow: hidden;
 }
 
 .chat-item {
@@ -657,6 +716,17 @@ const handleSearch = () => {
 
 .empty-sessions {
   padding: 40px 20px;
+}
+
+/* 滚动占位符样式 */
+.scroll-placeholder {
+  pointer-events: none;
+}
+
+.placeholder-item {
+  height: 80px;
+  margin-bottom: 10px;
+  opacity: 0;
 }
 
 /* 用户信息悬浮窗样式 */
