@@ -667,11 +667,24 @@ html, body {
 
 /* 侧边栏样式 */
 .sidebar {
-  background-color: #2c3e50;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  background: linear-gradient(180deg, #4A90E2 0%, #3D7BCB 50%, #2E6B9A 100%);
+  box-shadow: 4px 0 24px rgba(74, 144, 226, 0.15);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   position: relative;
+}
+
+.sidebar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(255, 176, 138, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(91, 143, 249, 0.08) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .logo-container {
@@ -679,32 +692,49 @@ html, body {
   align-items: center;
   justify-content: space-between;
   height: 65px;
-  background-color: var(--el-color-primary);
+  background: linear-gradient(135deg, rgba(255, 176, 138, 0.15) 0%, rgba(255, 154, 138, 0.08) 100%);
   padding: 0 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
+.logo-container::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 20px;
+  right: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 176, 138, 0.4), transparent);
 }
 
 .sidebar-toggle-btn {
   cursor: pointer;
-  color: white;
+  color: rgba(255, 255, 255, 0.85);
   font-size: 18px;
   padding: 10px;
-  border-radius: 4px;
-  transition: all 0.3s ease;
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: absolute;
-  bottom: 20px;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .sidebar-toggle-btn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 176, 138, 0.2);
+  color: #FFB08A;
+  border-color: rgba(255, 176, 138, 0.3);
+  transform: translateX(-50%) scale(1.05);
 }
 
 .logo-icon {
@@ -712,8 +742,9 @@ html, body {
 }
 
 .logo-text {
-  font-size: 16px;
-  font-weight: 700;
+  font-family: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
+  font-size: 15px;
+  font-weight: 600;
   color: white;
   letter-spacing: 0.5px;
 }
@@ -726,74 +757,83 @@ html, body {
   --el-menu-bg-color: transparent;
   --el-menu-text-color: rgba(255, 255, 255, 0.9);
   --el-menu-active-color: white;
-  --el-menu-hover-bg-color: rgba(52, 152, 219, 0.3);
+  --el-menu-hover-bg-color: rgba(255, 176, 138, 0.2);
 }
 
-/* 主菜单项样式 */
 .sidebar-menu .el-menu-item,
 .sidebar-menu .el-sub-menu__title {
   color: rgba(255, 255, 255, 0.9);
   height: 50px;
   line-height: 50px;
-  padding: 0 25px;
-  margin: 0 10px;
-  border-radius: 8px;
-  margin-bottom: 5px;
-  transition: all 0.3s ease;
+  padding: 0 22px;
+  margin: 0 12px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background-color: transparent;
   border-bottom: none;
+  position: relative;
 }
 
-/* 主菜单项hover样式 */
 .sidebar-menu .el-menu-item:hover,
 .sidebar-menu .el-sub-menu__title:hover {
-  background-color: rgba(52, 152, 219, 0.3);
+  background: linear-gradient(135deg, rgba(255, 176, 138, 0.2) 0%, rgba(255, 154, 138, 0.12) 100%);
   color: white;
+  transform: translateX(4px);
 }
 
-/* 主菜单项激活样式 */
 .sidebar-menu .el-menu-item.is-active {
-  background-color: #3498db;
-  color: white;
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  background: linear-gradient(135deg, #FFB08A 0%, #FF9A8B 100%);
+  color: #2C3E50;
+  box-shadow: 0 4px 12px rgba(255, 176, 138, 0.3);
+  font-weight: 600;
 }
 
-/* 子菜单容器样式 */
+.sidebar-menu .el-menu-item.is-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background: #2C3E50;
+  border-radius: 0 2px 2px 0;
+}
+
 .sidebar-menu .el-sub-menu {
   background-color: transparent;
 }
 
-/* 子菜单弹出样式 */
 .sidebar-menu .el-sub-menu .el-menu {
-  background-color: #2c3e50;
-  border-radius: 8px;
-  margin: 0 10px;
-  padding: 5px 0;
+  background: rgba(46, 107, 154, 0.95);
+  border-radius: 10px;
+  margin: 0 12px;
+  padding: 8px 0;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* 子菜单项样式 */
 .sidebar-menu .el-sub-menu .el-menu-item {
   color: rgba(255, 255, 255, 0.9);
-  height: 45px;
-  line-height: 45px;
-  padding: 0 35px;
-  margin: 0 5px;
-  border-radius: 6px;
+  height: 44px;
+  line-height: 44px;
+  padding: 0 32px;
+  margin: 0 8px;
+  border-radius: 8px;
   margin-bottom: 2px;
   background-color: transparent;
 }
 
-/* 子菜单项hover样式 */
 .sidebar-menu .el-sub-menu .el-menu-item:hover {
-  background-color: rgba(52, 152, 219, 0.3);
+  background: rgba(255, 176, 138, 0.15);
   color: white;
 }
 
-/* 子菜单项激活样式 */
 .sidebar-menu .el-sub-menu .el-menu-item.is-active {
-  background-color: #3498db;
-  color: white;
-  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+  background: linear-gradient(135deg, #FFB08A 0%, #FF9A8B 100%);
+  color: #2C3E50;
+  box-shadow: 0 2px 8px rgba(255, 176, 138, 0.25);
+  font-weight: 600;
 }
 
 .menu-icon {
@@ -808,11 +848,23 @@ html, body {
 
 /* 顶部导航栏 */
 .top-header {
-  background-color: white;
-  border-bottom: 1px solid #e4e7ed;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8F9FA 100%);
+  border-bottom: 1px solid rgba(74, 144, 226, 0.1);
   padding: 0 25px;
   height: 65px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 16px rgba(74, 144, 226, 0.06);
+  position: relative;
+}
+
+.top-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #4A90E2, #FFB08A, #4A90E2);
+  opacity: 0.4;
 }
 
 /* 紧凑模式 */
@@ -1070,12 +1122,12 @@ html, body {
 .toggle-btn {
   font-size: 20px;
   cursor: pointer;
-  color: #606266;
-  transition: color 0.3s ease;
+  color: #5A6C7D;
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .toggle-btn:hover {
-  color: #3498db;
+  color: #4A90E2;
 }
 
 .breadcrumb {
@@ -1095,62 +1147,86 @@ html, body {
 
 /* 在线人数样式 */
 .online-count {
-  font-size: 14px;
-  color: #606266;
+  font-size: 13px;
+  color: #5A6C7D;
   margin-right: 15px;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #F8F9FA 0%, #F0F2F5 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(74, 144, 226, 0.1);
 }
 
 /* 角色标签 */
 .role-tag {
-  padding: 4px 12px;
-  border-radius: 12px;
+  padding: 5px 14px;
+  border-radius: 20px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   color: white;
+  letter-spacing: 0.3px;
 }
 
 .role-admin {
-  background-color: #e74c3c;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8787 100%);
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
 }
 
 .role-teacher {
-  background-color: #27ae60;
+  background: linear-gradient(135deg, #52C41A 0%, #73D13D 100%);
+  box-shadow: 0 2px 8px rgba(82, 196, 26, 0.3);
 }
 
 .role-student {
-  background-color: #3498db;
+  background: linear-gradient(135deg, #4A90E2 0%, #5BA3F5 100%);
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
 }
 
 /* 用户信息 */
 .user-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  padding: 8px 14px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  border: 1px solid transparent;
 }
 
 .user-info:hover {
-  background-color: #f5f7fa;
+  background: linear-gradient(135deg, #F8F9FA 0%, #F0F2F5 100%);
+  border-color: rgba(74, 144, 226, 0.1);
 }
 
 .user-name {
   font-size: 14px;
   font-weight: 500;
-  color: #303133;
+  color: #2C3E50;
 }
 
 /* 主内容区域 */
 .main-content {
-  padding: 25px;
-  background-color: #f5f7fa;
+  padding: 24px;
+  background: linear-gradient(135deg, #F8F9FA 0%, #F0F2F5 50%, #E8E8F0 100%);
   min-height: 100%;
   height: 100%;
   position: relative;
   overflow: auto;
   margin: 0;
+}
+
+.main-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(74, 144, 226, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(255, 176, 138, 0.03) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 /* 聊天中心页面样式 */

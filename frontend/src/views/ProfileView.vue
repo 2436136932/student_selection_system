@@ -530,35 +530,59 @@ onMounted(() => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
 .profile-container {
-  padding: 20px;
+  padding: 0;
   min-height: 80vh;
 }
 
 .profile-card {
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  border: 1px solid rgba(15, 76, 129, 0.08);
+  box-shadow: 
+    0 4px 24px rgba(15, 76, 129, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.profile-card :deep(.el-card__header) {
+  background: linear-gradient(135deg, #FAF8F5 0%, #F5F2ED 100%);
+  border-bottom: 1px solid rgba(15, 76, 129, 0.08);
+  padding: 20px 24px;
 }
 
 .card-header {
   display: flex;
   align-items: center;
+  gap: 10px;
+  font-family: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
   font-size: 18px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: #1A1A2E;
+}
+
+.card-header::before {
+  content: "";
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(180deg, #D4AF37, #E8B96B);
+  border-radius: 2px;
 }
 
 .card-header .el-icon {
-  margin-right: 8px;
   font-size: 20px;
-  color: #409eff;
+  color: #1A6B9C;
 }
 
 .profile-basic {
   display: flex;
   flex-wrap: wrap;
-  gap: 30px;
-  padding: 20px 0;
+  gap: 40px;
+  padding: 32px 0;
 }
 
 .avatar-section {
@@ -566,96 +590,255 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   cursor: pointer;
+  position: relative;
 }
 
 .user-avatar {
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 4px solid #FAF8F5;
+  box-shadow: 
+    0 8px 32px rgba(15, 76, 129, 0.15),
+    0 0 0 4px rgba(212, 175, 55, 0.2);
+  background: linear-gradient(135deg, #FAF8F5 0%, #F5F2ED 100%);
 }
 
 .user-avatar:hover {
-  transform: scale(1.05);
+  transform: scale(1.08);
+  box-shadow: 
+    0 12px 40px rgba(15, 76, 129, 0.2),
+    0 0 0 6px rgba(212, 175, 55, 0.35);
 }
 
 .avatar-text {
-  margin-top: 10px;
-  color: #606266;
-  font-size: 14px;
+  margin-top: 16px;
+  font-family: 'Source Sans 3', 'Noto Sans SC', sans-serif;
+  color: #718096;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 16px;
+  background: linear-gradient(135deg, #FAF8F5 0%, #F5F2ED 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(15, 76, 129, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.avatar-section:hover .avatar-text {
+  background: linear-gradient(135deg, #0F4C81 0%, #1A6B9C 100%);
+  color: white;
+  border-color: transparent;
 }
 
 .info-section {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
+  gap: 20px;
   min-width: 600px;
+  flex: 1;
 }
 
 .info-item {
   display: flex;
   align-items: center;
-  font-size: 16px;
+  font-family: 'Source Sans 3', 'Noto Sans SC', sans-serif;
+  font-size: 15px;
   line-height: 1.8;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #FAF8F5 0%, #F5F2ED 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(15, 76, 129, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.info-item:hover {
+  border-color: rgba(15, 76, 129, 0.12);
+  box-shadow: 0 4px 12px rgba(15, 76, 129, 0.06);
+  transform: translateX(4px);
 }
 
 .info-item .label {
-  width: 80px;
-  color: #606266;
+  width: 85px;
+  color: #718096;
   font-weight: 500;
 }
 
 .info-item .value {
-  color: #303133;
+  color: #1A1A2E;
+  font-weight: 600;
+}
+
+.info-item :deep(.el-tag) {
+  border-radius: 20px;
   font-weight: 500;
+  padding: 4px 12px;
+  border: none;
+}
+
+.info-item :deep(.el-tag--danger) {
+  background: linear-gradient(135deg, #C44536 0%, #D65A4A 100%);
+  color: white;
+}
+
+.info-item :deep(.el-tag--warning) {
+  background: linear-gradient(135deg, #D4953A 0%, #E8AB52 100%);
+  color: white;
+}
+
+.info-item :deep(.el-tag--success) {
+  background: linear-gradient(135deg, #2D8B5E 0%, #3DA76F 100%);
+  color: white;
+}
+
+.info-item :deep(.el-tag--info) {
+  background: linear-gradient(135deg, #1A6B9C 0%, #3D8EB9 100%);
+  color: white;
 }
 
 .modify-card {
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  border: 1px solid rgba(15, 76, 129, 0.08);
+  box-shadow: 
+    0 4px 24px rgba(15, 76, 129, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  margin-top: 24px !important;
+}
+
+.modify-card :deep(.el-card__header) {
+  background: linear-gradient(135deg, #FAF8F5 0%, #F5F2ED 100%);
+  border-bottom: 1px solid rgba(15, 76, 129, 0.08);
+  padding: 16px 20px;
 }
 
 .modify-form {
-  padding: 10px 0;
+  padding: 16px 0;
+}
+
+.modify-form :deep(.el-form-item__label) {
+  font-family: 'Source Sans 3', 'Noto Sans SC', sans-serif;
+  font-weight: 500;
+  color: #1A1A2E;
+}
+
+.modify-form :deep(.el-input__wrapper) {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(15, 76, 129, 0.06);
+  border: 2px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #FAF8F5 0%, #F5F2ED 100%);
+}
+
+.modify-form :deep(.el-input__wrapper:hover) {
+  box-shadow: 0 4px 12px rgba(15, 76, 129, 0.1);
+}
+
+.modify-form :deep(.el-input__wrapper.is-focus) {
+  border-color: #1A6B9C;
+  box-shadow: 0 4px 16px rgba(15, 76, 129, 0.12);
+  background: white;
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-start;
-  margin-top: 20px;
+  gap: 12px;
+  margin-top: 24px;
 }
 
-/* 头像上传样式 */
+.form-actions :deep(.el-button--primary) {
+  background: linear-gradient(135deg, #0F4C81 0%, #1A6B9C 100%);
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 12px 28px;
+  box-shadow: 0 4px 16px rgba(15, 76, 129, 0.25);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-actions :deep(.el-button--primary:hover) {
+  background: linear-gradient(135deg, #1A6B9C 0%, #3D8EB9 100%);
+  box-shadow: 0 6px 20px rgba(15, 76, 129, 0.35);
+  transform: translateY(-2px);
+}
+
+.form-actions :deep(.el-button--default) {
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 12px 28px;
+  border: 2px solid rgba(15, 76, 129, 0.2);
+  color: #1A6B9C;
+  background: transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-actions :deep(.el-button--default:hover) {
+  background: rgba(15, 76, 129, 0.06);
+  border-color: #1A6B9C;
+  transform: translateY(-2px);
+}
+
+/* 头像上传对话框 */
+:deep(.el-dialog) {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 16px 64px rgba(15, 76, 129, 0.2);
+}
+
+:deep(.el-dialog__header) {
+  background: linear-gradient(135deg, #FAF8F5 0%, #F5F2ED 100%);
+  border-bottom: 1px solid rgba(15, 76, 129, 0.1);
+  padding: 20px 24px;
+}
+
+:deep(.el-dialog__title) {
+  font-family: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
+  font-weight: 600;
+  color: #1A1A2E;
+}
+
+:deep(.el-dialog__body) {
+  padding: 24px;
+}
+
 .avatar-upload-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 0;
+  padding: 24px 0;
 }
 
 .avatar-uploader {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
+  border: 2px dashed rgba(15, 76, 129, 0.2);
+  border-radius: 16px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: border-color 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 200px;
   height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, #FAF8F5 0%, #F5F2ED 100%);
 }
 
 .avatar-uploader:hover {
-  border-color: #409eff;
+  border-color: #D4AF37;
+  background: linear-gradient(135deg, #F5F2ED 0%, #EBE6DE 100%);
+  box-shadow: 0 8px 24px rgba(15, 76, 129, 0.1);
 }
 
 .avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
+  font-size: 48px;
+  color: #718096;
   width: 200px;
   height: 200px;
-  text-align: center;
-  line-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .avatar-preview {
@@ -666,16 +849,45 @@ onMounted(() => {
 }
 
 .upload-tip {
-  margin-top: 15px;
-  color: #909399;
-  font-size: 14px;
+  margin-top: 20px;
+  font-family: 'Source Sans 3', 'Noto Sans SC', sans-serif;
+  color: #718096;
+  font-size: 13px;
+  text-align: center;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #FAF8F5 0%, #F5F2ED 100%);
+  border-radius: 12px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.dialog-footer :deep(.el-button--primary) {
+  background: linear-gradient(135deg, #0F4C81 0%, #1A6B9C 100%);
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 12px 28px;
+  box-shadow: 0 4px 16px rgba(15, 76, 129, 0.25);
+}
+
+.dialog-footer :deep(.el-button--default) {
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 12px 28px;
+  border: 2px solid rgba(15, 76, 129, 0.2);
+  color: #1A6B9C;
 }
 
 /* 响应式设计 */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .profile-basic {
     flex-direction: column;
     align-items: center;
+    gap: 32px;
   }
   
   .info-section {
@@ -685,15 +897,28 @@ onMounted(() => {
   }
   
   .info-item {
-    justify-content: center;
+    justify-content: flex-start;
   }
   
   .modify-form {
-    padding: 0 10px;
+    padding: 0;
   }
   
   .form-actions {
     justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .info-item .label {
+    width: auto;
   }
 }
 </style>

@@ -15,64 +15,86 @@
         </div>
         <!-- 大型插画 - 登录场景 -->
         <svg class="image" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- 背景 -->
           <defs>
             <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#3498db;stop-opacity:1" />
-              <stop offset="100%" style="stop-color:#2980b9;stop-opacity:1" />
+              <stop offset="0%" style="stop-color:#0F4C81;stop-opacity:1" />
+              <stop offset="50%" style="stop-color:#1A6B9C;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#3D8EB9;stop-opacity:1" />
             </linearGradient>
+            <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#D4AF37;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#E8B96B;stop-opacity:1" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
           </defs>
-          <rect width="400" height="400" fill="url(#bgGradient)" rx="20" />
+          <rect width="400" height="400" fill="url(#bgGradient)" rx="24" />
           
-          <!-- 人物 -->
-          <g transform="translate(200, 300)">
-            <!-- 身体 -->
-            <ellipse cx="0" cy="-50" rx="30" ry="50" fill="#34495e" />
-            <!-- 头部 -->
-            <circle cx="0" cy="-90" r="25" fill="#f1c40f" />
-            <!-- 头发 -->
-            <path d="M-25 -90 C-35 -100 -35 -110 -25 -120 C-20 -125 20 -125 25 -120 C35 -110 35 -100 25 -90 Z" fill="#2c3e50" />
-            <!-- 眼睛 -->
-            <circle cx="-10" cy="-90" r="4" fill="#2c3e50" />
-            <circle cx="10" cy="-90" r="4" fill="#2c3e50" />
-            <!-- 嘴巴 -->
-            <path d="M-8 -85 Q0 -80 8 -85" stroke="#2c3e50" stroke-width="2" fill="none" />
-            <!-- 手臂 -->
-            <path d="M30 -50 Q45 -60 50 -80" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
-            <path d="M-30 -50 Q-45 -60 -50 -80" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
-            <!-- 手 -->
-            <circle cx="50" cy="-80" r="6" fill="#f1c40f" />
-            <circle cx="-50" cy="-80" r="6" fill="#f1c40f" />
-            <!-- 腿 -->
-            <path d="M20 0 Q25 20 20 40" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
-            <path d="M-20 0 Q-25 20 -20 40" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
-            <!-- 脚 -->
-            <rect x="10" y="40" width="20" height="8" fill="#34495e" rx="4" />
-            <rect x="-30" y="40" width="20" height="8" fill="#34495e" rx="4" />
+          <!-- 装饰性六边形网格 -->
+          <g opacity="0.08">
+            <polygon points="50,80 80,60 110,80 110,120 80,140 50,120" fill="white"/>
+            <polygon points="300,50 330,30 360,50 360,90 330,110 300,90" fill="white"/>
+            <polygon points="320,300 350,280 380,300 380,340 350,360 320,340" fill="white"/>
           </g>
           
-          <!-- 火箭 -->
-          <g transform="translate(100, 150) scale(0.6)">
-            <!-- 火箭主体 -->
-            <path d="M50 0 L150 100 L150 250 L50 350 L-50 250 L-50 100 Z" fill="#ecf0f1" />
-            <!-- 火箭窗户 -->
-            <circle cx="50" cy="100" r="30" fill="#3498db" />
-            <circle cx="50" cy="100" r="20" fill="#ecf0f1" />
-            <!-- 火箭鳍 -->
-            <path d="M-50 150 L-100 125 L-100 175 Z" fill="#e74c3c" />
-            <path d="M150 150 L200 125 L200 175 Z" fill="#e74c3c" />
-            <path d="M-50 250 L-100 225 L-100 275 Z" fill="#e74c3c" />
-            <path d="M150 250 L200 225 L200 275 Z" fill="#e74c3c" />
-            <!-- 火箭火焰 -->
-            <path d="M50 350 L20 400 L80 400 Z" fill="#f39c12" />
-            <path d="M50 370 L30 420 L70 420 Z" fill="#e74c3c" />
+          <!-- 奖杯 -->
+          <g transform="translate(200, 140)" filter="url(#glow)">
+            <path d="M-30 -60 L30 -60 L25 -20 Q0 10 -25 -20 Z" fill="url(#goldGradient)"/>
+            <rect x="-8" y="-20" width="16" height="25" fill="#B8962E"/>
+            <ellipse cx="0" cy="10" rx="25" ry="8" fill="#B8962E"/>
+            <ellipse cx="0" cy="-60" rx="30" ry="10" fill="#F5D485"/>
+            <path d="M-35 -55 Q-55 -50 -50 -30 Q-45 -10 -30 -15" stroke="url(#goldGradient)" stroke-width="4" fill="none"/>
+            <path d="M35 -55 Q55 -50 50 -30 Q45 -10 30 -15" stroke="url(#goldGradient)" stroke-width="4" fill="none"/>
+            <text x="0" y="-35" text-anchor="middle" font-size="16" fill="#B8962E" font-weight="bold">1</text>
           </g>
           
-          <!-- 装饰元素 -->
-          <circle cx="50" cy="50" r="10" fill="white" opacity="0.3" />
-          <circle cx="350" cy="100" r="15" fill="white" opacity="0.3" />
-          <circle cx="300" cy="350" r="8" fill="white" opacity="0.3" />
-          <circle cx="100" cy="300" r="12" fill="white" opacity="0.3" />
+          <!-- 书本 -->
+          <g transform="translate(120, 260)">
+            <rect x="-40" y="-25" width="80" height="50" rx="3" fill="#E8E4DD"/>
+            <rect x="-38" y="-23" width="36" height="46" fill="#FFFFFF"/>
+            <rect x="0" y="-23" width="36" height="46" fill="#F8F6F2"/>
+            <line x1="-35" y1="-15" x2="-5" y2="-15" stroke="#D4CFC6" stroke-width="2"/>
+            <line x1="-35" y1="-5" x2="-5" y2="-5" stroke="#D4CFC6" stroke-width="2"/>
+            <line x1="-35" y1="5" x2="-5" y2="5" stroke="#D4CFC6" stroke-width="2"/>
+            <line x1="5" y1="-15" x2="35" y2="-15" stroke="#D4CFC6" stroke-width="2"/>
+            <line x1="5" y1="-5" x2="35" y2="-5" stroke="#D4CFC6" stroke-width="2"/>
+          </g>
+          
+          <!-- 证书 -->
+          <g transform="translate(280, 260)">
+            <rect x="-35" y="-25" width="70" height="50" rx="2" fill="#FFFFFF"/>
+            <rect x="-30" y="-20" width="60" height="40" fill="#FAFAF8"/>
+            <line x1="-25" y1="-10" x2="25" y2="-10" stroke="#D4AF37" stroke-width="2"/>
+            <line x1="-20" y1="0" x2="20" y2="0" stroke="#D4CFC6" stroke-width="1"/>
+            <line x1="-20" y1="6" x2="20" y2="6" stroke="#D4CFC6" stroke-width="1"/>
+            <circle cx="0" cy="15" r="8" fill="url(#goldGradient)"/>
+          </g>
+          
+          <!-- 星星装饰 -->
+          <g fill="url(#goldGradient)" opacity="0.6">
+            <polygon points="60,180 63,190 73,190 65,196 68,206 60,200 52,206 55,196 47,190 57,190">
+              <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+            </polygon>
+            <polygon points="340,200 343,210 353,210 345,216 348,226 340,220 332,226 335,216 327,210 337,210">
+              <animate attributeName="opacity" values="0.6;1;0.6" dur="2.5s" repeatCount="indefinite"/>
+            </polygon>
+          </g>
+          
+          <!-- 浮动圆点装饰 -->
+          <circle cx="50" cy="50" r="6" fill="white" opacity="0.2">
+            <animate attributeName="cy" values="50;45;50" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="350" cy="80" r="8" fill="white" opacity="0.15">
+            <animate attributeName="cy" values="80;75;80" dur="4s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="320" cy="350" r="5" fill="white" opacity="0.2">
+            <animate attributeName="cy" values="350;345;350" dur="3.5s" repeatCount="indefinite"/>
+          </circle>
         </svg>
       </div>
       
@@ -91,65 +113,91 @@
         <svg class="image" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="regBgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#8e44ad;stop-opacity:1" />
-              <stop offset="100%" style="stop-color:#9b59b6;stop-opacity:1" />
+              <stop offset="0%" style="stop-color:#1A6B9C;stop-opacity:1" />
+              <stop offset="50%" style="stop-color:#0F4C81;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#0A3A5F;stop-opacity:1" />
             </linearGradient>
+            <linearGradient id="goldGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#D4AF37;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#F5D485;stop-opacity:1" />
+            </linearGradient>
+            <filter id="glow2">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
           </defs>
-          <rect width="400" height="400" fill="url(#regBgGradient)" rx="20" />
+          <rect width="400" height="400" fill="url(#regBgGradient)" rx="24" />
           
-          <!-- 人物 -->
-          <g transform="translate(200, 300)">
-            <!-- 身体 -->
-            <ellipse cx="0" cy="-50" rx="30" ry="50" fill="#34495e" />
-            <!-- 头部 -->
-            <circle cx="0" cy="-90" r="25" fill="#e84393" />
-            <!-- 头发 -->
-            <path d="M-25 -90 C-35 -100 -35 -110 -25 -120 C-20 -125 20 -125 25 -120 C35 -110 35 -100 25 -90 Z" fill="#2c3e50" />
-            <!-- 眼睛 -->
-            <circle cx="-10" cy="-90" r="4" fill="#2c3e50" />
-            <circle cx="10" cy="-90" r="4" fill="#2c3e50" />
-            <!-- 嘴巴 -->
-            <path d="M-8 -85 Q0 -80 8 -85" stroke="#2c3e50" stroke-width="2" fill="none" />
-            <!-- 手臂 -->
-            <path d="M30 -50 Q45 -60 50 -80" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
-            <path d="M-30 -50 Q-45 -60 -50 -80" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
-            <!-- 手 -->
-            <circle cx="50" cy="-80" r="6" fill="#e84393" />
-            <circle cx="-50" cy="-80" r="6" fill="#e84393" />
-            <!-- 腿 -->
-            <path d="M20 0 Q25 20 20 40" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
-            <path d="M-20 0 Q-25 20 -20 40" stroke="#34495e" stroke-width="12" fill="none" stroke-linecap="round" />
-            <!-- 脚 -->
-            <rect x="10" y="40" width="20" height="8" fill="#34495e" rx="4" />
-            <rect x="-30" y="40" width="20" height="8" fill="#34495e" rx="4" />
+          <!-- 装饰性六边形网格 -->
+          <g opacity="0.06">
+            <polygon points="30,300 60,280 90,300 90,340 60,360 30,340" fill="white"/>
+            <polygon points="310,70 340,50 370,70 370,110 340,130 310,110" fill="white"/>
           </g>
           
-          <!-- 电脑 -->
-          <g transform="translate(200, 200)">
-            <!-- 屏幕 -->
-            <rect x="-60" y="-100" width="120" height="80" fill="#2c3e50" rx="5" />
-            <!-- 屏幕内容 -->
-            <rect x="-50" y="-90" width="100" height="60" fill="#3498db" />
-            <!-- 电脑支架 -->
-            <rect x="-20" y="-20" width="40" height="20" fill="#7f8c8d" />
-            <!-- 键盘 -->
-            <rect x="-45" y="0" width="90" height="20" fill="#7f8c8d" rx="3" />
-            <!-- 按键 -->
-            <circle cx="-35" cy="10" r="3" fill="#2c3e50" />
-            <circle cx="-25" cy="10" r="3" fill="#2c3e50" />
-            <circle cx="-15" cy="10" r="3" fill="#2c3e50" />
-            <circle cx="-5" cy="10" r="3" fill="#2c3e50" />
-            <circle cx="5" cy="10" r="3" fill="#2c3e50" />
-            <circle cx="15" cy="10" r="3" fill="#2c3e50" />
-            <circle cx="25" cy="10" r="3" fill="#2c3e50" />
-            <circle cx="35" cy="10" r="3" fill="#2c3e50" />
+          <!-- 笔记本电脑 -->
+          <g transform="translate(200, 180)">
+            <rect x="-70" y="-50" width="140" height="90" rx="6" fill="#2C3E50"/>
+            <rect x="-62" y="-42" width="124" height="74" fill="#1A252F"/>
+            <rect x="-58" y="-38" width="116" height="66" fill="#0F4C81"/>
+            <rect x="-20" y="-5" width="40" height="8" rx="4" fill="url(#goldGradient2)"/>
+            <rect x="-35" y="10" width="70" height="4" rx="2" fill="rgba(255,255,255,0.3)"/>
+            <rect x="-25" y="18" width="50" height="4" rx="2" fill="rgba(255,255,255,0.2)"/>
+            <rect x="-55" y="40" width="110" height="12" rx="2" fill="#3D566E"/>
+            <rect x="-40" y="44" width="80" height="4" rx="1" fill="#4A637B"/>
           </g>
           
-          <!-- 装饰元素 -->
-          <circle cx="50" cy="50" r="10" fill="white" opacity="0.3" />
-          <circle cx="350" cy="100" r="15" fill="white" opacity="0.3" />
-          <circle cx="300" cy="350" r="8" fill="white" opacity="0.3" />
-          <circle cx="100" cy="300" r="12" fill="white" opacity="0.3" />
+          <!-- 漂浮的文档 -->
+          <g transform="translate(100, 120)">
+            <rect x="-25" y="-32" width="50" height="64" rx="3" fill="#FFFFFF" opacity="0.95">
+              <animate attributeName="y" values="-32;-28;-32" dur="3s" repeatCount="indefinite"/>
+            </rect>
+            <line x1="-18" y1="-22" x2="18" y2="-22" stroke="#D4AF37" stroke-width="2"/>
+            <line x1="-15" y1="-12" x2="15" y2="-12" stroke="#E2DDD5" stroke-width="2"/>
+            <line x1="-15" y1="-4" x2="15" y2="-4" stroke="#E2DDD5" stroke-width="2"/>
+            <line x1="-15" y1="4" x2="10" y2="4" stroke="#E2DDD5" stroke-width="2"/>
+            <circle cx="0" cy="18" r="6" fill="url(#goldGradient2)"/>
+          </g>
+          
+          <!-- 漂浮的奖章 -->
+          <g transform="translate(300, 130)">
+            <circle cx="0" cy="0" r="25" fill="url(#goldGradient2)" filter="url(#glow2)">
+              <animate attributeName="r" values="25;27;25" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="0" cy="0" r="18" fill="#B8962E"/>
+            <polygon points="0,-12 3,-4 12,-4 5,2 7,10 0,5 -7,10 -5,2 -12,-4 -3,-4" fill="#F5D485"/>
+            <path d="M-8 25 L0 20 L8 25 L0 40 Z" fill="#D4AF37"/>
+          </g>
+          
+          <!-- 铅笔 -->
+          <g transform="translate(320, 280) rotate(-30)">
+            <rect x="-5" y="-40" width="10" height="50" fill="#F5D485"/>
+            <polygon points="0,15 -5,10 5,10" fill="#2C3E50"/>
+            <rect x="-5" y="-40" width="10" height="8" fill="#E8B96B"/>
+          </g>
+          
+          <!-- 星星装饰 -->
+          <g fill="url(#goldGradient2)" opacity="0.5">
+            <polygon points="70,220 72,228 80,228 74,233 76,241 70,236 64,241 66,233 60,228 68,228">
+              <animate attributeName="opacity" values="0.5;0.9;0.5" dur="2.2s" repeatCount="indefinite"/>
+            </polygon>
+            <polygon points="330,320 332,328 340,328 334,333 336,341 330,336 324,341 326,333 320,328 328,328">
+              <animate attributeName="opacity" values="0.5;0.9;0.5" dur="2.8s" repeatCount="indefinite"/>
+            </polygon>
+          </g>
+          
+          <!-- 浮动圆点装饰 -->
+          <circle cx="60" cy="60" r="5" fill="white" opacity="0.15">
+            <animate attributeName="cy" values="60;55;60" dur="3.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="340" cy="50" r="7" fill="white" opacity="0.12">
+            <animate attributeName="cy" values="50;45;50" dur="4s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="80" cy="340" r="4" fill="white" opacity="0.18">
+            <animate attributeName="cy" values="340;335;340" dur="3s" repeatCount="indefinite"/>
+          </circle>
         </svg>
       </div>
     </div>
@@ -349,11 +397,21 @@
             </el-form-item>
           </div>
           
-          <el-form-item>
+          <el-form-item v-if="selectedRole !== 'admin'">
             <button @click="handleRegister" :disabled="registerLoading" class="btn solid">
               {{ registerLoading ? '注册中...' : '注册' }}
             </button>
           </el-form-item>
+          
+          <div v-else class="admin-register-notice">
+            <el-alert
+              title="管理员账号不支持注册"
+              description="请联系系统管理员获取账号"
+              type="warning"
+              :closable="false"
+              show-icon
+            />
+          </div>
         </el-form>
       </div>
     </div>
@@ -809,57 +867,83 @@ onMounted(() => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
 body, input {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Source Sans 3', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
 }
 
 :root {
-  --primary-color: #3498db;
-  --secondary-color: #2980b9;
-  --accent-color: #8e44ad;
-  --light-color: #f8f9fa;
-  --dark-color: #2c3e50;
+  --primary-deep: #0F4C81;
+  --primary-medium: #1A6B9C;
+  --primary-light: #3D8EB9;
+  --accent-gold: #D4AF37;
+  --accent-warm: #E8B96B;
+  --accent-light: #F5D485;
+  --bg-cream: #FAF8F5;
+  --bg-paper: #F5F2ED;
+  --text-ink: #1A1A2E;
+  --text-slate: #4A5568;
   --white-color: #ffffff;
-  --success-color: #27ae60;
-  --warning-color: #f39c12;
-  --danger-color: #e74c3c;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.15);
-  --transition: all 0.3s ease;
+  --success-color: #2D8B5E;
+  --warning-color: #D4953A;
+  --danger-color: #C44536;
+  --shadow-sm: 0 2px 8px rgba(15, 76, 129, 0.08);
+  --shadow-md: 0 4px 20px rgba(15, 76, 129, 0.12);
+  --shadow-lg: 0 8px 40px rgba(15, 76, 129, 0.16);
+  --shadow-xl: 0 16px 60px rgba(15, 76, 129, 0.2);
+  --shadow-gold: 0 4px 24px rgba(212, 175, 55, 0.3);
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* 主容器样式 */
 .container {
   position: relative;
   width: 100%;
-  background-color: var(--light-color);
+  background: linear-gradient(135deg, var(--bg-cream) 0%, var(--bg-paper) 50%, #EDE8E0 100%);
   min-height: 100vh;
   overflow: hidden;
 }
 
-/* 背景装饰 */
-.container:before {
+.container::before {
   content: "";
   position: absolute;
-  height: 2000px;
-  width: 2000px;
-  top: -10%;
-  right: 48%;
+  height: 2200px;
+  width: 2200px;
+  top: -15%;
+  right: 46%;
   transform: translateY(-50%);
-  background-image: linear-gradient(-45deg, var(--primary-color) 0%, var(--accent-color) 100%);
-  transition: 1.8s ease-in-out;
+  background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-medium) 50%, var(--primary-light) 100%);
+  transition: 1.8s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 50%;
   z-index: 6;
-  box-shadow: 0 0 100px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 0 80px rgba(15, 76, 129, 0.3),
+    0 0 160px rgba(15, 76, 129, 0.15),
+    inset 0 0 100px rgba(255, 255, 255, 0.05);
 }
 
-/* 添加装饰性气泡 */
-.container:after {
+.container::before::after {
+  content: "";
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
+  border-radius: 50%;
+  border: 2px solid rgba(212, 175, 55, 0.2);
+}
+
+.container::after {
   content: "";
   position: absolute;
   height: 100%;
@@ -867,9 +951,10 @@ body, input {
   top: 0;
   left: 0;
   background-image: 
-    radial-gradient(circle at 20% 50%, rgba(52, 152, 219, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(142, 68, 173, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 80%, rgba(41, 128, 185, 0.1) 0%, transparent 50%);
+    radial-gradient(circle at 15% 35%, rgba(15, 76, 129, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 85% 25%, rgba(212, 175, 55, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 45% 85%, rgba(15, 76, 129, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(212, 175, 55, 0.04) 0%, transparent 35%);
   z-index: 5;
   pointer-events: none;
 }
@@ -907,72 +992,117 @@ body, input {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 2rem 3rem;
-  transition: all 0.2s 0.7s;
+  padding: 2.5rem 3rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   grid-column: 1 / 2;
   grid-row: 1 / 2;
-  background: var(--white-color);
-  border-radius: 20px;
-  box-shadow: var(--shadow);
-  min-height: 480px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24px;
+  box-shadow: 
+    0 4px 24px rgba(15, 76, 129, 0.1),
+    0 8px 48px rgba(15, 76, 129, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  min-height: 500px;
+  position: relative;
+  animation: formSlideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-deep), var(--accent-gold), var(--primary-light));
+  border-radius: 24px 24px 0 0;
+}
+
+@keyframes formSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 标题样式 */
 .title {
-  font-size: 2rem;
-  color: var(--dark-color);
-  margin-bottom: 20px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  font-family: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
+  font-size: 1.75rem;
+  color: var(--text-ink);
+  margin-bottom: 24px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
   text-align: center;
+  position: relative;
+}
+
+.title::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-gold), var(--accent-warm));
+  margin: 12px auto 0;
+  border-radius: 2px;
 }
 
 /* 输入框样式 */
 .input-field {
   max-width: 380px;
   width: 100%;
-  background-color: var(--light-color);
-  margin: 15px 0;
-  height: 55px;
-  border-radius: 50px;
+  background: linear-gradient(135deg, #FAFAF8 0%, #F5F5F2 100%);
+  margin: 12px 0;
+  height: 56px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   padding: 0 20px;
   position: relative;
-  transition: var(--transition);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all var(--transition-base);
+  box-shadow: 
+    0 2px 8px rgba(15, 76, 129, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   box-sizing: border-box;
   overflow: hidden;
   background-clip: padding-box;
-  border: none !important;
-}
-
-/* 确保表单没有默认样式 */
-.login-form :deep(.el-form-item) {
-  margin-bottom: 0 !important;
-}
-
-.login-form :deep(.el-form-item__label) {
-  display: none !important;
-}
-
-.login-form :deep(.el-form-item__content) {
-  margin-left: 0 !important;
-  width: 100% !important;
+  border: 2px solid transparent;
 }
 
 .input-field:hover {
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+  box-shadow: 
+    0 4px 16px rgba(15, 76, 129, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transform: translateY(-1px);
+}
+
+.input-field:focus-within {
+  border-color: var(--primary-medium);
+  box-shadow: 
+    0 4px 20px rgba(15, 76, 129, 0.12),
+    0 0 0 4px rgba(15, 76, 129, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  background: #FFFFFF;
 }
 
 .input-field i {
-  margin-right: 15px;
-  color: var(--primary-color);
-  transition: 0.5s;
-  font-size: 1.2rem;
+  margin-right: 14px;
+  color: var(--primary-medium);
+  transition: all var(--transition-base);
+  font-size: 1.15rem;
   z-index: 1;
+}
+
+.input-field:focus-within i {
+  color: var(--accent-gold);
+  transform: scale(1.1);
 }
 
 /* 无边框输入框样式 */
@@ -1040,6 +1170,19 @@ body, input {
 /* 确保登录表单没有额外样式 */
 .login-form {
   width: 100%;
+}
+
+.login-form :deep(.el-form-item) {
+  margin-bottom: 0 !important;
+}
+
+.login-form :deep(.el-form-item__label) {
+  display: none !important;
+}
+
+.login-form :deep(.el-form-item__content) {
+  margin-left: 0 !important;
+  width: 100% !important;
 }
 
 /* 深度修改Element Plus输入框样式 */
@@ -1152,35 +1295,64 @@ body, input {
 .btn {
   width: 100%;
   max-width: 380px;
-  background: #409eff;
+  background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-medium) 100%);
   border: none;
   outline: none;
-  height: 55px;
-  border-radius: 50px;
+  height: 56px;
+  border-radius: 16px;
   color: var(--white-color);
   text-transform: uppercase;
   font-weight: 600;
   margin: 20px 0;
   cursor: pointer;
-  transition: var(--transition);
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
+  transition: all var(--transition-base);
+  box-shadow: 
+    0 4px 16px rgba(15, 76, 129, 0.25),
+    0 2px 8px rgba(15, 76, 129, 0.15);
   font-size: 1rem;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
 }
 
 .btn:hover {
-  background: #66b1ff;
-  box-shadow: 0 6px 16px rgba(64, 158, 255, 0.4);
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, var(--primary-medium) 0%, var(--primary-light) 100%);
+  box-shadow: 
+    0 6px 24px rgba(15, 76, 129, 0.35),
+    0 4px 12px rgba(15, 76, 129, 0.2);
+  transform: translateY(-3px);
+}
+
+.btn:hover::before {
+  left: 100%;
 }
 
 .btn:active {
-  transform: translateY(0);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 16px rgba(15, 76, 129, 0.25),
+    0 2px 8px rgba(15, 76, 129, 0.15);
 }
 
 /* 角色选择器样式 */
 .role-selector {
-  margin: 25px 0;
+  margin: 20px 0;
   width: 100%;
 }
 
@@ -1189,24 +1361,24 @@ body, input {
   justify-content: space-between;
   width: 100%;
   background: transparent !important;
-  border-radius: 30px;
+  border-radius: 16px;
   padding: 0;
   box-shadow: none;
-  transition: var(--transition);
+  transition: all var(--transition-base);
   gap: 0;
-  border: 2px solid rgba(52, 152, 219, 0.2);
+  border: 2px solid rgba(15, 76, 129, 0.15);
+  background: linear-gradient(135deg, #FAFAF8 0%, #F5F5F2 100%);
 }
 
 .role-group:hover {
-  border-color: rgba(52, 152, 219, 0.4);
+  border-color: rgba(15, 76, 129, 0.3);
 }
 
-/* 使用:deep()选择器确保样式被正确应用 */
 .role-selector :deep(.el-radio-group) {
   background: transparent !important;
   width: 100% !important;
   display: flex !important;
-  border-radius: 28px !important;
+  border-radius: 14px !important;
   padding: 0 !important;
 }
 
@@ -1221,83 +1393,74 @@ body, input {
 .role-selector :deep(.el-radio-button__inner) {
   border: none !important;
   background: transparent !important;
-  color: var(--dark-color) !important;
+  color: var(--text-slate) !important;
   border-radius: 0 !important;
   padding: 14px 8px !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: all var(--transition-base) !important;
   font-size: 14px !important;
   font-weight: 600 !important;
   box-shadow: none !important;
   line-height: normal !important;
   height: auto !important;
-  min-height: 50px !important;
+  min-height: 52px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
 }
 
-/* 移除第一个和最后一个按钮的圆角 */
 .role-selector :deep(.el-radio-button:first-child .el-radio-button__inner) {
-  border-radius: 28px 0 0 28px !important;
+  border-radius: 14px 0 0 14px !important;
 }
 
 .role-selector :deep(.el-radio-button:last-child .el-radio-button__inner) {
-  border-radius: 0 28px 28px 0 !important;
+  border-radius: 0 14px 14px 0 !important;
 }
 
-/* 按钮悬停效果 */
 .role-selector :deep(.el-radio-button__inner:hover) {
-  background: rgba(52, 152, 219, 0.1) !important;
-  color: var(--primary-color) !important;
+  background: rgba(15, 76, 129, 0.06) !important;
+  color: var(--primary-deep) !important;
 }
 
-/* 按钮激活效果 */
 .role-selector :deep(.el-radio-button.is-active .el-radio-button__inner) {
-  background: #409eff !important;
+  background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-medium) 100%) !important;
   color: var(--white-color) !important;
-  box-shadow: 0 4px 16px rgba(64, 158, 255, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(15, 76, 129, 0.25) !important;
 }
 
-/* 确保激活状态的按钮样式正确 */
 .role-selector :deep(.el-radio-button__orig-radio:checked + .el-radio-button__inner) {
-  background: #409eff !important;
+  background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-medium) 100%) !important;
   color: var(--white-color) !important;
 }
 
-/* 移除Element Plus默认的边框和背景 */
 .role-selector :deep(.el-radio-button--default.is-active .el-radio-button__inner) {
   border-color: transparent !important;
   color: var(--white-color) !important;
-  background: #409eff !important;
+  background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-medium) 100%) !important;
 }
 
 .role-selector :deep(.el-radio-button--default:not(.is-active) .el-radio-button__inner) {
   border-color: transparent !important;
-  color: var(--dark-color) !important;
+  color: var(--text-slate) !important;
   background: transparent !important;
 }
 
-/* 确保没有额外的边框 */
 .role-selector :deep(.el-radio-button + .el-radio-button) {
   margin-left: 0 !important;
   border-left: none !important;
 }
 
-/* 确保激活状态的按钮显示在最上层 */
 .role-selector :deep(.el-radio-button.is-active) {
   z-index: 1;
 }
 
-/* 确保激活状态的按钮没有额外样式 */
 .role-selector :deep(.el-radio-button.is-active + .el-radio-button .el-radio-button__inner) {
   border-left: none !important;
 }
 
-/* 移除所有可能导致白底的样式 */
 .role-selector :deep(.el-radio-button__inner) {
   --el-button-bg-color: transparent !important;
   --el-button-border-color: transparent !important;
-  --el-button-hover-bg-color: rgba(52, 152, 219, 0.1) !important;
+  --el-button-hover-bg-color: rgba(15, 76, 129, 0.06) !important;
   --el-button-hover-border-color: transparent !important;
   --el-button-active-bg-color: transparent !important;
   --el-button-active-border-color: transparent !important;
@@ -1344,7 +1507,6 @@ body, input {
   z-index: 6;
 }
 
-/* 面板样式 */
 .panel {
   display: flex;
   flex-direction: column;
@@ -1367,54 +1529,59 @@ body, input {
 
 .panel .content {
   color: var(--white-color);
-  transition: transform 0.9s ease-in-out;
+  transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
   transition-delay: 0.6s;
-  max-width: 300px;
+  max-width: 320px;
 }
 
 .panel h3 {
-  font-weight: 700;
-  line-height: 1.2;
+  font-family: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
+  font-weight: 600;
+  line-height: 1.3;
   font-size: 2rem;
-  margin-bottom: 15px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .panel p {
+  font-family: 'Source Sans 3', 'Noto Sans SC', sans-serif;
   font-size: 1rem;
   padding: 0.7rem 0;
-  margin-bottom: 30px;
-  line-height: 1.5;
-  opacity: 0.9;
+  margin-bottom: 28px;
+  line-height: 1.6;
+  opacity: 0.92;
 }
 
 .btn.transparent {
   margin: 0;
-  background: none;
-  border: 2px solid var(--white-color);
-  width: 150px;
-  height: 45px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  width: 140px;
+  height: 48px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--white-color);
-  transition: var(--transition);
-  border-radius: 22px;
+  transition: all var(--transition-base);
+  border-radius: 24px;
+  letter-spacing: 0.5px;
 }
 
 .btn.transparent:hover {
   background: var(--white-color);
-  color: var(--primary-color);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  color: var(--primary-deep);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  border-color: var(--white-color);
 }
 
 /* 图片样式 */
 .image {
   width: 100%;
-  transition: transform 1.1s ease-in-out, opacity 1.1s ease-in-out;
+  transition: transform 1.1s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.1s cubic-bezier(0.4, 0, 0.2, 1);
   transition-delay: 0.4s;
-  max-width: 300px;
+  max-width: 320px;
   opacity: 0.95;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.15));
 }
 
 /* 右侧面板初始状态 */
@@ -1424,7 +1591,7 @@ body, input {
 }
 
 /* 注册模式样式 */
-.container.sign-up-mode:before {
+.container.sign-up-mode::before {
   transform: translate(100%, -50%);
   right: 52%;
 }
@@ -1467,6 +1634,10 @@ body, input {
   .panel h3 {
     font-size: 1.8rem;
   }
+  
+  .image {
+    max-width: 280px;
+  }
 }
 
 @media (max-width: 870px) {
@@ -1479,7 +1650,7 @@ body, input {
     width: 90%;
     top: 95%;
     transform: translate(-50%, -100%);
-    transition: 1s 0.8s ease-in-out;
+    transition: 1s 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .signin-signup, .container.sign-up-mode .signin-signup {
@@ -1508,19 +1679,19 @@ body, input {
   }
   
   .image {
-    width: 250px;
-    transition: transform 0.9s ease-in-out;
+    width: 220px;
+    transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
     transition-delay: 0.6s;
   }
   
   .panel .content {
     padding-right: 15%;
-    transition: transform 0.9s ease-in-out;
+    transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
     transition-delay: 0.8s;
   }
   
   .panel h3 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
   
   .panel p {
@@ -1529,12 +1700,12 @@ body, input {
   }
   
   .btn.transparent {
-    width: 130px;
-    height: 40px;
-    font-size: 0.8rem;
+    width: 120px;
+    height: 42px;
+    font-size: 0.85rem;
   }
   
-  .container:before {
+  .container::before {
     width: 1500px;
     height: 1500px;
     transform: translateX(-50%);
@@ -1542,10 +1713,10 @@ body, input {
     bottom: 68%;
     right: initial;
     top: initial;
-    transition: 2s ease-in-out;
+    transition: 2s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
-  .container.sign-up-mode:before {
+  .container.sign-up-mode::before {
     transform: translate(-50%, 100%);
     bottom: 32%;
     right: initial;
@@ -1575,11 +1746,15 @@ body, input {
 @media (max-width: 570px) {
   .form-wrapper {
     padding: 2rem 1.5rem;
-    min-height: 450px;
+    min-height: 480px;
     width: 100%;
+    border-radius: 20px;
   }
   
-  /* 小屏幕下单列显示 */
+  .form-wrapper::before {
+    border-radius: 20px 20px 0 0;
+  }
+  
   .form-row {
     flex-direction: column;
     gap: 0;
@@ -1597,35 +1772,37 @@ body, input {
     padding: 1rem;
   }
   
-  .container:before {
+  .container::before {
     bottom: 72%;
     left: 50%;
   }
   
-  .container.sign-up-mode:before {
+  .container.sign-up-mode::before {
     bottom: 28%;
     left: 50%;
   }
   
   .title {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
   }
   
   .input-field {
-    margin: 12px 0;
-    height: 50px;
+    margin: 10px 0;
+    height: 52px;
+    border-radius: 14px;
   }
   
   .btn {
     width: 160px;
-    height: 45px;
+    height: 50px;
     font-size: 0.9rem;
+    border-radius: 14px;
   }
   
-  /* 身份选择器始终一行三个显示 */
   .role-group {
     flex-direction: row;
     gap: 4px;
+    border-radius: 14px;
   }
   
   .role-button {
@@ -1634,7 +1811,7 @@ body, input {
   }
   
   .panel h3 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
   
   .panel p {
@@ -1653,72 +1830,73 @@ body, input {
 
 /* 自定义发送验证码按钮 */
 .custom-send-code-btn {
-  background-color: var(--primary-color) !important;
+  background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-medium) 100%) !important;
   border: none !important;
   color: var(--white-color) !important;
-  height: 40px !important;
-  padding: 0 15px !important;
+  height: 42px !important;
+  padding: 0 18px !important;
   font-size: 0.85rem !important;
-  border-radius: 20px !important;
-  transition: var(--transition) !important;
-  box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3) !important;
+  border-radius: 12px !important;
+  transition: all var(--transition-base) !important;
+  box-shadow: 0 3px 12px rgba(15, 76, 129, 0.25) !important;
+  font-weight: 600 !important;
 }
 
 .custom-send-code-btn:hover {
-  background-color: var(--secondary-color) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4) !important;
+  background: linear-gradient(135deg, var(--primary-medium) 0%, var(--primary-light) 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 5px 16px rgba(15, 76, 129, 0.35) !important;
 }
 
 /* 忘记密码对话框按钮样式 */
 .dialog-footer {
   display: flex;
   justify-content: center;
-  gap: 15px;
+  gap: 16px;
   padding: 20px 0 0 0;
 }
 
 .dialog-footer .el-button {
-  border-radius: 30px !important;
-  padding: 10px 25px !important;
+  border-radius: 14px !important;
+  padding: 12px 28px !important;
   font-weight: 600 !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: all var(--transition-base) !important;
   min-width: 120px !important;
 }
 
 .dialog-footer .el-button--primary {
-  background: #409eff !important;
+  background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-medium) 100%) !important;
   border: none !important;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3) !important;
+  box-shadow: 0 4px 16px rgba(15, 76, 129, 0.25) !important;
   color: var(--white-color) !important;
 }
 
 .dialog-footer .el-button--primary:hover {
-  background: #66b1ff !important;
-  box-shadow: 0 6px 16px rgba(64, 158, 255, 0.4) !important;
-  transform: translateY(-1px) !important;
+  background: linear-gradient(135deg, var(--primary-medium) 0%, var(--primary-light) 100%) !important;
+  box-shadow: 0 6px 20px rgba(15, 76, 129, 0.35) !important;
+  transform: translateY(-2px) !important;
 }
 
 .dialog-footer .el-button--default {
   background: transparent !important;
-  border: 2px solid var(--primary-color) !important;
-  color: var(--primary-color) !important;
+  border: 2px solid var(--primary-medium) !important;
+  color: var(--primary-deep) !important;
   box-shadow: none !important;
 }
 
 .dialog-footer .el-button--default:hover {
-  background: rgba(52, 152, 219, 0.1) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2) !important;
+  background: rgba(15, 76, 129, 0.06) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(15, 76, 129, 0.15) !important;
 }
 
-/* 添加加载动画 */
+/* 加载动画 */
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
   }
   50% {
-    opacity: 0.5;
+    opacity: 0.6;
   }
 }
 
@@ -1726,5 +1904,44 @@ body, input {
   opacity: 0.7;
   cursor: not-allowed;
   animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* 忘记密码链接样式 */
+.forgot-password-container {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+.forgot-password-container .el-link {
+  color: var(--primary-medium) !important;
+  font-weight: 500 !important;
+  transition: all var(--transition-base);
+  font-size: 0.9rem;
+}
+
+.forgot-password-container .el-link:hover {
+  color: var(--accent-gold) !important;
+}
+
+.admin-register-notice {
+  width: 100%;
+  max-width: 380px;
+  margin: 20px 0;
+}
+
+.admin-register-notice :deep(.el-alert) {
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+
+.admin-register-notice :deep(.el-alert__title) {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.admin-register-notice :deep(.el-alert__description) {
+  margin-top: 6px;
+  font-size: 0.9rem;
 }
 </style>
