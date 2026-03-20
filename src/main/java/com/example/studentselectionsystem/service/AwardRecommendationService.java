@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,9 @@ public class AwardRecommendationService {
 
     @Autowired
     private StudentMapper studentMapper;
+
+    @Autowired
+    private RecommendationWeightService recommendationWeightService;
 
     public List<Map<String, Object>> recommendAwards(Long studentId) {
         try {
@@ -102,15 +106,23 @@ public class AwardRecommendationService {
                                       List<Score> studentScores, 
                                       List<StudentAwardRecord> studentAwardRecords) {
         
-        double gradeScore = calculateGradeScore(studentScores) * 0.4;
+        RecommendationWeight weights = recommendationWeightService.getWeights();
         
-        double awardScore = calculateAwardScore(award, studentAwardRecords) * 0.3;
+        double gradeWeight = weights.getGradeWeight().divide(new BigDecimal("100")).doubleValue();
+        double awardWeight = weights.getAwardWeight().divide(new BigDecimal("100")).doubleValue();
+        double majorWeight = weights.getMajorWeight().divide(new BigDecimal("100")).doubleValue();
+        double historyWeight = weights.getHistoryWeight().divide(new BigDecimal("100")).doubleValue();
+        double competitionWeight = weights.getCompetitionWeight().divide(new BigDecimal("100")).doubleValue();
         
-        double majorScore = calculateMajorScore(student, award) * 0.15;
+        double gradeScore = calculateGradeScore(studentScores) * gradeWeight;
         
-        double historyScore = calculateHistoryScore(award) * 0.1;
+        double awardScore = calculateAwardScore(award, studentAwardRecords) * awardWeight;
         
-        double competitionScore = calculateCompetitionScore(award) * 0.05;
+        double majorScore = calculateMajorScore(student, award) * majorWeight;
+        
+        double historyScore = calculateHistoryScore(award) * historyWeight;
+        
+        double competitionScore = calculateCompetitionScore(award) * competitionWeight;
 
         return gradeScore + awardScore + majorScore + historyScore + competitionScore;
     }

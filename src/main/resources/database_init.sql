@@ -21,6 +21,7 @@ DROP TABLE IF EXISTS notices;
 DROP TABLE IF EXISTS carousel;
 DROP TABLE IF EXISTS majors;
 DROP TABLE IF EXISTS verification_codes;
+DROP TABLE IF EXISTS recommendation_weights;
 DROP TABLE IF EXISTS users;
 
 -- 启用外键约束检查
@@ -271,6 +272,22 @@ CREATE TABLE IF NOT EXISTS verification_codes (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     status TINYINT DEFAULT 0 COMMENT '状态：0-未使用，1-已使用，2-已过期'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='验证码表';
+
+-- 创建推荐权重配置表
+CREATE TABLE IF NOT EXISTS recommendation_weights (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '配置ID',
+    grade_weight DECIMAL(5,2) DEFAULT 40.00 COMMENT '成绩权重',
+    award_weight DECIMAL(5,2) DEFAULT 30.00 COMMENT '奖项权重',
+    major_weight DECIMAL(5,2) DEFAULT 15.00 COMMENT '专业权重',
+    history_weight DECIMAL(5,2) DEFAULT 10.00 COMMENT '历史数据权重',
+    competition_weight DECIMAL(5,2) DEFAULT 5.00 COMMENT '竞争程度权重',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    updated_by BIGINT COMMENT '更新人ID'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='AI推荐权重配置表';
+
+-- 插入默认权重配置
+INSERT INTO recommendation_weights (grade_weight, award_weight, major_weight, history_weight, competition_weight) VALUES
+(40.00, 30.00, 15.00, 10.00, 5.00);
 
 -- 插入轮播图初始数据
 INSERT INTO carousel (image_url, title, description, sort_order, interval_time, status) VALUES

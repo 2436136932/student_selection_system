@@ -1,27 +1,67 @@
-# 计划：注册页面管理员不提供注册按钮
+# 计划：管理员自主配置AI智能推荐权重
 
 ## 需求分析
-在注册页面，当用户选择"管理员"角色时，不显示注册按钮。这是因为管理员账号通常由系统预设或通过其他方式创建，不允许普通用户自行注册为管理员。
+当前AI智能推荐的权重是硬编码在 `AwardRecommendationService.java` 中的：
+- 成绩匹配度：40%
+- 奖项匹配度：30%
+- 专业匹配：15%
+- 历史数据：10%
+- 竞争程度：5%
 
-## 当前实现
-- 注册表单中有角色选择器（管理员、教师、学生）
-- 注册按钮始终显示
+需要让管理员可以在前端界面自主调整这些权重比例。
 
 ## 修改方案
 
-### 1. 修改注册按钮显示逻辑
-**文件**: `frontend/src/views/LoginView.vue`
+### 1. 数据库层
+**新增表**: `recommendation_weights` (推荐权重配置表)
+```sql
+CREATE TABLE recommendation_weights (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    grade_weight DECIMAL(5,2) DEFAULT 40.00 COMMENT '成绩权重',
+    award_weight DECIMAL(5,2) DEFAULT 30.00 COMMENT '奖项权重',
+    major_weight DECIMAL(5,2) DEFAULT 15.00 COMMENT '专业权重',
+    history_weight DECIMAL(5,2) DEFAULT 10.00 COMMENT '历史数据权重',
+    competition_weight DECIMAL(5,2) DEFAULT 5.00 COMMENT '竞争程度权重',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by BIGINT COMMENT '更新人ID'
+);
+```
 
-**修改内容**:
-- 在注册按钮上添加 `v-if` 条件判断
-- 当 `selectedRole === 'admin'` 时隐藏注册按钮
-- 显示提示信息说明管理员不能注册
+### 2. 后端层
+**新增文件**:
+- `entity/RecommendationWeight.java` - 实体类
+- `mapper/RecommendationWeightMapper.java` - Mapper接口
+- `service/RecommendationWeightService.java` - 服务类
+- `controller/RecommendationWeightController.java` - 控制器
 
-### 2. 具体修改
-- 第 400-404 行：注册按钮区域
-  - 添加条件判断，当角色为管理员时隐藏按钮
-  - 添加提示文本，告知用户管理员不支持注册
+**修改文件**:
+- `AwardRecommendationService.java` - 从数据库读取权重配置
+
+### 3. 前端层
+**修改文件**: `SystemSettingsView.vue`
+- 添加"AI推荐权重配置"模块（仅管理员可见）
+- 使用滑块组件调整各权重
+- 权重总和必须为100%，自动校验
+
+**修改文件**: `AwardRecommendationView.vue`
+- 从后端获取当前权重配置并显示
+
+## 详细任务清单
+
+### 后端任务
+1. 创建 `RecommendationWeight` 实体类
+2. 创建 `RecommendationWeightMapper` 接口
+3. 创建 `RecommendationWeightService` 服务类
+4. 创建 `RecommendationWeightController` 控制器
+5. 修改 `AwardRecommendationService` 使用动态权重
+6. 更新 `database_init.sql` 添加新表
+
+### 前端任务
+1. 修改 `SystemSettingsView.vue` 添加权重配置模块
+2. 修改 `AwardRecommendationView.vue` 显示当前权重
 
 ## 预期效果
-- 选择"管理员"角色时：显示提示"管理员账号不支持注册，请联系系统管理员"
-- 选择"教师"或"学生"角色时：正常显示注册按钮
+- 管理员可以在"系统设置"页面调整AI推荐的各项权重
+- 权重总和必须为100%
+- 修改后立即生效，影响所有学生的推荐结果
+- 学生端可以看到当前使用的权重配置

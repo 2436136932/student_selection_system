@@ -30,6 +30,7 @@ com\example\studentselectionsystem\mapper\AwardMapper.class
 com\example\studentselectionsystem\util\JwtUtil.class
 com\example\studentselectionsystem\entity\Major.class
 com\example\studentselectionsystem\controller\AwardController$1.class
+com\example\studentselectionsystem\mapper\RecommendationWeightMapper.class
 com\example\studentselectionsystem\controller\UserController.class
 com\example\studentselectionsystem\service\impl\StudentServiceImpl.class
 com\example\studentselectionsystem\service\StudentAwardApplicationService.class
@@ -46,11 +47,13 @@ com\example\studentselectionsystem\config\WebSocketConfig.class
 com\example\studentselectionsystem\controller\AuthController.class
 com\example\studentselectionsystem\websocket\ChatWebSocketHandler.class
 com\example\studentselectionsystem\config\JwtAuthenticationFilter.class
+com\example\studentselectionsystem\controller\RecommendationWeightController.class
 com\example\studentselectionsystem\entity\SelectionProcess.class
 com\example\studentselectionsystem\repository\ScoreRepository.class
 com\example\studentselectionsystem\entity\ChatMessage.class
 com\example\studentselectionsystem\mapper\ChatSessionMapper.class
 com\example\studentselectionsystem\mapper\StudentMapper.class
+com\example\studentselectionsystem\entity\RecommendationWeight.class
 com\example\studentselectionsystem\entity\Selection.class
 com\example\studentselectionsystem\repository\CourseRepository.class
 com\example\studentselectionsystem\service\StudentAwardRecordService.class
@@ -131,3 +134,4 @@ com\example\studentselectionsystem\repository\ChatMessageRepository.class
 com\example\studentselectionsystem\service\ChatMessageService.class
 com\example\studentselectionsystem\dao\impl\AwardDAOImpl.class
 com\example\studentselectionsystem\service\impl\StudentAwardRecordServiceImpl.class
+com\example\studentselectionsystem\service\RecommendationWeightService.class

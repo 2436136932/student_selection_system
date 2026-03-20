@@ -146,6 +146,8 @@
           </div>
         </el-card>
 
+
+
         <!-- 操作按钮 -->
         <div class="settings-actions">
           <el-button type="primary" @click="saveSettings">保存设置</el-button>
@@ -167,6 +169,7 @@ import {
 } from '@element-plus/icons-vue'
 import { getUserInfo } from '../utils/role'
 import Sortable from 'sortablejs'
+import axios from 'axios'
 
 // 主题选项
 const themeOptions = ref([
@@ -178,8 +181,8 @@ const themeOptions = ref([
   { name: 'teal', label: '青色', color: '#409eff' }
 ])
 
-// 用户信息
-const userInfo = ref({})
+// 用户信息 - 立即从localStorage获取
+const userInfo = ref(getUserInfo())
 
 // 电脑信息
 const computerInfo = ref({
@@ -195,6 +198,8 @@ const loginInfo = ref({
   loginTime: localStorage.getItem('loginTime') || '未知',
   lastLoginTime: localStorage.getItem('lastLoginTime') || '未知'
 })
+
+
 
 // 菜单顺序管理
 // 菜单定义，与App.vue保持一致
@@ -360,8 +365,6 @@ watch(displaySettings, (newSettings) => {
 // 组件挂载时初始化
 onMounted(() => {
   initSettings()
-  // 获取用户信息
-  userInfo.value = getUserInfo()
   // 根据用户角色过滤菜单
   filterMenusByRole()
   // 初始化拖拽排序
@@ -631,6 +634,8 @@ const filterMenusByRole = () => {
   font-size: 14px;
   color: #303133;
 }
+
+
 
 /* 响应式设计 */
 @media (max-width: 768px) {
