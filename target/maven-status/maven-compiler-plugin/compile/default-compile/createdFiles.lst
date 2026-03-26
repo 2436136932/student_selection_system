@@ -1,7 +1,6 @@
 com\example\studentselectionsystem\entity\Role.class
 com\example\studentselectionsystem\service\impl\FileServiceImpl.class
 com\example\studentselectionsystem\service\RoleService.class
-com\example\studentselectionsystem\model\Award.class
 com\example\studentselectionsystem\service\impl\CourseServiceImpl.class
 com\example\studentselectionsystem\service\TeacherService.class
 com\example\studentselectionsystem\mapper\UserMapper.class
@@ -30,7 +29,6 @@ com\example\studentselectionsystem\mapper\AwardMapper.class
 com\example\studentselectionsystem\util\JwtUtil.class
 com\example\studentselectionsystem\entity\Major.class
 com\example\studentselectionsystem\controller\AwardController$1.class
-com\example\studentselectionsystem\mapper\RecommendationWeightMapper.class
 com\example\studentselectionsystem\controller\UserController.class
 com\example\studentselectionsystem\service\impl\StudentServiceImpl.class
 com\example\studentselectionsystem\service\StudentAwardApplicationService.class
@@ -47,7 +45,6 @@ com\example\studentselectionsystem\config\WebSocketConfig.class
 com\example\studentselectionsystem\controller\AuthController.class
 com\example\studentselectionsystem\websocket\ChatWebSocketHandler.class
 com\example\studentselectionsystem\config\JwtAuthenticationFilter.class
-com\example\studentselectionsystem\controller\RecommendationWeightController.class
 com\example\studentselectionsystem\entity\SelectionProcess.class
 com\example\studentselectionsystem\repository\ScoreRepository.class
 com\example\studentselectionsystem\entity\ChatMessage.class
@@ -90,7 +87,6 @@ com\example\studentselectionsystem\mapper\CarouselMapper.class
 com\example\studentselectionsystem\entity\StudentAwardApplication.class
 com\example\studentselectionsystem\service\impl\EmailServiceImpl.class
 com\example\studentselectionsystem\repository\RoleRepository.class
-com\example\studentselectionsystem\dao\AwardDAO.class
 com\example\studentselectionsystem\service\impl\SelectionServiceImpl.class
 com\example\studentselectionsystem\scheduler\AwardStatusScheduler.class
 com\example\studentselectionsystem\service\SelectionService.class
@@ -132,6 +128,4 @@ com\example\studentselectionsystem\service\impl\PermissionServiceImpl.class
 com\example\studentselectionsystem\config\GlobalExceptionHandler.class
 com\example\studentselectionsystem\repository\ChatMessageRepository.class
 com\example\studentselectionsystem\service\ChatMessageService.class
-com\example\studentselectionsystem\dao\impl\AwardDAOImpl.class
 com\example\studentselectionsystem\service\impl\StudentAwardRecordServiceImpl.class
-com\example\studentselectionsystem\service\RecommendationWeightService.class

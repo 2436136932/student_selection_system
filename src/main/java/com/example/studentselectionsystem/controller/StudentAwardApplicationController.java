@@ -518,7 +518,7 @@ public class StudentAwardApplicationController {
                     if (optionalTeacher.isPresent()) {
                         Long currentTeacherId = optionalTeacher.get().getId();
                         // 查询申请对应的奖项信息
-                        Optional<com.example.studentselectionsystem.model.Award> awardOptional = awardService.getAwardById(String.valueOf(application.getAwardId()));
+                        Optional<com.example.studentselectionsystem.entity.Award> awardOptional = awardService.getAwardById(String.valueOf(application.getAwardId()));
                         if (!awardOptional.isPresent() || awardOptional.get().getApprovingTeacherId() == null || !awardOptional.get().getApprovingTeacherId().equals(currentTeacherId)) {
                             // 教师试图查看非自己负责审批的申请，返回403 Forbidden
                             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

@@ -5,115 +5,6 @@
       <p class="subtitle">基于您的成绩和获奖记录，为您智能推荐合适的奖项（推荐仅供参考）</p>
     </div>
 
-    <!-- AI推荐权重配置（仅管理员可见） -->
-    <el-card v-if="userInfo.role === 'admin'" class="weights-config-card" shadow="hover">
-      <template #header>
-        <div class="card-header">
-          <el-icon><Setting /></el-icon>
-          <span>AI推荐权重配置</span>
-        </div>
-      </template>
-
-      <div class="ai-weights-section">
-        <div class="weights-description">
-          <p>调整AI智能推荐的各项权重比例，权重总和必须为100%</p>
-        </div>
-        
-        <div class="weights-config">
-          <div class="weight-item">
-            <div class="weight-label">
-              <span>📊 成绩匹配权重</span>
-              <span class="weight-value">{{ aiWeights.gradeWeight }}%</span>
-            </div>
-            <el-slider 
-              v-model="aiWeights.gradeWeight" 
-              :min="0" 
-              :max="100" 
-              :step="5"
-              show-input
-              @change="validateWeights"
-            />
-          </div>
-          
-          <div class="weight-item">
-            <div class="weight-label">
-              <span>🏆 奖项匹配权重</span>
-              <span class="weight-value">{{ aiWeights.awardWeight }}%</span>
-            </div>
-            <el-slider 
-              v-model="aiWeights.awardWeight" 
-              :min="0" 
-              :max="100" 
-              :step="5"
-              show-input
-              @change="validateWeights"
-            />
-          </div>
-          
-          <div class="weight-item">
-            <div class="weight-label">
-              <span>🎓 专业匹配权重</span>
-              <span class="weight-value">{{ aiWeights.majorWeight }}%</span>
-            </div>
-            <el-slider 
-              v-model="aiWeights.majorWeight" 
-              :min="0" 
-              :max="100" 
-              :step="5"
-              show-input
-              @change="validateWeights"
-            />
-          </div>
-          
-          <div class="weight-item">
-            <div class="weight-label">
-              <span>📈 历史数据权重</span>
-              <span class="weight-value">{{ aiWeights.historyWeight }}%</span>
-            </div>
-            <el-slider 
-              v-model="aiWeights.historyWeight" 
-              :min="0" 
-              :max="100" 
-              :step="5"
-              show-input
-              @change="validateWeights"
-            />
-          </div>
-          
-          <div class="weight-item">
-            <div class="weight-label">
-              <span>⚔️ 竞争程度权重</span>
-              <span class="weight-value">{{ aiWeights.competitionWeight }}%</span>
-            </div>
-            <el-slider 
-              v-model="aiWeights.competitionWeight" 
-              :min="0" 
-              :max="100" 
-              :step="5"
-              show-input
-              @change="validateWeights"
-            />
-          </div>
-        </div>
-        
-        <div class="weights-summary">
-          <el-alert 
-            :title="weightsSum === 100 ? '权重配置正确' : `权重总和为 ${weightsSum}%，必须为100%`"
-            :type="weightsSum === 100 ? 'success' : 'error'"
-            :closable="false"
-            show-icon
-          />
-        </div>
-        
-        <div class="weights-actions">
-          <el-button type="primary" @click="saveAiWeights" :disabled="weightsSum !== 100">
-            保存权重配置
-          </el-button>
-          <el-button @click="resetAiWeights">恢复默认</el-button>
-        </div>
-      </div>
-    </el-card>
-
     <el-card class="info-card" shadow="hover">
       <template #header>
         <div class="card-header">
@@ -124,11 +15,11 @@
       <div class="info-content">
         <p>💡 我们的 AI 系统会综合分析以下因素为您推荐奖项：</p>
         <ul>
-          <li>📊 <strong>成绩匹配度</strong>（权重 {{ currentWeights.gradeWeight }}%）：基于您的平均成绩和 GPA</li>
-          <li>🏆 <strong>已有奖项</strong>（权重 {{ currentWeights.awardWeight }}%）：您的历史获奖记录</li>
-          <li>🎓 <strong>专业匹配</strong>（权重 {{ currentWeights.majorWeight }}%）：奖项与您的专业相关性</li>
-          <li>📈 <strong>历史数据</strong>（权重 {{ currentWeights.historyWeight }}%）：该奖项的历史申请情况</li>
-          <li>⚔️ <strong>竞争程度</strong>（权重 {{ currentWeights.competitionWeight }}%）：当前申请人数与名额比例</li>
+          <li>📊 <strong>成绩匹配度</strong>（权重 40%）：基于您的平均成绩和 GPA</li>
+          <li>🏆 <strong>已有奖项</strong>（权重 30%）：您的历史获奖记录</li>
+          <li>🎓 <strong>专业匹配</strong>（权重 15%）：奖项与您的专业相关性</li>
+          <li>📈 <strong>历史数据</strong>（权重 10%）：该奖项的历史申请情况</li>
+          <li>⚔️ <strong>竞争程度</strong>（权重 5%）：当前申请人数与名额比例</li>
         </ul>
       </div>
     </el-card>
@@ -278,31 +169,25 @@
             <el-col :span="12">
               <div class="detail-item">
                 <span class="detail-label">📊 成绩匹配：</span>
-                <span class="detail-value">{{ (selectedAward.matchScore * currentWeights.gradeWeight / 100).toFixed(1) }} 分</span>
+                <span class="detail-value">{{ (selectedAward.matchScore * 0.4).toFixed(1) }} 分</span>
               </div>
             </el-col>
             <el-col :span="12">
               <div class="detail-item">
                 <span class="detail-label">🏆 奖项匹配：</span>
-                <span class="detail-value">{{ (selectedAward.matchScore * currentWeights.awardWeight / 100).toFixed(1) }} 分</span>
+                <span class="detail-value">{{ (selectedAward.matchScore * 0.3).toFixed(1) }} 分</span>
               </div>
             </el-col>
             <el-col :span="12">
               <div class="detail-item">
                 <span class="detail-label">🎓 专业匹配：</span>
-                <span class="detail-value">{{ (selectedAward.matchScore * currentWeights.majorWeight / 100).toFixed(1) }} 分</span>
+                <span class="detail-value">{{ (selectedAward.matchScore * 0.15).toFixed(1) }} 分</span>
               </div>
             </el-col>
             <el-col :span="12">
               <div class="detail-item">
                 <span class="detail-label">📈 历史数据：</span>
-                <span class="detail-value">{{ (selectedAward.matchScore * currentWeights.historyWeight / 100).toFixed(1) }} 分</span>
-              </div>
-            </el-col>
-            <el-col :span="12">
-              <div class="detail-item">
-                <span class="detail-label">⚔️ 竞争程度：</span>
-                <span class="detail-value">{{ (selectedAward.matchScore * currentWeights.competitionWeight / 100).toFixed(1) }} 分</span>
+                <span class="detail-value">{{ (selectedAward.matchScore * 0.1).toFixed(1) }} 分</span>
               </div>
             </el-col>
           </el-row>
@@ -327,12 +212,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, reactive } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import { InfoFilled, Refresh, DocumentAdd, View, TrendCharts, Setting } from '@element-plus/icons-vue'
-import { getUserInfo } from '../utils/role'
+import { InfoFilled, Refresh, DocumentAdd, View, TrendCharts } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const loading = ref(false)
@@ -340,96 +224,6 @@ const analyzed = ref(false)
 const recommendations = ref([])
 const detailDialogVisible = ref(false)
 const selectedAward = ref(null)
-
-const userInfo = ref(getUserInfo())
-
-const currentWeights = ref({
-  gradeWeight: 40,
-  awardWeight: 30,
-  majorWeight: 15,
-  historyWeight: 10,
-  competitionWeight: 5
-})
-
-const aiWeights = reactive({
-  gradeWeight: 40,
-  awardWeight: 30,
-  majorWeight: 15,
-  historyWeight: 10,
-  competitionWeight: 5
-})
-
-const weightsSum = computed(() => {
-  return aiWeights.gradeWeight + aiWeights.awardWeight + aiWeights.majorWeight + 
-         aiWeights.historyWeight + aiWeights.competitionWeight
-})
-
-const fetchCurrentWeights = async () => {
-  try {
-    const response = await axios.get('/api/recommendation-weights')
-    if (response.data.success && response.data.data) {
-      currentWeights.value = {
-        gradeWeight: Number(response.data.data.gradeWeight),
-        awardWeight: Number(response.data.data.awardWeight),
-        majorWeight: Number(response.data.data.majorWeight),
-        historyWeight: Number(response.data.data.historyWeight),
-        competitionWeight: Number(response.data.data.competitionWeight)
-      }
-      aiWeights.gradeWeight = Number(response.data.data.gradeWeight)
-      aiWeights.awardWeight = Number(response.data.data.awardWeight)
-      aiWeights.majorWeight = Number(response.data.data.majorWeight)
-      aiWeights.historyWeight = Number(response.data.data.historyWeight)
-      aiWeights.competitionWeight = Number(response.data.data.competitionWeight)
-    }
-  } catch (error) {
-    console.error('获取权重配置失败:', error)
-  }
-}
-
-const saveAiWeights = async () => {
-  if (weightsSum.value !== 100) {
-    ElMessage.error('权重总和必须为100%')
-    return
-  }
-  
-  try {
-    const response = await axios.put('/api/recommendation-weights', {
-      gradeWeight: aiWeights.gradeWeight,
-      awardWeight: aiWeights.awardWeight,
-      majorWeight: aiWeights.majorWeight,
-      historyWeight: aiWeights.historyWeight,
-      competitionWeight: aiWeights.competitionWeight
-    })
-    
-    if (response.data.success) {
-      ElMessage.success('AI权重配置保存成功')
-      currentWeights.value = {
-        gradeWeight: aiWeights.gradeWeight,
-        awardWeight: aiWeights.awardWeight,
-        majorWeight: aiWeights.majorWeight,
-        historyWeight: aiWeights.historyWeight,
-        competitionWeight: aiWeights.competitionWeight
-      }
-    } else {
-      ElMessage.error(response.data.message || '保存失败')
-    }
-  } catch (error) {
-    console.error('保存AI权重配置失败:', error)
-    ElMessage.error('保存失败，请稍后重试')
-  }
-}
-
-const resetAiWeights = () => {
-  aiWeights.gradeWeight = 40
-  aiWeights.awardWeight = 30
-  aiWeights.majorWeight = 15
-  aiWeights.historyWeight = 10
-  aiWeights.competitionWeight = 5
-  ElMessage.info('已恢复默认权重配置')
-}
-
-const validateWeights = () => {
-}
 
 const loadRecommendations = async () => {
   loading.value = true
@@ -539,7 +333,7 @@ const applyFromDialog = () => {
 }
 
 onMounted(() => {
-  fetchCurrentWeights()
+  // 页面加载时不自动获取，等用户点击按钮
 })
 </script>
 
@@ -564,58 +358,6 @@ onMounted(() => {
 .subtitle {
   font-size: 1.1rem;
   color: #606266;
-}
-
-.weights-config-card {
-  margin-bottom: 30px;
-  border-radius: 15px;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.ai-weights-section {
-  padding: 10px 0;
-}
-
-.weights-description {
-  margin-bottom: 20px;
-  color: #606266;
-}
-
-.weights-config {
-  margin-bottom: 20px;
-}
-
-.weight-item {
-  margin-bottom: 25px;
-  padding: 15px;
-  background-color: #f5f7fa;
-  border-radius: 8px;
-}
-
-.weight-label {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  font-weight: 500;
-  color: #303133;
-}
-
-.weight-value {
-  font-size: 16px;
-  color: #409eff;
-  font-weight: bold;
-}
-
-.weights-summary {
-  margin-bottom: 20px;
-}
-
-.weights-actions {
-  display: flex;
-  gap: 10px;
 }
 
 .info-card {

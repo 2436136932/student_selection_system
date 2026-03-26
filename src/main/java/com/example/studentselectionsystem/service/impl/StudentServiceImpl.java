@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.studentselectionsystem.entity.Major;
 import com.example.studentselectionsystem.entity.Student;
-import com.example.studentselectionsystem.model.Award;
+import com.example.studentselectionsystem.entity.Award;
 import com.example.studentselectionsystem.repository.MajorRepository;
 import com.example.studentselectionsystem.repository.StudentRepository;
 import com.example.studentselectionsystem.service.AwardService;

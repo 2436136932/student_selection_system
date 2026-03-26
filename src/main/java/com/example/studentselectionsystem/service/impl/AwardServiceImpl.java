@@ -114,42 +114,15 @@ public class AwardServiceImpl implements AwardService {
         awardMapper.updateById(entityAward);
     }
 
-    // 将实体类转换为模型类
-    private com.example.studentselectionsystem.model.Award convertToModelAward(com.example.studentselectionsystem.entity.Award entityAward) {
+    // 直接使用实体类，无需转换
+    private com.example.studentselectionsystem.entity.Award convertToEntityAward(com.example.studentselectionsystem.entity.Award entityAward) {
         // 更新奖项的当前状态
         updateAwardCurrentStatus(entityAward);
-        
-        com.example.studentselectionsystem.model.Award modelAward = new com.example.studentselectionsystem.model.Award();
-        modelAward.setAwardId(String.valueOf(entityAward.getId()));
-        modelAward.setAwardName(entityAward.getAwardName());
-        modelAward.setAwardLevel(entityAward.getAwardLevel());
-        modelAward.setDescription(entityAward.getDescription());
-        // 由于model.Award没有year字段，我们可以使用createTime的年份
-        if (entityAward.getCreateTime() != null) {
-            modelAward.setYear(String.valueOf(entityAward.getCreateTime().getYear() + 1900));
-        }
-        // 设置当前状态、当前阶段和截止时间
-        modelAward.setCurrentStatus(entityAward.getCurrentStatus());
-        modelAward.setCurrentStage(entityAward.getCurrentStage());
-        modelAward.setEndTime(entityAward.getEndTime());
-        // 添加缺失的字段转换
-        modelAward.setAwardType(entityAward.getAwardType());
-        modelAward.setRequirement(entityAward.getRequirement());
-        modelAward.setQuota(entityAward.getQuota());
-        modelAward.setStartTime(entityAward.getStartTime());
-        modelAward.setStatus(entityAward.getStatus());
-        // 设置审批教师信息
-        if (entityAward.getApprovingTeacherId() != null) {
-            modelAward.setApprovingTeacherId(entityAward.getApprovingTeacherId());
-        }
-        if (entityAward.getApprovingTeacherName() != null) {
-            modelAward.setApprovingTeacherName(entityAward.getApprovingTeacherName());
-        }
-        return modelAward;
+        return entityAward;
     }
 
     @Override
-    public boolean addAward(com.example.studentselectionsystem.model.Award award) {
+    public boolean addAward(com.example.studentselectionsystem.entity.Award award) {
         com.example.studentselectionsystem.entity.Award entityAward = new com.example.studentselectionsystem.entity.Award();
         entityAward.setAwardName(award.getAwardName());
         entityAward.setAwardLevel(award.getAwardLevel());
@@ -173,9 +146,9 @@ public class AwardServiceImpl implements AwardService {
     }
 
     @Override
-    public boolean updateAward(com.example.studentselectionsystem.model.Award award) {
+    public boolean updateAward(com.example.studentselectionsystem.entity.Award award) {
         com.example.studentselectionsystem.entity.Award entityAward = new com.example.studentselectionsystem.entity.Award();
-        entityAward.setId(Long.parseLong(award.getAwardId()));
+        entityAward.setId(award.getId());
         entityAward.setAwardName(award.getAwardName());
         entityAward.setAwardLevel(award.getAwardLevel());
         entityAward.setDescription(award.getDescription());
@@ -210,41 +183,41 @@ public class AwardServiceImpl implements AwardService {
     }
     
     @Override
-    public Optional<com.example.studentselectionsystem.model.Award> getAwardById(String awardId) {
+    public Optional<com.example.studentselectionsystem.entity.Award> getAwardById(String awardId) {
         com.example.studentselectionsystem.entity.Award entityAward = awardMapper.selectById(Long.parseLong(awardId));
         if (entityAward != null) {
             // 更新奖项的当前状态
             updateAwardCurrentStatus(entityAward);
-            return Optional.of(convertToModelAward(entityAward));
+            return Optional.of(convertToEntityAward(entityAward));
         } else {
             return Optional.empty();
         }
     }
 
     @Override
-    public List<com.example.studentselectionsystem.model.Award> getAwardsByStudentId(String studentId) {
+    public List<com.example.studentselectionsystem.entity.Award> getAwardsByStudentId(String studentId) {
         QueryWrapper<com.example.studentselectionsystem.entity.Award> wrapper = new QueryWrapper<>();
         wrapper.eq("student_id", studentId);
         List<com.example.studentselectionsystem.entity.Award> entityAwards = awardMapper.selectList(wrapper);
         
-        // 先更新所有奖项的当前状态，然后再转换为模型类
+        // 先更新所有奖项的当前状态
         entityAwards.forEach(this::updateAwardCurrentStatus);
         
-        return entityAwards.stream().map(this::convertToModelAward).collect(Collectors.toList());
+        return entityAwards;
     }
 
     @Override
-    public List<com.example.studentselectionsystem.model.Award> getAllAwards() {
+    public List<com.example.studentselectionsystem.entity.Award> getAllAwards() {
         List<com.example.studentselectionsystem.entity.Award> entityAwards = awardMapper.selectList(null);
         
-        // 先更新所有奖项的当前状态，然后再转换为模型类
+        // 先更新所有奖项的当前状态
         entityAwards.forEach(this::updateAwardCurrentStatus);
         
-        return entityAwards.stream().map(this::convertToModelAward).collect(Collectors.toList());
+        return entityAwards;
     }
 
     @Override
-    public IPage<com.example.studentselectionsystem.model.Award> getAwardsByPage(int page, int size, String studentId, String awardName, String year) {
+    public IPage<com.example.studentselectionsystem.entity.Award> getAwardsByPage(int page, int size, String studentId, String awardName, String year) {
         // 创建查询条件
         QueryWrapper<com.example.studentselectionsystem.entity.Award> wrapper = new QueryWrapper<>();
         
@@ -264,20 +237,10 @@ public class AwardServiceImpl implements AwardService {
         IPage<com.example.studentselectionsystem.entity.Award> entityPage = new Page<>(page, size);
         entityPage = awardMapper.selectPage(entityPage, wrapper);
         
-        // 先更新所有奖项的当前状态，然后再转换为模型类
+        // 先更新所有奖项的当前状态
         entityPage.getRecords().forEach(this::updateAwardCurrentStatus);
         
-        // 转换为模型类
-        List<com.example.studentselectionsystem.model.Award> modelAwards = entityPage.getRecords().stream()
-                .map(this::convertToModelAward)
-                .collect(Collectors.toList());
-        
-        // 创建结果页
-        IPage<com.example.studentselectionsystem.model.Award> resultPage = new Page<>(page, size);
-        resultPage.setRecords(modelAwards);
-        resultPage.setTotal(entityPage.getTotal());
-        
-        return resultPage;
+        return entityPage;
     }
 
     @Override
@@ -301,7 +264,7 @@ public class AwardServiceImpl implements AwardService {
     }
 
     @Override
-    public List<com.example.studentselectionsystem.model.Award> getRecentAwards() {
+    public List<com.example.studentselectionsystem.entity.Award> getRecentAwards() {
         // 创建查询条件，按创建时间倒序排列，获取前5条记录
         QueryWrapper<com.example.studentselectionsystem.entity.Award> wrapper = new QueryWrapper<>();
         wrapper.orderByDesc("created_at");
@@ -309,10 +272,10 @@ public class AwardServiceImpl implements AwardService {
         
         List<com.example.studentselectionsystem.entity.Award> entityAwards = awardMapper.selectList(wrapper);
         
-        // 先更新所有奖项的当前状态，然后再转换为模型类
+        // 先更新所有奖项的当前状态
         entityAwards.forEach(this::updateAwardCurrentStatus);
         
-        return entityAwards.stream().map(this::convertToModelAward).collect(Collectors.toList());
+        return entityAwards;
     }
     
     @Override

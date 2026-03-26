@@ -1,7 +1,7 @@
 package com.example.studentselectionsystem.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.example.studentselectionsystem.model.Award;
+import com.example.studentselectionsystem.entity.Award;
 import com.example.studentselectionsystem.service.AwardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +47,7 @@ public class AwardController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updateAward(@PathVariable Integer id, @RequestBody Award award) {
         // 确保路径参数和请求体中的ID一致
-        award.setAwardId(String.valueOf(id));
+        award.setId(Long.valueOf(id));
         boolean success = awardService.updateAward(award);
         if (success) {
             return ResponseEntity.ok("更新奖项成功");

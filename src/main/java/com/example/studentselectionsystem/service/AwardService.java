@@ -1,7 +1,7 @@
 package com.example.studentselectionsystem.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.example.studentselectionsystem.model.Award;
+import com.example.studentselectionsystem.entity.Award;
 import java.util.List;
 import java.util.Optional;
 
