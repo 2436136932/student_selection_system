@@ -4,23 +4,41 @@
       <template #header>
         <div class="card-header">
           <h2>聊天中心</h2>
+          <!-- 小屏幕切换按钮 -->
+          <div v-if="isSmallScreen" class="mobile-toggle">
+            <el-button 
+              :type="showUserList ? 'primary' : 'default'" 
+              size="small"
+              @click="toggleView('list')"
+            >
+              用户列表
+            </el-button>
+            <el-button 
+              :type="!showUserList ? 'primary' : 'default'" 
+              size="small"
+              @click="toggleView('chat')"
+              :disabled="!currentSession"
+            >
+              聊天窗口
+            </el-button>
+          </div>
         </div>
       </template>
       
       <div class="chat-main">
         <!-- 左侧用户列表 -->
-        <div class="chat-list-panel">
+        <div class="chat-list-panel" :class="{ 'hidden-mobile': isSmallScreen && !showUserList }">
           <ChatList 
             :users="users" 
             :currentSession="currentSession"
             :chatSessions="chatSessions"
             :online-users="onlineUsers"
-            @select-user="selectUser"
+            @select-user="handleSelectUser"
           />
         </div>
         
         <!-- 右侧聊天窗口 -->
-        <div class="chat-window-panel">
+        <div class="chat-window-panel" :class="{ 'hidden-mobile': isSmallScreen && showUserList }">
           <ChatWindow 
             v-if="currentSession && currentChatUser" 
             :session="currentSession"
@@ -40,7 +58,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, onUnmounted, computed } from 'vue'
 import ChatList from '../components/ChatList.vue'
 import ChatWindow from '../components/ChatWindow.vue'
 
@@ -57,6 +75,36 @@ const currentMessages = ref([])
 // 在线用户列表
 const onlineUsers = ref([])
 
+// 响应式布局相关
+const windowWidth = ref(window.innerWidth)
+const showUserList = ref(true)
+
+// 判断是否为小屏幕
+const isSmallScreen = computed(() => windowWidth.value <= 576)
+
+// 监听窗口大小变化
+const handleResize = () => {
+  windowWidth.value = window.innerWidth
+  // 如果从小屏幕切换到大屏幕，重置显示状态
+  if (!isSmallScreen.value) {
+    showUserList.value = true
+  }
+}
+
+// 切换视图（仅在小屏幕下使用）
+const toggleView = (view) => {
+  showUserList.value = view === 'list'
+}
+
+// 处理选择用户（在小屏幕下自动切换到聊天窗口）
+const handleSelectUser = (user) => {
+  selectUser(user)
+  // 如果是小屏幕，选择用户后自动切换到聊天窗口
+  if (isSmallScreen.value) {
+    showUserList.value = false
+  }
+}
+
 // 导入WebSocket服务
 import { initializeWebSocket as initWebSocket } from '../utils/websocketService'
 
@@ -71,6 +119,14 @@ onMounted(() => {
   // 每30秒获取一次在线用户列表
   setInterval(fetchOnlineUsers, 30000)
   console.log('聊天功能初始化完成')
+  
+  // 添加窗口大小变化监听
+  window.addEventListener('resize', handleResize)
+})
+
+// 组件卸载时清理
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
 })
 
 // 消息处理函数
@@ -343,6 +399,8 @@ const handleCloseSession = (sessionId) => {
   background-color: #fafafa;
   border-bottom: 1px solid #e8e8e8;
   flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .card-header h2 {
@@ -350,6 +408,12 @@ const handleCloseSession = (sessionId) => {
   font-size: 20px;
   font-weight: 600;
   color: #2c3e50;
+}
+
+/* 小屏幕切换按钮 */
+.mobile-toggle {
+  display: flex;
+  gap: 8px;
 }
 
 /* 直接修改 Element Plus 卡片内容区域样式 */
@@ -379,6 +443,7 @@ const handleCloseSession = (sessionId) => {
   display: flex;
   flex-direction: column;
   height: 100%;
+  transition: all 0.3s ease;
 }
 
 .chat-window-panel {
@@ -387,6 +452,7 @@ const handleCloseSession = (sessionId) => {
   flex-direction: column;
   background-color: #ffffff;
   width: 0; /* 确保flex:1能正确计算 */
+  transition: all 0.3s ease;
 }
 
 .no-session {
@@ -397,5 +463,57 @@ const handleCloseSession = (sessionId) => {
   background-color: #f5f7fa;
   height: 100%;
   width: 100%;
+}
+
+/* 小屏幕隐藏类 */
+.hidden-mobile {
+  display: none !important;
+}
+
+/* 中等屏幕响应式（576px < 宽度 <= 768px） */
+@media (max-width: 768px) {
+  .card-header {
+    padding: 12px 16px;
+  }
+  
+  .card-header h2 {
+    font-size: 18px;
+  }
+  
+  .chat-list-panel {
+    width: 280px;
+  }
+}
+
+/* 小屏幕响应式（宽度 <= 576px） */
+@media (max-width: 576px) {
+  .card-header {
+    padding: 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .card-header h2 {
+    font-size: 16px;
+    text-align: center;
+  }
+  
+  .mobile-toggle {
+    justify-content: center;
+  }
+  
+  .chat-main {
+    flex-direction: column;
+  }
+  
+  .chat-list-panel {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e8e8e8;
+  }
+  
+  .chat-window-panel {
+    width: 100%;
+  }
 }
 </style>

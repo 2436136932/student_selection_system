@@ -198,13 +198,14 @@
           <el-select v-model="form.awardId" placeholder="请选择奖项" style="width: 100%">
             <el-option 
               v-for="award in awards" 
-              :key="award.awardId" 
-              :label="award.awardName" 
-              :value="award.awardId"
+              :key="award.id" 
+              :label="`${award.awardName} (${award.status || '未发布'})`" 
+              :value="award.id"
             >
               <div>
                 <span>{{ award.awardName }}</span>
                 <span style="margin-left: 10px; color: #909399;">{{ award.awardLevel }}</span>
+                <span style="margin-left: 10px; color: #409EFF;">{{ award.status || '未发布' }}</span>
               </div>
             </el-option>
           </el-select>
@@ -1018,7 +1019,7 @@ onMounted(() => {
     // 如果有 awardId，自动打开申请对话框并预选择奖项
     getAwards().then(() => {
       // 等待奖项列表加载完成后，设置选中的奖项
-      applicationForm.awardId = parseInt(awardIdFromQuery)
+      form.awardId = parseInt(awardIdFromQuery)
       dialogVisible.value = true
       
       // 立即清除 URL 中的 query 参数，这样关闭对话框后不会再次打开

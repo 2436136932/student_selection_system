@@ -13,7 +13,7 @@
       <div class="award-cards-container">
         <el-card 
           v-for="award in awards" 
-          :key="award.awardId" 
+          :key="award.id" 
           class="award-card"
           shadow="hover"
           :body-style="{ padding: '15px' }"
@@ -217,7 +217,7 @@
               </el-form>
 
               <el-table :data="awards" style="width: 100%" stripe v-loading="loading">
-                <el-table-column prop="awardId" label="奖项ID" width="80"></el-table-column>
+                <el-table-column prop="id" label="奖项ID" width="80"></el-table-column>
                 <el-table-column prop="awardName" label="奖项名称" width="150"></el-table-column>
                 <el-table-column prop="awardLevel" label="奖项级别" width="100"></el-table-column>
                 <el-table-column prop="awardType" label="奖项类型" width="100"></el-table-column>
@@ -258,8 +258,8 @@
       width="500px"
     >
       <el-form :model="form" label-width="100px">
-        <el-form-item v-if="form.awardId" label="奖项ID">
-          <el-input v-model="form.awardId" placeholder="奖项ID" disabled></el-input>
+        <el-form-item v-if="form.id" label="奖项ID">
+          <el-input v-model="form.id" placeholder="奖项ID" disabled></el-input>
         </el-form-item>
         <el-form-item label="奖项名称">
           <el-input v-model="form.awardName" placeholder="请输入奖项名称"></el-input>
@@ -741,7 +741,7 @@ export default {
     const teachers = ref([])
     const activeTab = ref('awards')
     const form = reactive({
-      awardId: null,
+      id: null,
       awardName: '',
       awardLevel: '',
       awardType: '',
@@ -859,9 +859,9 @@ export default {
     // 新增/编辑奖项
     const handleSubmit = async () => {
       try {
-        if (form.awardId) {
+        if (form.id) {
           // 编辑
-          await axios.put(`/api/awards/${form.awardId}`, form)
+          await axios.put(`/api/awards/${form.id}`, form)
           ElMessage.success('奖项更新成功')
         } else {
           // 新增
@@ -901,7 +901,7 @@ export default {
           }
         )
         
-        await axios.delete(`/api/awards/${row.awardId}`)
+        await axios.delete(`/api/awards/${row.id}`)
         ElMessage.success('奖项删除成功')
         getAwards()
       } catch (error) {
@@ -927,7 +927,7 @@ export default {
     
     // 重置编辑表单
     const resetEditForm = () => {
-      form.awardId = null
+      form.id = null
       form.awardName = ''
       form.awardLevel = ''
       form.awardType = ''
@@ -974,8 +974,8 @@ export default {
       console.log('当前pageNum:', applicationCurrentPage.value)
       console.log('当前pageSize:', applicationPageSize.value)
       console.log('当前搜索条件:', applicationSearchForm)
-      if (!award || !award.awardId) {
-        console.error('award参数为空或awardId不存在')
+      if (!award || !award.id) {
+        console.error('award参数为空或id不存在')
         return
       }
       
@@ -985,7 +985,7 @@ export default {
         const params = {
           pageNum: applicationCurrentPage.value,
           pageSize: applicationPageSize.value,
-          awardId: parseInt(award.awardId) // 确保awardId是数字类型
+          awardId: parseInt(award.id) // 确保id是数字类型
         }
         console.log('请求参数:', params)
         
@@ -1123,7 +1123,7 @@ export default {
     window.testViewApplications = () => {
       console.log('测试查看申请功能...')
       const testAward = {
-        awardId: 1,
+        id: 1,
         awardName: '测试奖项'
       }
       handleViewApplications(testAward)
@@ -1285,7 +1285,7 @@ export default {
         const isEndTimeReached = endTime != null && now > endTime
         
         // 获取实际的申请和审批数据
-        const stats = await getAwardStatistics(award.awardId);
+        const stats = await getAwardStatistics(award.id);
         
         // 根据奖项状态和结束时间设置当前状态
         if (award.status === '未发布') {
@@ -1381,13 +1381,13 @@ export default {
       const loadStatisticsData = async (process) => {
         try {
           console.log('开始加载统计数据，process:', process);
-          console.log('awardId:', process.awardId);
+          console.log('id:', process.id);
           // 并行获取四个统计数据
           const [applicationCountData, finalApprovedCountData, teacherApprovedCountData, adminApprovedCountData] = await Promise.all([
-            axios.get(`/api/student-award-applications/award/${process.awardId}/count`).then(res => { console.log('总申请数接口返回:', res); return res; }),
-            axios.get(`/api/student-award-applications/award/${process.awardId}/approved-count`).then(res => { console.log('最终获奖数接口返回:', res); return res; }),
-            axios.get(`/api/student-award-applications/award/${process.awardId}/teacher-approved-count`).then(res => { console.log('教师审核通过数接口返回:', res); return res; }),
-            axios.get(`/api/student-award-applications/award/${process.awardId}/admin-approved-count`).then(res => { console.log('管理员审核通过数接口返回:', res); return res; })
+            axios.get(`/api/student-award-applications/award/${process.id}/count`).then(res => { console.log('总申请数接口返回:', res); return res; }),
+            axios.get(`/api/student-award-applications/award/${process.id}/approved-count`).then(res => { console.log('最终获奖数接口返回:', res); return res; }),
+            axios.get(`/api/student-award-applications/award/${process.id}/teacher-approved-count`).then(res => { console.log('教师审核通过数接口返回:', res); return res; }),
+            axios.get(`/api/student-award-applications/award/${process.id}/admin-approved-count`).then(res => { console.log('管理员审核通过数接口返回:', res); return res; })
           ]);
           // 将数据存储到当前流程对象中
           process.applicationCount = applicationCountData.data;
@@ -1586,7 +1586,7 @@ export default {
     const handlePublish = async (award) => {
       try {
         // 更新奖项状态为已发布，并设置当前阶段为学生申请
-        await axios.put(`/api/awards/${award.awardId}`, { 
+        await axios.put(`/api/awards/${award.id}`, { 
           ...award, 
           status: '已发布',
           currentStage: '学生申请',
@@ -1604,7 +1604,7 @@ export default {
     const handleEndSelection = async (award) => {
       try {
         // 更新奖项状态为已结束，当前状态为已完成
-        await axios.put(`/api/awards/${award.awardId}`, { ...award, status: '已结束', currentStatus: '已完成' })
+        await axios.put(`/api/awards/${award.id}`, { ...award, status: '已结束', currentStatus: '已完成' })
         ElMessage.success('结束评选成功')
         getAwards()
       } catch (error) {
@@ -1616,7 +1616,7 @@ export default {
     // 查看评选结果
     const handleViewResults = (award) => {
       // 保存当前奖项ID到localStorage，供结果页面使用
-      localStorage.setItem('currentAwardId', award.awardId)
+      localStorage.setItem('currentAwardId', award.id)
       localStorage.setItem('currentAwardName', award.awardName)
       // 跳转到学生奖项申请页面查看结果
       router.push('/student-award-applications')

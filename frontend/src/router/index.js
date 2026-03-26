@@ -110,7 +110,7 @@ const router = createRouter({
       path: '/award-recommendation',
       name: 'AwardRecommendation',
       component: () => import('../views/AwardRecommendationView.vue'),
-      meta: { requiresAuth: true, role: 'student' }
+      meta: { requiresAuth: true }
     }
   ]
 })

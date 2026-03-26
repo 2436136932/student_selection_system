@@ -18,6 +18,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\MajorController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\NoticeController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\PermissionController.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\RecommendationWeightController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\RoleController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\ScoreController.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\controller\StatisticsController.java
@@ -54,6 +55,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\MajorMapper.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\NoticeMapper.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\PermissionMapper.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\RecommendationWeightMapper.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\RoleMapper.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\ScoreMapper.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\mapper\SelectionMapper.java
@@ -95,6 +97,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\MajorServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\NoticeServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\PermissionServiceImpl.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\RecommendationWeightServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\RoleServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\ScoreServiceImpl.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\impl\SelectionServiceImpl.java
@@ -107,6 +110,7 @@ G:\javacode\student-selection-system\src\main\java\com\example\studentselections
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\MajorService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\NoticeService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\PermissionService.java
+G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\RecommendationWeightService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\RoleService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\ScoreService.java
 G:\javacode\student-selection-system\src\main\java\com\example\studentselectionsystem\service\SelectionService.java

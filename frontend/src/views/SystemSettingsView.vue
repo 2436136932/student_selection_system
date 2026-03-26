@@ -165,7 +165,7 @@ import {
   Setting, Brush, Monitor, User, Menu, 
   House, User as UserIcon, Briefcase, School, DataLine, 
   DocumentChecked, Medal, DocumentCopy, Bell, UserFilled, 
-  PictureRounded
+  PictureRounded, TrendCharts
 } from '@element-plus/icons-vue'
 import { getUserInfo } from '../utils/role'
 import Sortable from 'sortablejs'

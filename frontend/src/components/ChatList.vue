@@ -485,6 +485,7 @@ onMounted(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .chat-list-header {
@@ -542,87 +543,39 @@ onMounted(() => {
 
 .chat-list-content {
   flex: 1;
-  overflow-y: scroll !important;
-  overflow-x: hidden !important;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 10px;
   padding-right: 12px;
-  /* 确保内容区域有足够的高度来触发滚动 */
-  min-height: 0;
-  /* 强制显示滚动条 */
   -webkit-overflow-scrolling: touch;
-  /* 设置固定高度，确保滚动条可见 */
-  height: calc(100vh - 200px);
-  max-height: calc(100vh - 200px);
-  /* 确保内容超出时显示滚动条 */
-  overflow-y: overlay;
 }
 
 /* WebKit浏览器滚动条样式 */
 .chat-list-content::-webkit-scrollbar {
-  width: 14px !important;
-  height: 14px !important;
-  background: #f1f1f1 !important;
-  display: block !important;
-  visibility: visible !important;
-  appearance: none !important;
+  width: 8px;
+  height: 8px;
 }
 
 .chat-list-content::-webkit-scrollbar-track {
-  background: #f1f1f1 !important;
-  border-radius: 7px !important;
-  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.1) !important;
-  display: block !important;
-  visibility: visible !important;
-  border: 1px solid #e0e0e0 !important;
+  background: #f1f1f1;
+  border-radius: 4px;
 }
 
 .chat-list-content::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #3498db, #2980b9) !important;
-  border-radius: 7px !important;
-  transition: all 0.2s ease !important;
-  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3) !important;
-  min-height: 40px !important;
-  display: block !important;
-  visibility: visible !important;
-  border: 2px solid #f1f1f1 !important;
-  appearance: none !important;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  border-radius: 4px;
+  transition: all 0.2s ease;
 }
 
 .chat-list-content::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #2980b9, #3498db);
-  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.4);
-  transform: scaleY(1.1);
-}
-
-.chat-list-content::-webkit-scrollbar-thumb:active {
-  background: linear-gradient(135deg, #1f618d, #2980b9);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 /* Firefox浏览器滚动条样式 */
 .chat-list-content {
   scrollbar-width: thin;
   scrollbar-color: #3498db #f1f1f1;
-}
-
-/* 强制显示滚动条的额外样式 */
-.chat-list-content {
-  /* 确保内容区域有足够的高度来触发滚动 */
-  overflow-y: scroll !important;
-  overflow-x: hidden !important;
-  /* 强制显示滚动条 */
-  -webkit-overflow-scrolling: touch;
-  /* 确保滚动条始终可见 */
-  --scrollbar-width: 12px;
-  --scrollbar-height: 12px;
-}
-
-/* 增加滚动条容器的可见性 */
-.chat-list {
-  border-right: 1px solid #e8e8e8;
-  position: relative;
-  height: 100%;
-  overflow: hidden;
 }
 
 .chat-item {
@@ -829,6 +782,108 @@ onMounted(() => {
   50% {
     transform: scale(1.2);
     box-shadow: 0 0 0 6px rgba(103, 194, 58, 0);
+  }
+}
+
+/* 响应式样式 - 中等屏幕（576px < 宽度 <= 768px） */
+@media (max-width: 768px) {
+  .chat-list-header {
+    padding: 12px 16px;
+  }
+  
+  .chat-list-header h3 {
+    font-size: 15px;
+  }
+  
+  .chat-item {
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+  
+  .chat-item-name {
+    font-size: 14px;
+  }
+  
+  .chat-item-message {
+    font-size: 12px;
+  }
+  
+  .chat-list-content {
+    height: calc(100vh - 180px);
+    max-height: calc(100vh - 180px);
+  }
+}
+
+/* 响应式样式 - 小屏幕（宽度 <= 576px） */
+@media (max-width: 576px) {
+  .chat-list-header {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  
+  .chat-list-header h3 {
+    font-size: 14px;
+  }
+  
+  .search-result-count {
+    font-size: 11px;
+  }
+  
+  .chat-item {
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+  }
+  
+  .chat-item-avatar {
+    margin-right: 10px;
+  }
+  
+  .chat-item-avatar :deep(.el-avatar) {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  .chat-item-name {
+    font-size: 13px;
+  }
+  
+  .chat-item-message {
+    font-size: 11px;
+  }
+  
+  .chat-item-role-tag {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+  
+  .chat-list-content {
+    height: calc(100vh - 160px);
+    max-height: calc(100vh - 160px);
+    padding: 8px;
+  }
+  
+  .user-info-popover {
+    padding: 12px;
+  }
+  
+  .user-info-item {
+    margin-bottom: 8px;
+    padding: 4px 0;
+  }
+  
+  .user-info-item .label {
+    font-size: 12px;
+    width: 60px;
+  }
+  
+  .user-info-item .value {
+    font-size: 13px;
+  }
+  
+  /* 隐藏部分不重要的信息 */
+  .collapse-title {
+    font-size: 13px;
   }
 }
 </style>

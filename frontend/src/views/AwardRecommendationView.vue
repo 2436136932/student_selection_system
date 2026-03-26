@@ -3,6 +3,16 @@
     <div class="page-header">
       <h2>🤖 AI 智能推荐</h2>
       <p class="subtitle">基于您的成绩和获奖记录，为您智能推荐合适的奖项（推荐仅供参考）</p>
+      <!-- 管理员权重配置按钮 -->
+      <el-button 
+        v-if="userInfo.role === 'admin'"
+        type="warning" 
+        @click="openWeightDialog"
+        class="weight-config-btn"
+      >
+        <el-icon><Setting /></el-icon>
+        权重配置
+      </el-button>
     </div>
 
     <el-card class="info-card" shadow="hover">
@@ -15,11 +25,11 @@
       <div class="info-content">
         <p>💡 我们的 AI 系统会综合分析以下因素为您推荐奖项：</p>
         <ul>
-          <li>📊 <strong>成绩匹配度</strong>（权重 40%）：基于您的平均成绩和 GPA</li>
-          <li>🏆 <strong>已有奖项</strong>（权重 30%）：您的历史获奖记录</li>
-          <li>🎓 <strong>专业匹配</strong>（权重 15%）：奖项与您的专业相关性</li>
-          <li>📈 <strong>历史数据</strong>（权重 10%）：该奖项的历史申请情况</li>
-          <li>⚔️ <strong>竞争程度</strong>（权重 5%）：当前申请人数与名额比例</li>
+          <li>📊 <strong>成绩匹配度</strong>（权重 {{ aiWeights.gradeWeight }}%）：基于您的平均成绩和 GPA</li>
+          <li>🏆 <strong>已有奖项</strong>（权重 {{ aiWeights.awardWeight }}%）：您的历史获奖记录</li>
+          <li>🎓 <strong>专业匹配</strong>（权重 {{ aiWeights.majorWeight }}%）：奖项与您的专业相关性</li>
+          <li>📈 <strong>历史数据</strong>（权重 {{ aiWeights.historyWeight }}%）：该奖项的历史申请情况</li>
+          <li>⚔️ <strong>竞争程度</strong>（权重 {{ aiWeights.competitionWeight }}%）：当前申请人数与名额比例</li>
         </ul>
       </div>
     </el-card>
@@ -208,15 +218,121 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 权重配置对话框 -->
+    <el-dialog 
+      v-model="weightDialogVisible" 
+      title="AI智能推荐权重配置"
+      width="700px"
+      :close-on-click-modal="false"
+    >
+      <div class="weight-config-section">
+        <p class="weight-config-desc">配置AI智能推荐算法的权重参数，总权重必须为100%</p>
+        
+        <el-form :model="aiWeights" label-position="top" class="weight-form">
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="成绩匹配度权重">
+                <el-slider 
+                  v-model="aiWeights.gradeWeight" 
+                  :min="0" 
+                  :max="100" 
+                  :step="1"
+                  show-input
+                />
+                <span class="setting-desc">基于学生的平均成绩和GPA</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="已有奖项权重">
+                <el-slider 
+                  v-model="aiWeights.awardWeight" 
+                  :min="0" 
+                  :max="100" 
+                  :step="1"
+                  show-input
+                />
+                <span class="setting-desc">学生的历史获奖记录</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="专业匹配权重">
+                <el-slider 
+                  v-model="aiWeights.majorWeight" 
+                  :min="0" 
+                  :max="100" 
+                  :step="1"
+                  show-input
+                />
+                <span class="setting-desc">奖项与学生专业的相关性</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="历史数据权重">
+                <el-slider 
+                  v-model="aiWeights.historyWeight" 
+                  :min="0" 
+                  :max="100" 
+                  :step="1"
+                  show-input
+                />
+                <span class="setting-desc">该奖项的历史申请情况</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="竞争程度权重">
+                <el-slider 
+                  v-model="aiWeights.competitionWeight" 
+                  :min="0" 
+                  :max="100" 
+                  :step="1"
+                  show-input
+                />
+                <span class="setting-desc">当前申请人数与名额比例</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="总权重">
+                <el-input 
+                  :model-value="totalWeight" 
+                  disabled 
+                  :class="{ 'weight-error': totalWeight !== 100 }"
+                />
+                <span class="setting-desc" :class="{ 'weight-error-text': totalWeight !== 100 }">
+                  {{ totalWeight === 100 ? '✓ 权重总和正确' : '✗ 权重总和必须为100%' }}
+                </span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="weightDialogVisible = false">取消</el-button>
+          <el-button 
+            type="primary" 
+            @click="saveWeights"
+            :disabled="totalWeight !== 100"
+          >
+            保存配置
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import { InfoFilled, Refresh, DocumentAdd, View, TrendCharts } from '@element-plus/icons-vue'
+import { InfoFilled, Refresh, DocumentAdd, View, TrendCharts, Setting } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const loading = ref(false)
@@ -224,6 +340,90 @@ const analyzed = ref(false)
 const recommendations = ref([])
 const detailDialogVisible = ref(false)
 const selectedAward = ref(null)
+
+// 用户信息
+const userInfoStr = localStorage.getItem('userInfo')
+const userInfo = userInfoStr ? JSON.parse(userInfoStr) : {}
+
+// 权重配置对话框
+const weightDialogVisible = ref(false)
+
+// 打开权重配置对话框
+const openWeightDialog = async () => {
+  await initAIWeights()
+  weightDialogVisible.value = true
+}
+
+// AI智能推荐权重配置
+const aiWeights = ref({
+  gradeWeight: 40,
+  awardWeight: 30,
+  majorWeight: 15,
+  historyWeight: 10,
+  competitionWeight: 5
+})
+
+// 计算总权重
+const totalWeight = computed(() => {
+  return aiWeights.value.gradeWeight + aiWeights.value.awardWeight + aiWeights.value.majorWeight + aiWeights.value.historyWeight + aiWeights.value.competitionWeight
+})
+
+// 保存权重配置
+const saveWeights = async () => {
+  if (totalWeight.value !== 100) {
+    ElMessage.error('权重总和必须为100%')
+    return
+  }
+  
+  try {
+    const response = await axios.post('/api/recommendation-weights', aiWeights.value)
+    
+    if (response.data.success) {
+      localStorage.setItem('aiWeights', JSON.stringify(aiWeights.value))
+      ElMessage.success('权重配置已保存')
+      weightDialogVisible.value = false
+    } else {
+      ElMessage.error(response.data.message || '保存失败')
+    }
+  } catch (error) {
+    console.error('保存权重配置失败:', error)
+    ElMessage.error('保存权重配置失败，请稍后重试')
+  }
+}
+
+// 初始化AI权重设置
+const initAIWeights = async () => {
+  console.log('开始加载权重配置...')
+  try {
+    const response = await axios.get('/api/recommendation-weights')
+    console.log('API响应:', response.data)
+    
+    if (response.data.success && response.data.data) {
+      const weights = response.data.data
+      console.log('从API获取的权重:', weights)
+      aiWeights.value = {
+        gradeWeight: Math.round(Number(weights.gradeWeight)) || 40,
+        awardWeight: Math.round(Number(weights.awardWeight)) || 30,
+        majorWeight: Math.round(Number(weights.majorWeight)) || 15,
+        historyWeight: Math.round(Number(weights.historyWeight)) || 10,
+        competitionWeight: Math.round(Number(weights.competitionWeight)) || 5,
+        id: weights.id
+      }
+      console.log('设置后的aiWeights:', aiWeights.value)
+      localStorage.setItem('aiWeights', JSON.stringify(aiWeights.value))
+    }
+  } catch (error) {
+    console.error('加载权重配置失败:', error)
+    const savedWeights = localStorage.getItem('aiWeights')
+    if (savedWeights) {
+      try {
+        aiWeights.value = JSON.parse(savedWeights)
+      } catch (e) {
+        console.error('解析本地权重设置失败:', e)
+      }
+    }
+  }
+}
 
 const loadRecommendations = async () => {
   loading.value = true
@@ -333,6 +533,8 @@ const applyFromDialog = () => {
 }
 
 onMounted(() => {
+  // 初始化AI权重设置
+  initAIWeights()
   // 页面加载时不自动获取，等用户点击按钮
 })
 </script>
@@ -514,6 +716,42 @@ onMounted(() => {
   font-size: 1.1rem;
 }
 
+/* 权重配置按钮样式 */
+.weight-config-btn {
+  margin-top: 20px;
+  border-radius: 20px;
+  padding: 8px 20px;
+}
+
+/* 权重配置对话框样式 */
+.weight-config-section {
+  padding: 20px 0;
+}
+
+.weight-config-desc {
+  margin-bottom: 20px;
+  color: #606266;
+  font-size: 14px;
+}
+
+.weight-form {
+  padding: 10px 0;
+}
+
+.weight-error {
+  border-color: #f56c6c !important;
+}
+
+.weight-error-text {
+  color: #f56c6c !important;
+}
+
+.setting-desc {
+  margin-left: 10px;
+  color: #909399;
+  font-size: 14px;
+}
+
 @media (max-width: 768px) {
   .recommendations-list {
     grid-template-columns: 1fr;
@@ -521,6 +759,15 @@ onMounted(() => {
   
   .page-header h2 {
     font-size: 2rem;
+  }
+  
+  .weight-form .el-row {
+    flex-direction: column;
+  }
+  
+  .weight-form .el-col {
+    width: 100% !important;
+    margin-bottom: 20px;
   }
 }
 </style>

@@ -529,6 +529,7 @@ watch(
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
+  overflow: hidden;
 }
 
 .chat-window-header {
@@ -610,50 +611,34 @@ watch(
 
 .chat-messages {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 20px;
-  background-color: #f5f7fa;
-  min-height: 0; /* 解决flex子元素溢出问题 */
-  /* 自定义滚动条样式 - 确保滚动条总是显示 */
-  overflow-y: scroll;
-  scrollbar-width: thin;
-  scrollbar-color: #3498db #f1f1f1;
-  /* 增加内边距，让滚动条更明显 */
   padding-right: 15px;
+  background-color: #f5f7fa;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* WebKit浏览器滚动条样式 */
 .chat-messages::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-  /* 确保滚动条轨道总是显示 */
-  background: #f1f1f1;
+  width: 8px;
+  height: 8px;
 }
 
 .chat-messages::-webkit-scrollbar-track {
   background: #f1f1f1;
-  border-radius: 5px;
-  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, #3498db, #2980b9);
-  border-radius: 5px;
+  border-radius: 4px;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
-  /* 确保滚动条滑块总是可见 */
-  min-height: 20px;
 }
 
 .chat-messages::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #2980b9, #3498db);
-  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.4);
-  transform: scaleY(1.1);
-}
-
-.chat-messages::-webkit-scrollbar-thumb:active {
-  background: linear-gradient(135deg, #1f618d, #2980b9);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 /* Firefox浏览器滚动条样式 */
@@ -1109,5 +1094,194 @@ watch(
   font-size: 14px;
   color: #606266;
   text-align: center;
+}
+
+/* 响应式样式 - 中等屏幕（576px < 宽度 <= 768px） */
+@media (max-width: 768px) {
+  .chat-window-header {
+    padding: 10px 16px;
+  }
+  
+  .header-name {
+    font-size: 15px;
+  }
+  
+  .header-details,
+  .header-department,
+  .header-major-class {
+    font-size: 11px;
+  }
+  
+  .chat-messages {
+    padding: 16px;
+  }
+  
+  .message-content {
+    max-width: 75%;
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  
+  .chat-input-area {
+    padding: 12px 16px;
+  }
+  
+  .input-hint {
+    font-size: 11px;
+  }
+  
+  .message-input {
+    font-size: 14px;
+  }
+  
+  .send-button {
+    min-width: 70px;
+    height: 38px;
+    font-size: 13px;
+  }
+}
+
+/* 响应式样式 - 小屏幕（宽度 <= 576px） */
+@media (max-width: 576px) {
+  .chat-window-header {
+    padding: 8px 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .header-left {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .header-info {
+    margin-left: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .header-name {
+    font-size: 14px;
+  }
+  
+  .header-details,
+  .header-department,
+  .header-major-class {
+    font-size: 10px;
+  }
+  
+  .header-status {
+    font-size: 10px;
+  }
+  
+  .header-right {
+    width: 100%;
+    justify-content: center;
+    margin-top: 4px;
+  }
+  
+  .chat-messages {
+    padding: 12px;
+  }
+  
+  .message-content {
+    max-width: 85%;
+    padding: 10px 14px;
+    font-size: 13px;
+    border-radius: 16px;
+  }
+  
+  .message-time {
+    font-size: 10px;
+  }
+  
+  .chat-input-area {
+    padding: 10px 12px;
+  }
+  
+  .input-toolbar {
+    margin-bottom: 6px;
+  }
+  
+  .toolbar-btn {
+    padding: 4px 8px;
+    font-size: 14px;
+  }
+  
+  .input-hint {
+    font-size: 10px;
+    margin-bottom: 8px;
+  }
+  
+  .input-wrapper {
+    gap: 8px;
+  }
+  
+  .message-input {
+    font-size: 13px;
+  }
+  
+  .send-button {
+    min-width: 60px;
+    height: 36px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+  
+  /* 图片消息优化 */
+  .message-content.image-message img {
+    max-width: 200px;
+    max-height: 200px;
+  }
+  
+  /* 文件消息优化 */
+  .message-content.file-message {
+    padding: 10px;
+  }
+  
+  .file-icon {
+    font-size: 20px;
+  }
+  
+  .file-name {
+    font-size: 12px;
+  }
+  
+  .file-size {
+    font-size: 10px;
+  }
+  
+  /* 用户信息悬浮窗优化 */
+  .user-info-popover {
+    padding: 12px;
+  }
+  
+  .user-info-item {
+    margin-bottom: 8px;
+    padding: 4px 0;
+  }
+  
+  .user-info-item .label {
+    font-size: 12px;
+    width: 60px;
+  }
+  
+  .user-info-item .value {
+    font-size: 13px;
+  }
+  
+  /* 图片预览优化 */
+  .preview-container {
+    padding: 12px;
+  }
+  
+  .preview-image {
+    max-height: 60vh;
+  }
+  
+  .preview-footer {
+    margin-top: 12px;
+    font-size: 12px;
+  }
 }
 </style>
