@@ -508,8 +508,12 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
 
-// 设置axios基础URL
-axios.defaults.baseURL = 'http://localhost:8080'
+// 设置axios基础URL，根据当前访问的hostname自动构建后端URL
+const getBaseURL = () => {
+  const hostname = window.location.hostname
+  return `http://${hostname}:8080`
+}
+axios.defaults.baseURL = getBaseURL()
 
 const router = useRouter()
 

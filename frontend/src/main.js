@@ -6,8 +6,12 @@ import router from './router'
 import axios from 'axios'
 import './styles/global.css'
 
-// 配置axios基础URL，指向后端服务
-axios.defaults.baseURL = 'http://localhost:8080'
+// 配置axios基础URL，根据当前访问的hostname自动构建后端URL
+const getBaseURL = () => {
+  const hostname = window.location.hostname
+  return `http://${hostname}:8080`
+}
+axios.defaults.baseURL = getBaseURL()
 
 // 添加axios拦截器，自动为每个请求添加Authorization头，并过滤外部请求
 axios.interceptors.request.use(config => {

@@ -14,7 +14,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         // 允许所有/api/**路径的请求跨域访问
         registry.addMapping("/api/**")
-                .allowedOrigins("http://localhost:5173")  // 允许前端域名
+                .allowedOrigins("http://localhost:5173","http://localhost:5174","http://10.11.250.206:5173","http://10.11.250.206:5174")  // 允许前端域名
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // 允许的HTTP方法
                 .allowedHeaders("*")  // 允许所有请求头
                 .allowCredentials(true)  // 允许携带凭证
@@ -22,7 +22,7 @@ public class CorsConfig implements WebMvcConfigurer {
                 
         // 允许WebSocket路径跨域访问
         registry.addMapping("/ws/**")
-                .allowedOrigins("http://localhost:5173")
+                .allowedOrigins("http://localhost:5173","http://localhost:5174","http://10.11.250.206:5173","http://10.11.250.206:5174")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)
