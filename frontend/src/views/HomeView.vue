@@ -236,10 +236,10 @@ onMounted(() => {
 
 // 在HomeView中引入AI通义千问的脚本
 createAiChat({
-       appId:"2003270009308119042",
+       appId:"2003300836708515841",
        // 支持top-left左上, top-right右上, bottom-left左下, bottom-right右下
        iconPosition:"bottom-right"
-    });
+    })
 
 </script>
 

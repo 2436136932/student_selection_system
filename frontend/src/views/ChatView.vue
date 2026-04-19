@@ -421,8 +421,9 @@ const handleCloseSession = (sessionId) => {
   padding: 0;
   margin: 0;
   width: 100%;
-  flex: 1;
-  max-width: none;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -432,6 +433,7 @@ const handleCloseSession = (sessionId) => {
   overflow: hidden;
   flex: 1;
   width: 100%;
+  height: 0;
 }
 
 .chat-list-panel {
@@ -451,7 +453,8 @@ const handleCloseSession = (sessionId) => {
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
-  width: 0; /* 确保flex:1能正确计算 */
+  min-width: 0;
+  height: 100%;
   transition: all 0.3s ease;
 }
 

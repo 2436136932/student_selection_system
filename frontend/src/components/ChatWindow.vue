@@ -9,7 +9,7 @@
           :width="280"
         >
           <template #reference>
-            <el-avatar size="large">
+            <el-avatar size="large" :src="getFullAvatarUrl(props.chatUser.avatar)">
               {{ getInitials(props.chatUser.realName || props.chatUser.username) }}
             </el-avatar>
           </template>
@@ -256,6 +256,15 @@ const isUserOnline = computed(() => {
 // 获取用户姓名首字母
 const getInitials = (name) => {
   return name.charAt(0).toUpperCase()
+}
+
+// 获取完整的头像URL
+const getFullAvatarUrl = (avatar) => {
+  if (!avatar) return ''
+  if (avatar.startsWith('/')) {
+    return `http://localhost:8080${avatar}`
+  }
+  return avatar
 }
 
 // 输入框消息内容

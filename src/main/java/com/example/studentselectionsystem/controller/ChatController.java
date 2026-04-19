@@ -136,6 +136,7 @@ public class ChatController {
                 userMap.put("username", user.getUsername());
                 userMap.put("realName", user.getRealName());
                 userMap.put("role", user.getRole());
+                userMap.put("avatar", user.getAvatar());
                 
                 // 根据用户角色添加额外信息
                 if ("teacher".equals(user.getRole())) {

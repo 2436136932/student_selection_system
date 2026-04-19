@@ -57,7 +57,7 @@
                 :width="280"
               >
                 <template #reference>
-                  <el-avatar size="large">
+                  <el-avatar size="large" :src="getFullAvatarUrl(user.avatar)">
                     {{ getUserInitial(user) }}
                   </el-avatar>
                 </template>
@@ -136,7 +136,7 @@
                 :width="280"
               >
                 <template #reference>
-                  <el-avatar size="large">
+                  <el-avatar size="large" :src="getFullAvatarUrl(user.avatar)">
                     {{ getUserInitial(user) }}
                   </el-avatar>
                 </template>
@@ -219,7 +219,7 @@
                 :width="280"
               >
                 <template #reference>
-                  <el-avatar size="large">
+                  <el-avatar size="large" :src="getFullAvatarUrl(user.avatar)">
                     {{ getUserInitial(user) }}
                   </el-avatar>
                 </template>
@@ -284,11 +284,6 @@
       <!-- 无匹配用户时显示 -->
       <div v-if="filteredUsers.length === 0" class="empty-sessions">
         <el-empty description="暂无匹配用户" />
-      </div>
-      
-      <!-- 添加一些占位内容，确保内容超出容器高度 -->
-      <div v-if="filteredUsers.length > 0 && filteredUsers.length < 5" class="scroll-placeholder">
-        <div v-for="i in (5 - filteredUsers.length)" :key="i" class="placeholder-item"></div>
       </div>
     </div>
   </div>
@@ -431,6 +426,15 @@ const getUserInitial = (user) => {
   return name.charAt(0).toUpperCase()
 }
 
+// 获取完整的头像URL
+const getFullAvatarUrl = (avatar) => {
+  if (!avatar) return ''
+  if (avatar.startsWith('/')) {
+    return `http://localhost:8080${avatar}`
+  }
+  return avatar
+}
+
 // 获取用户的未读消息数量
 const getUnreadCount = (user) => {
   // 从chatSessions中查找与当前用户相关的会话
@@ -455,28 +459,9 @@ const handleSearch = () => {
 // 引用DOM元素
 const chatListContent = ref(null)
 
-// 在组件挂载后强制设置滚动条
+// 在组件挂载后初始化
 onMounted(() => {
-  // 确保内容区域有足够的高度来显示滚动条
-  setTimeout(() => {
-    if (chatListContent.value) {
-      // 获取容器高度
-      const containerHeight = chatListContent.value.clientHeight
-      // 获取内容高度
-      const contentHeight = chatListContent.value.scrollHeight
-      
-      // 如果内容高度小于容器高度，增加最小高度以确保滚动条可见
-      if (contentHeight <= containerHeight) {
-        chatListContent.value.style.minHeight = `${containerHeight + 100}px`
-      }
-      
-      // 强制显示滚动条
-      chatListContent.value.style.overflowY = 'scroll'
-      
-      console.log('聊天列表容器高度:', containerHeight)
-      console.log('聊天列表内容高度:', contentHeight)
-    }
-  }, 1000)
+  // 滚动条已通过CSS自动处理，无需额外操作
 })
 </script>
 
@@ -495,6 +480,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .chat-list-header h3 {
@@ -551,31 +537,30 @@ onMounted(() => {
   -webkit-overflow-scrolling: touch;
 }
 
-/* WebKit浏览器滚动条样式 */
+/* 自定义滚动条样式 - WebKit浏览器 */
 .chat-list-content::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
 }
 
 .chat-list-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
+  background: #f0f0f0;
+  border-radius: 3px;
 }
 
 .chat-list-content::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #3498db, #2980b9);
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  background: #c1c1c1;
+  border-radius: 3px;
+  transition: background 0.3s ease;
 }
 
 .chat-list-content::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #2980b9, #3498db);
+  background: #a8a8a8;
 }
 
-/* Firefox浏览器滚动条样式 */
+/* Firefox浏览器滚动条 */
 .chat-list-content {
   scrollbar-width: thin;
-  scrollbar-color: #3498db #f1f1f1;
+  scrollbar-color: #c1c1c1 #f0f0f0;
 }
 
 .chat-item {
@@ -669,17 +654,6 @@ onMounted(() => {
 
 .empty-sessions {
   padding: 40px 20px;
-}
-
-/* 滚动占位符样式 */
-.scroll-placeholder {
-  pointer-events: none;
-}
-
-.placeholder-item {
-  height: 80px;
-  margin-bottom: 10px;
-  opacity: 0;
 }
 
 /* 用户信息悬浮窗样式 */
@@ -790,27 +764,22 @@ onMounted(() => {
   .chat-list-header {
     padding: 12px 16px;
   }
-  
+
   .chat-list-header h3 {
     font-size: 15px;
   }
-  
+
   .chat-item {
     padding: 12px 14px;
     margin-bottom: 8px;
   }
-  
+
   .chat-item-name {
     font-size: 14px;
   }
-  
+
   .chat-item-message {
     font-size: 12px;
-  }
-  
-  .chat-list-content {
-    height: calc(100vh - 180px);
-    max-height: calc(100vh - 180px);
   }
 }
 
@@ -856,10 +825,8 @@ onMounted(() => {
     font-size: 10px;
     padding: 2px 6px;
   }
-  
+
   .chat-list-content {
-    height: calc(100vh - 160px);
-    max-height: calc(100vh - 160px);
     padding: 8px;
   }
   
