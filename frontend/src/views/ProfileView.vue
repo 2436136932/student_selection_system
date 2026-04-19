@@ -11,12 +11,11 @@
       <div class="profile-content">
         <!-- 头像和基本信息 -->
         <div class="profile-basic">
-          <div class="avatar-section">
+          <div class="avatar-section" @click="showAvatarUpload = true">
             <el-avatar
               :size="120"
               :src="userInfo.avatar"
               class="user-avatar"
-              @click="showAvatarUpload = true"
               @error="handleAvatarError"
             >
               <el-icon v-if="!userInfo.avatar"><UserFilled /></el-icon>

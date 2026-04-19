@@ -691,7 +691,8 @@ const handleLogin = () => {
             username: response.data.user.username,
             role: response.data.user.role,
             name: response.data.user.name || response.data.user.username,
-            id: response.data.user.id
+            id: response.data.user.id,
+            avatar: response.data.user.avatar || ''
           }))
           // 存储登录时间
           localStorage.setItem('loginTime', currentTime)

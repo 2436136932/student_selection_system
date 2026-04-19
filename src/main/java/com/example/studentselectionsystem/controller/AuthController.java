@@ -73,7 +73,8 @@ public class AuthController {
                     "role", user.getRole(),
                     "name", user.getName(),
                     "email", user.getEmail(),
-                    "phone", user.getPhone()
+                    "phone", user.getPhone(),
+                    "avatar", user.getAvatar() != null ? user.getAvatar() : ""
             ));
 
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -138,7 +139,8 @@ public class AuthController {
                     "role", savedUser.getRole(),
                     "name", savedUser.getName(),
                     "email", savedUser.getEmail(),
-                    "phone", savedUser.getPhone()
+                    "phone", savedUser.getPhone(),
+                    "avatar", savedUser.getAvatar() != null ? savedUser.getAvatar() : ""
             ));
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
