@@ -101,6 +101,14 @@
               >
                 <el-icon><Download /></el-icon> 下载材料
               </el-button>
+              <!-- 预览详情按钮 -->
+              <el-button 
+                size="small" 
+                type="warning" 
+                @click="previewApplicationDetail(scope.row)"
+              >
+                <el-icon><View /></el-icon> 预览详情
+              </el-button>
               <!-- 取消申请按钮 -->
               <el-button 
                 v-if="scope.row.status === 0" 
@@ -143,6 +151,14 @@
                 @click="downloadMaterial(scope.row)"
               >
                 <el-icon><Download /></el-icon> 下载材料
+              </el-button>
+              <!-- 预览详情按钮 -->
+              <el-button 
+                size="small" 
+                type="warning" 
+                @click="previewApplicationDetail(scope.row)"
+              >
+                <el-icon><View /></el-icon> 预览详情
               </el-button>
               <!-- 教师只能在状态为0（待教师审批）时看到审批按钮 -->
               <!-- 管理员可以在状态为1（待管理员审批）时看到审批按钮 -->
@@ -278,7 +294,129 @@
         </span>
       </template>
     </el-dialog>
-    
+
+    <!-- 申请详情预览对话框 -->
+    <el-dialog
+      v-model="applicationDetailVisible"
+      title="申请详情预览"
+      width="800px"
+      destroy-on-close
+    >
+      <div v-if="currentApplication" class="application-detail">
+        <el-card class="detail-card" shadow="never">
+          <template #header>
+            <div class="detail-header">
+              <span class="detail-title">学生信息</span>
+            </div>
+          </template>
+          <el-descriptions :column="2" border>
+            <el-descriptions-item label="学生姓名">
+              {{ currentApplication.student?.name || '-' }}
+            </el-descriptions-item>
+            <el-descriptions-item label="学号">
+              {{ currentApplication.student?.studentNumber || '-' }}
+            </el-descriptions-item>
+            <el-descriptions-item label="专业">
+              {{ currentApplication.student?.major || '-' }}
+            </el-descriptions-item>
+            <el-descriptions-item label="班级">
+              {{ currentApplication.student?.className || '-' }}
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+
+        <el-card class="detail-card" shadow="never">
+          <template #header>
+            <div class="detail-header">
+              <span class="detail-title">奖项信息</span>
+            </div>
+          </template>
+          <el-descriptions :column="2" border>
+            <el-descriptions-item label="奖项名称">
+              <el-tag type="primary">{{ currentApplication.award?.awardName || '-' }}</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item label="奖项级别">
+              <el-tag :type="getLevelType(currentApplication.award?.awardLevel)">
+                {{ currentApplication.award?.awardLevel || '-' }}
+              </el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item label="奖项类型">
+              {{ currentApplication.award?.awardType || '-' }}
+            </el-descriptions-item>
+            <el-descriptions-item label="奖项描述">
+              {{ currentApplication.award?.description || '-' }}
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+
+        <el-card class="detail-card" shadow="never">
+          <template #header>
+            <div class="detail-header">
+              <span class="detail-title">申请信息</span>
+            </div>
+          </template>
+          <el-descriptions :column="2" border>
+            <el-descriptions-item label="申请ID">
+              {{ currentApplication.id }}
+            </el-descriptions-item>
+            <el-descriptions-item label="申请日期">
+              {{ currentApplication.applicationTime ? new Date(currentApplication.applicationTime).toLocaleString() : '-' }}
+            </el-descriptions-item>
+            <el-descriptions-item label="当前状态">
+              <el-tag :type="getStatusType(currentApplication)">
+                {{ currentApplication.approvalStatus || '待教师审批' }}
+              </el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item label="申请材料">
+              <el-button 
+                v-if="currentApplication.materialPath" 
+                size="small" 
+                type="primary" 
+                @click="previewMaterial(currentApplication)"
+              >
+                <el-icon><Picture /></el-icon> 预览材料
+              </el-button>
+              <span v-else>-</span>
+            </el-descriptions-item>
+          </el-descriptions>
+          <div class="description-section">
+            <h4>申请理由：</h4>
+            <div class="description-content">
+              {{ currentApplication.description || '无' }}
+            </div>
+          </div>
+        </el-card>
+
+        <el-card v-if="currentApplication.teacherApprovalComments || currentApplication.adminApprovalComments" class="detail-card" shadow="never">
+          <template #header>
+            <div class="detail-header">
+              <span class="detail-title">审批意见</span>
+            </div>
+          </template>
+          <el-descriptions :column="1" border>
+            <el-descriptions-item v-if="currentApplication.teacherApprovalComments" label="教师意见">
+              {{ currentApplication.teacherApprovalComments }}
+            </el-descriptions-item>
+            <el-descriptions-item v-if="currentApplication.adminApprovalComments" label="管理员意见">
+              {{ currentApplication.adminApprovalComments }}
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="applicationDetailVisible = false">关闭</el-button>
+          <el-button 
+            v-if="currentApplication && currentApplication.materialPath" 
+            type="primary" 
+            @click="downloadMaterial(currentApplication)"
+          >
+            <el-icon><Download /></el-icon> 下载材料
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
+
     <!-- 材料预览组件 -->
     <MaterialPreview
       v-model:visible="materialPreviewVisible"
@@ -295,7 +433,7 @@
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Edit, Delete, Plus, Check, Close, Upload, Download, Picture } from '@element-plus/icons-vue'
+import { Edit, Delete, Plus, Check, Close, Upload, Download, Picture, View } from '@element-plus/icons-vue'
 import axios from 'axios'
 // 导入材料预览组件
 import MaterialPreview from '../components/MaterialPreview.vue'
@@ -351,6 +489,10 @@ const previewUrl = ref('')
 const downloadUrl = ref('')
 const currentMaterialName = ref('')
 const currentMaterialSize = ref(0)
+
+// 申请详情预览相关
+const applicationDetailVisible = ref(false)
+const currentApplication = ref(null)
 
 const searchForm = reactive({
   awardName: '',
@@ -812,6 +954,25 @@ const handlePreviewClose = () => {
   currentMaterialSize.value = 0
 }
 
+// 预览申请详情
+const previewApplicationDetail = (row) => {
+  currentApplication.value = row
+  applicationDetailVisible.value = true
+}
+
+// 获取奖项级别标签类型
+const getLevelType = (level) => {
+  if (!level) return 'info'
+  const levelMap = {
+    '国家级': 'danger',
+    '省部级': 'warning',
+    '市厅级': 'success',
+    '校级': 'primary',
+    '院级': 'info'
+  }
+  return levelMap[level] || 'info'
+}
+
 // 预览申请材料
 const previewMaterial = (row) => {
   if (!row.id) {
@@ -1227,5 +1388,51 @@ onMounted(() => {
     padding: 10px 12px;
     font-size: 12px;
   }
+}
+
+/* 申请详情预览样式 */
+.application-detail {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.detail-card {
+  margin-bottom: 16px;
+}
+
+.detail-card:last-child {
+  margin-bottom: 0;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+}
+
+.detail-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: #303133;
+}
+
+.description-section {
+  margin-top: 16px;
+  padding: 12px;
+  background: #f5f7fa;
+  border-radius: 8px;
+}
+
+.description-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #606266;
+}
+
+.description-content {
+  font-size: 14px;
+  color: #303133;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 </style>

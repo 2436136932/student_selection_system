@@ -178,26 +178,32 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <div class="detail-item">
-                <span class="detail-label">📊 成绩匹配：</span>
-                <span class="detail-value">{{ (selectedAward.matchScore * 0.4).toFixed(1) }} 分</span>
+                <span class="detail-label">📊 成绩匹配（{{ selectedAward.gradeWeight }}%）：</span>
+                <span class="detail-value">{{ selectedAward.gradeScore.toFixed(1) }} 分</span>
               </div>
             </el-col>
             <el-col :span="12">
               <div class="detail-item">
-                <span class="detail-label">🏆 奖项匹配：</span>
-                <span class="detail-value">{{ (selectedAward.matchScore * 0.3).toFixed(1) }} 分</span>
+                <span class="detail-label">🏆 奖项匹配（{{ selectedAward.awardWeight }}%）：</span>
+                <span class="detail-value">{{ selectedAward.awardScore.toFixed(1) }} 分</span>
               </div>
             </el-col>
             <el-col :span="12">
               <div class="detail-item">
-                <span class="detail-label">🎓 专业匹配：</span>
-                <span class="detail-value">{{ (selectedAward.matchScore * 0.15).toFixed(1) }} 分</span>
+                <span class="detail-label">🎓 专业匹配（{{ selectedAward.majorWeight }}%）：</span>
+                <span class="detail-value">{{ selectedAward.majorScore.toFixed(1) }} 分</span>
               </div>
             </el-col>
             <el-col :span="12">
               <div class="detail-item">
-                <span class="detail-label">📈 历史数据：</span>
-                <span class="detail-value">{{ (selectedAward.matchScore * 0.1).toFixed(1) }} 分</span>
+                <span class="detail-label">📈 历史数据（{{ selectedAward.historyWeight }}%）：</span>
+                <span class="detail-value">{{ selectedAward.historyScore.toFixed(1) }} 分</span>
+              </div>
+            </el-col>
+            <el-col :span="12">
+              <div class="detail-item">
+                <span class="detail-label">⚡ 竞争程度（{{ selectedAward.competitionWeight }}%）：</span>
+                <span class="detail-value">{{ selectedAward.competitionScore.toFixed(1) }} 分</span>
               </div>
             </el-col>
           </el-row>

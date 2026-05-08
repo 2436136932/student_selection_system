@@ -32,6 +32,29 @@ public class RecommendationWeightServiceImpl implements RecommendationWeightServ
             weights.setCompetitionWeight(new BigDecimal("5.00"));
             weights.setUpdatedAt(LocalDateTime.now());
             recommendationWeightMapper.insert(weights);
+        } else {
+            double totalWeight = weights.getGradeWeight().doubleValue() + 
+                              weights.getAwardWeight().doubleValue() + 
+                              weights.getMajorWeight().doubleValue() + 
+                              weights.getHistoryWeight().doubleValue() + 
+                              weights.getCompetitionWeight().doubleValue();
+            
+            boolean isInvalid = Math.abs(totalWeight - 100.0) > 0.01 ||
+                              weights.getGradeWeight().doubleValue() < 5 ||
+                              weights.getAwardWeight().doubleValue() < 5 ||
+                              weights.getMajorWeight().doubleValue() < 5 ||
+                              weights.getHistoryWeight().doubleValue() < 5 ||
+                              weights.getCompetitionWeight().doubleValue() < 5;
+            
+            if (isInvalid) {
+                weights.setGradeWeight(new BigDecimal("40.00"));
+                weights.setAwardWeight(new BigDecimal("30.00"));
+                weights.setMajorWeight(new BigDecimal("15.00"));
+                weights.setHistoryWeight(new BigDecimal("10.00"));
+                weights.setCompetitionWeight(new BigDecimal("5.00"));
+                weights.setUpdatedAt(LocalDateTime.now());
+                recommendationWeightMapper.updateById(weights);
+            }
         }
         
         return weights;

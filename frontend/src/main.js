@@ -5,6 +5,7 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 import './styles/global.css'
+import './styles/holiday-themes.css'
 
 // 配置axios基础URL，根据当前访问的hostname自动构建后端URL
 const getBaseURL = () => {

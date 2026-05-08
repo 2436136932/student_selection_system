@@ -45,6 +45,73 @@
           </div>
         </el-card>
 
+        <!-- 节日主题设置 -->
+        <el-card class="setting-item-card" shadow="hover" style="margin-top: 20px;">
+          <template #header>
+            <div class="card-header">
+              <el-icon><Calendar /></el-icon>
+              <span>节日主题</span>
+              <el-tag v-if="currentHolidayInfo" :type="currentHolidayInfo.type === 'solemn' ? 'info' : 'success'" size="small" style="margin-left: 10px;">
+                {{ currentHolidayInfo.name }}
+              </el-tag>
+            </div>
+          </template>
+
+          <div class="holiday-theme-section">
+            <div class="holiday-theme-description">
+              <p>系统会自动识别节日并切换主题，您也可以手动选择主题</p>
+              <p class="holiday-tip">特殊纪念日（如国家公祭日）会自动切换肃穆主题</p>
+            </div>
+
+            <!-- 主题模式选择 -->
+            <div class="theme-mode-section">
+              <el-radio-group v-model="holidayThemeSettings.mode" @change="handleHolidayModeChange">
+                <el-radio-button label="auto">
+                  <el-icon><Calendar /></el-icon>
+                  自动识别
+                </el-radio-button>
+                <el-radio-button label="manual">
+                  <el-icon><Brush /></el-icon>
+                  手动选择
+                </el-radio-button>
+              </el-radio-group>
+            </div>
+
+            <!-- 手动主题选择 -->
+            <div v-if="holidayThemeSettings.mode === 'manual'" class="manual-theme-section">
+              <el-divider>选择主题</el-divider>
+              <div class="holiday-theme-grid">
+                <div
+                  v-for="theme in availableThemes"
+                  :key="theme.key"
+                  class="holiday-theme-item"
+                  :class="{ active: holidayThemeSettings.manualTheme === theme.key, solemn: theme.type === 'solemn' }"
+                  @click="selectHolidayTheme(theme.key)"
+                >
+                  <div class="holiday-theme-preview" :style="{ background: theme.colors.gradient }"></div>
+                  <div class="holiday-theme-info">
+                    <span class="holiday-theme-name">{{ theme.name }}</span>
+                    <el-tag v-if="theme.type === 'solemn'" type="info" size="small">肃穆</el-tag>
+                    <el-tag v-else-if="theme.key !== 'default'" type="success" size="small">喜庆</el-tag>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 当前主题信息 -->
+            <div v-if="currentHolidayInfo" class="current-holiday-info">
+              <el-divider>当前主题</el-divider>
+              <el-alert
+                :title="currentHolidayInfo.name"
+                :type="currentHolidayInfo.type === 'solemn' ? 'info' : 'success'"
+                :description="currentHolidayInfo.desc"
+                show-icon
+                :closable="false"
+              />
+            </div>
+          </div>
+        </el-card>
+
         <!-- 显示设置 -->
         <el-card class="setting-item-card" shadow="hover" style="margin-top: 20px;">
           <template #header>
@@ -161,15 +228,16 @@
 <script setup>
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
-import { 
-  Setting, Brush, Monitor, User, Menu, 
-  House, User as UserIcon, Briefcase, School, DataLine, 
-  DocumentChecked, Medal, DocumentCopy, Bell, UserFilled, 
-  PictureRounded, TrendCharts
+import {
+  Setting, Brush, Monitor, User, Menu,
+  House, User as UserIcon, Briefcase, School, DataLine,
+  DocumentChecked, Medal, DocumentCopy, Bell, UserFilled,
+  PictureRounded, TrendCharts, Calendar
 } from '@element-plus/icons-vue'
 import { getUserInfo } from '../utils/role'
 import Sortable from 'sortablejs'
 import axios from 'axios'
+import { getAllThemes, detectHoliday, getCurrentTheme, applyThemeCSS, ThemeMode } from '../utils/holidayTheme'
 
 // 主题选项
 const themeOptions = ref([
@@ -199,7 +267,42 @@ const loginInfo = ref({
   lastLoginTime: localStorage.getItem('lastLoginTime') || '未知'
 })
 
+// 节日主题设置
+const holidayThemeSettings = reactive({
+  mode: ThemeMode.AUTO,
+  manualTheme: null
+})
 
+// 可用主题列表
+const availableThemes = computed(() => getAllThemes())
+
+// 当前节日信息
+const currentHolidayInfo = computed(() => {
+  const holiday = detectHoliday()
+  if (holiday) {
+    return {
+      name: holiday.name,
+      type: holiday.type,
+      desc: holiday.type === 'solemn'
+        ? `${holiday.name}期间，系统已自动切换为肃穆主题，关闭花哨特效`
+        : `${holiday.name}期间，系统已自动切换为节日主题`
+    }
+  }
+
+  // 检查手动设置的主题
+  if (holidayThemeSettings.mode === 'manual' && holidayThemeSettings.manualTheme) {
+    const theme = getCurrentTheme(holidayThemeSettings.manualTheme, ThemeMode.MANUAL)
+    if (theme) {
+      return {
+        name: theme.name + '（手动）',
+        type: theme.type,
+        desc: '当前为手动设置的主题'
+      }
+    }
+  }
+
+  return null
+})
 
 // 菜单顺序管理
 // 菜单定义，与App.vue保持一致
@@ -302,17 +405,69 @@ const handleThemeChange = () => {
   }
 }
 
+// 处理节日主题模式变化
+const handleHolidayModeChange = () => {
+  // 如果切换到自动模式，清除手动主题
+  if (holidayThemeSettings.mode === ThemeMode.AUTO) {
+    holidayThemeSettings.manualTheme = null
+  }
+  // 保存并应用
+  saveHolidayThemeSettings()
+}
+
+// 选择节日主题
+const selectHolidayTheme = (themeKey) => {
+  holidayThemeSettings.manualTheme = themeKey
+  saveHolidayThemeSettings()
+  ElMessage.success('主题已切换')
+}
+
+// 保存节日主题设置
+const saveHolidayThemeSettings = () => {
+  const settings = {
+    mode: holidayThemeSettings.mode,
+    manualTheme: holidayThemeSettings.manualTheme
+  }
+  localStorage.setItem('holidayThemeSettings', JSON.stringify(settings))
+
+  // 应用主题
+  const theme = getCurrentTheme(holidayThemeSettings.manualTheme, holidayThemeSettings.mode)
+  if (theme) {
+    applyThemeCSS(theme)
+  }
+
+  // 触发storage事件，通知App.vue更新
+  window.dispatchEvent(new Event('storage'))
+}
+
+// 初始化节日主题设置
+const initHolidayThemeSettings = () => {
+  const savedSettings = localStorage.getItem('holidayThemeSettings')
+  if (savedSettings) {
+    try {
+      const settings = JSON.parse(savedSettings)
+      holidayThemeSettings.mode = settings.mode || ThemeMode.AUTO
+      holidayThemeSettings.manualTheme = settings.manualTheme || null
+    } catch (e) {
+      console.error('解析节日主题设置失败:', e)
+    }
+  }
+}
+
 // 保存设置
 const saveSettings = () => {
   // 保存主题设置
   localStorage.setItem('selectedTheme', selectedTheme.value)
-  
+
   // 保存显示设置
   localStorage.setItem('displaySettings', JSON.stringify(displaySettings))
-  
+
+  // 保存节日主题设置
+  saveHolidayThemeSettings()
+
   // 保存菜单顺序
   saveMenuOrder()
-  
+
   ElMessage.success('设置已保存')
 }
 
@@ -321,16 +476,21 @@ const resetSettings = () => {
   // 恢复默认主题
   selectedTheme.value = 'default'
   handleThemeChange()
-  
+
   // 恢复默认显示设置
   Object.assign(displaySettings, {
     compactMode: false,
     darkMode: false
   })
-  
+
+  // 恢复默认节日主题设置
+  holidayThemeSettings.mode = ThemeMode.AUTO
+  holidayThemeSettings.manualTheme = null
+  saveHolidayThemeSettings()
+
   // 恢复默认菜单顺序
   resetMenuOrder()
-  
+
   ElMessage.info('已恢复默认设置')
 }
 
@@ -345,19 +505,22 @@ const initSettings = () => {
     // 默认主题
     handleThemeChange()
   }
-  
+
   // 加载显示设置
   const savedDisplaySettings = localStorage.getItem('displaySettings')
   if (savedDisplaySettings) {
     Object.assign(displaySettings, JSON.parse(savedDisplaySettings))
   }
+
+  // 加载节日主题设置
+  initHolidayThemeSettings()
 }
 
 // 监听显示设置变化，实时保存到localStorage
 watch(displaySettings, (newSettings) => {
   // 实时保存到localStorage
   localStorage.setItem('displaySettings', JSON.stringify(newSettings))
-  
+
   // 触发显示效果变化（通过localStorage事件）
   window.dispatchEvent(new Event('storage'))
 }, { deep: true })
@@ -635,20 +798,112 @@ const filterMenusByRole = () => {
   color: #303133;
 }
 
+/* 节日主题设置样式 */
+.holiday-theme-section {
+  padding: 20px 0;
+}
 
+.holiday-theme-description {
+  margin-bottom: 20px;
+  color: #606266;
+}
+
+.holiday-tip {
+  color: #909399;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.theme-mode-section {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.manual-theme-section {
+  margin-top: 20px;
+}
+
+.holiday-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.holiday-theme-item {
+  border: 2px solid #e4e7ed;
+  border-radius: 12px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.holiday-theme-item:hover {
+  border-color: #409eff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.holiday-theme-item.active {
+  border-color: #409eff;
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.2);
+}
+
+.holiday-theme-item.solemn {
+  border-color: #c0c4cc;
+}
+
+.holiday-theme-item.solemn:hover {
+  border-color: #909399;
+}
+
+.holiday-theme-item.solemn.active {
+  border-color: #909399;
+  box-shadow: 0 4px 12px rgba(144, 147, 153, 0.2);
+}
+
+.holiday-theme-preview {
+  width: 100%;
+  height: 60px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.holiday-theme-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.holiday-theme-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #303133;
+}
+
+.current-holiday-info {
+  margin-top: 20px;
+}
 
 /* 响应式设计 */
 @media (max-width: 768px) {
   .settings-content {
     padding: 10px;
   }
-  
+
   .theme-options {
     flex-direction: column;
   }
-  
+
   .settings-actions {
     justify-content: center;
+  }
+
+  .holiday-theme-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 </style>

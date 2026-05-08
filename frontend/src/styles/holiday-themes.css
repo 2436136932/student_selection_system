@@ -1,0 +1,423 @@
+/**
+ * 节日主题样式文件
+ * 定义节日主题和肃穆主题的CSS变量覆盖与特殊样式
+ */
+
+/* ==================== 基础节日变量 ==================== */
+:root {
+  --holiday-primary: #4A90E2;
+  --holiday-secondary: #FF9A8B;
+  --holiday-accent: #FFB08A;
+  --holiday-bg: #F8F9FA;
+  --holiday-surface: #FFFFFF;
+  --holiday-text: #2C3E50;
+  --holiday-border: rgba(74, 144, 226, 0.1);
+  --holiday-gradient: linear-gradient(180deg, #4A90E2 0%, #3D7BCB 50%, #2E6B9A 100%);
+}
+
+/* ==================== 喜庆节日主题覆盖 ==================== */
+/* 这些样式会在检测到节日时通过JS动态应用 */
+
+/* 侧边栏节日主题 */
+[data-holiday-theme="festive"] .sidebar {
+  background: var(--holiday-gradient) !important;
+  box-shadow: 4px 0 24px rgba(var(--holiday-primary-rgb, 74, 144, 226), 0.15) !important;
+}
+
+[data-holiday-theme="festive"] .logo-container {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%) !important;
+}
+
+[data-holiday-theme="festive"] .sidebar-menu .el-menu-item.is-active {
+  background: linear-gradient(135deg, var(--holiday-accent) 0%, var(--holiday-secondary) 100%) !important;
+  box-shadow: 0 4px 12px rgba(var(--holiday-primary-rgb, 74, 144, 226), 0.3) !important;
+}
+
+[data-holiday-theme="festive"] .sidebar-menu .el-menu-item:hover,
+[data-holiday-theme="festive"] .sidebar-menu .el-sub-menu__title:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.12) 100%) !important;
+}
+
+/* 顶部导航栏节日主题 */
+[data-holiday-theme="festive"] .top-header::after {
+  background: linear-gradient(90deg, var(--holiday-primary), var(--holiday-accent), var(--holiday-primary)) !important;
+  opacity: 0.6 !important;
+}
+
+/* 主内容区域节日主题 */
+[data-holiday-theme="festive"] .main-content {
+  background: linear-gradient(135deg, var(--holiday-bg) 0%, #F0F2F5 50%, #E8E8F0 100%) !important;
+}
+
+[data-holiday-theme="festive"] .content-wrapper {
+  border-color: var(--holiday-border) !important;
+}
+
+/* 按钮节日主题 */
+[data-holiday-theme="festive"] .el-button--primary {
+  background: linear-gradient(135deg, var(--holiday-primary) 0%, var(--holiday-secondary) 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(var(--holiday-primary-rgb, 74, 144, 226), 0.2) !important;
+}
+
+/* 卡片节日主题 */
+[data-holiday-theme="festive"] .el-card {
+  border: 1px solid var(--holiday-border) !important;
+}
+
+[data-holiday-theme="festive"] .el-card__header {
+  background: linear-gradient(135deg, var(--holiday-bg) 0%, #F0F2F5 100%) !important;
+}
+
+/* 标签节日主题 */
+[data-holiday-theme="festive"] .role-admin {
+  background: linear-gradient(135deg, var(--holiday-primary) 0%, var(--holiday-secondary) 100%) !important;
+}
+
+/* ==================== 肃穆主题样式 ==================== */
+/* 国家公祭日、烈士纪念日等特殊日期使用 */
+
+/* 全局肃穆样式 */
+.solemn-theme,
+[data-holiday-theme="solemn"] {
+  --el-color-primary: #6B6B6B !important;
+}
+
+[data-holiday-theme="solemn"] body {
+  background-color: #E8E8E8 !important;
+  color: #4A4A4A !important;
+}
+
+/* 肃穆主题 - 侧边栏 */
+[data-holiday-theme="solemn"] .sidebar {
+  background: linear-gradient(180deg, #5A5A5A 0%, #4A4A4A 50%, #3A3A3A 100%) !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-holiday-theme="solemn"] .sidebar::before {
+  display: none !important;
+}
+
+[data-holiday-theme="solemn"] .logo-container {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-holiday-theme="solemn"] .logo-container::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
+}
+
+[data-holiday-theme="solemn"] .logo-text {
+  color: #CCCCCC !important;
+}
+
+/* 肃穆主题 - 菜单 */
+[data-holiday-theme="solemn"] .sidebar-menu {
+  --el-menu-text-color: rgba(255, 255, 255, 0.7) !important;
+  --el-menu-active-color: #FFFFFF !important;
+  --el-menu-hover-bg-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-holiday-theme="solemn"] .sidebar-menu .el-menu-item,
+[data-holiday-theme="solemn"] .sidebar-menu .el-sub-menu__title {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+[data-holiday-theme="solemn"] .sidebar-menu .el-menu-item:hover,
+[data-holiday-theme="solemn"] .sidebar-menu .el-sub-menu__title:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #FFFFFF !important;
+}
+
+[data-holiday-theme="solemn"] .sidebar-menu .el-menu-item.is-active {
+  background: linear-gradient(135deg, #6B6B6B 0%, #5A5A5A 100%) !important;
+  color: #FFFFFF !important;
+  box-shadow: none !important;
+}
+
+[data-holiday-theme="solemn"] .sidebar-menu .el-menu-item.is-active::before {
+  background: #CCCCCC !important;
+}
+
+[data-holiday-theme="solemn"] .sidebar-menu .el-sub-menu .el-menu {
+  background: rgba(58, 58, 58, 0.95) !important;
+}
+
+/* 肃穆主题 - 顶部导航栏 */
+[data-holiday-theme="solemn"] .top-header {
+  background: linear-gradient(180deg, #F0F0F0 0%, #E8E8E8 100%) !important;
+  border-bottom: 1px solid rgba(74, 74, 74, 0.1) !important;
+}
+
+[data-holiday-theme="solemn"] .top-header::after {
+  background: linear-gradient(90deg, #6B6B6B, #888888, #6B6B6B) !important;
+  opacity: 0.3 !important;
+}
+
+[data-holiday-theme="solemn"] .user-name {
+  color: #4A4A4A !important;
+}
+
+[data-holiday-theme="solemn"] .online-count {
+  background: linear-gradient(135deg, #F0F0F0 0%, #E8E8E8 100%) !important;
+  border: 1px solid rgba(74, 74, 74, 0.1) !important;
+  color: #6B6B6B !important;
+}
+
+/* 肃穆主题 - 主内容区域 */
+[data-holiday-theme="solemn"] .main-content {
+  background: linear-gradient(135deg, #E8E8E8 0%, #E0E0E0 50%, #D8D8D8 100%) !important;
+}
+
+[data-holiday-theme="solemn"] .main-content::before {
+  display: none !important;
+}
+
+[data-holiday-theme="solemn"] .content-wrapper {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(74, 74, 74, 0.08) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), 0 8px 32px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* 肃穆主题 - 按钮 */
+[data-holiday-theme="solemn"] .el-button--primary {
+  background: linear-gradient(135deg, #6B6B6B 0%, #5A5A5A 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-holiday-theme="solemn"] .el-button--primary:hover {
+  background: linear-gradient(135deg, #5A5A5A 0%, #4A4A4A 100%) !important;
+}
+
+/* 肃穆主题 - 卡片 */
+[data-holiday-theme="solemn"] .el-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(74, 74, 74, 0.08) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-holiday-theme="solemn"] .el-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
+  transform: none !important;
+}
+
+[data-holiday-theme="solemn"] .el-card__header {
+  background: linear-gradient(135deg, #F0F0F0 0%, #E8E8E8 100%) !important;
+  border-bottom: 1px solid rgba(74, 74, 74, 0.08) !important;
+}
+
+/* 肃穆主题 - 表格 */
+[data-holiday-theme="solemn"] .el-table__header-wrapper th {
+  background: linear-gradient(135deg, #F0F0F0 0%, #E8E8E8 100%) !important;
+  color: #4A4A4A !important;
+}
+
+[data-holiday-theme="solemn"] .el-table__body-wrapper tr:hover > td {
+  background: rgba(74, 74, 74, 0.04) !important;
+}
+
+/* 肃穆主题 - 表单 */
+[data-holiday-theme="solemn"] .el-input__wrapper {
+  background: linear-gradient(135deg, #F5F5F5 0%, #F0F0F0 100%) !important;
+  border-color: rgba(74, 74, 74, 0.1) !important;
+}
+
+[data-holiday-theme="solemn"] .el-input__wrapper.is-focus {
+  border-color: #6B6B6B !important;
+  box-shadow: 0 0 0 4px rgba(107, 107, 107, 0.1), var(--shadow-md) !important;
+}
+
+/* 肃穆主题 - 标签 */
+[data-holiday-theme="solemn"] .role-admin,
+[data-holiday-theme="solemn"] .role-teacher,
+[data-holiday-theme="solemn"] .role-student {
+  background: linear-gradient(135deg, #6B6B6B 0%, #5A5A5A 100%) !important;
+  box-shadow: none !important;
+}
+
+/* 肃穆主题 - 分页 */
+[data-holiday-theme="solemn"] .el-pagination button,
+[data-holiday-theme="solemn"] .el-pagination .el-pager li {
+  background: linear-gradient(135deg, #F0F0F0 0%, #E8E8E8 100%) !important;
+  border: 1px solid rgba(74, 74, 74, 0.1) !important;
+}
+
+[data-holiday-theme="solemn"] .el-pagination .el-pager li.is-active {
+  background: linear-gradient(135deg, #6B6B6B 0%, #5A5A5A 100%) !important;
+  color: white !important;
+}
+
+/* 肃穆主题 - 对话框 */
+[data-holiday-theme="solemn"] .el-dialog {
+  background: #F5F5F5 !important;
+  border: 1px solid rgba(74, 74, 74, 0.1) !important;
+}
+
+[data-holiday-theme="solemn"] .el-dialog__header {
+  background: linear-gradient(135deg, #F0F0F0 0%, #E8E8E8 100%) !important;
+  border-bottom: 1px solid rgba(74, 74, 74, 0.1) !important;
+}
+
+/* 肃穆主题 - 下拉菜单 */
+[data-holiday-theme="solemn"] .el-dropdown-menu {
+  background: #F0F0F0 !important;
+  border: 1px solid rgba(74, 74, 74, 0.1) !important;
+}
+
+[data-holiday-theme="solemn"] .el-dropdown-item {
+  color: #4A4A4A !important;
+}
+
+[data-holiday-theme="solemn"] .el-dropdown-item:hover {
+  background: rgba(74, 74, 74, 0.08) !important;
+}
+
+/* 肃穆主题 - 消息提示 */
+[data-holiday-theme="solemn"] .el-message {
+  background: rgba(240, 240, 240, 0.95) !important;
+  border: 1px solid rgba(74, 74, 74, 0.1) !important;
+}
+
+/* 肃穆主题 - 移除动画效果 */
+[data-holiday-theme="solemn"] .el-card,
+[data-holiday-theme="solemn"] .el-button,
+[data-holiday-theme="solemn"] .content-wrapper {
+  transition: none !important;
+}
+
+[data-holiday-theme="solemn"] .el-card:hover,
+[data-holiday-theme="solemn"] .el-button:hover {
+  transform: none !important;
+}
+
+/* 肃穆主题 - 滚动条 */
+[data-holiday-theme="solemn"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #6B6B6B 0%, #5A5A5A 100%) !important;
+}
+
+/* ==================== 深色模式与肃穆主题共存 ==================== */
+.dark-mode[data-holiday-theme="solemn"] .sidebar {
+  background: linear-gradient(180deg, #3A3A3A 0%, #2A2A2A 50%, #1A1A1A 100%) !important;
+}
+
+.dark-mode[data-holiday-theme="solemn"] .top-header {
+  background: linear-gradient(180deg, #3A3A3A 0%, #2A2A2A 100%) !important;
+}
+
+.dark-mode[data-holiday-theme="solemn"] .main-content {
+  background: linear-gradient(135deg, #2A2A2A 0%, #1A1A1A 50%, #0A0A0A 100%) !important;
+}
+
+.dark-mode[data-holiday-theme="solemn"] .content-wrapper {
+  background-color: rgba(40, 40, 40, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark-mode[data-holiday-theme="solemn"] .el-card {
+  background: #2A2A2A !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark-mode[data-holiday-theme="solemn"] .el-card__header {
+  background: linear-gradient(135deg, #3A3A3A 0%, #2A2A2A 100%) !important;
+}
+
+/* ==================== 节日装饰元素基础样式 ==================== */
+.holiday-decoration-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  overflow: hidden;
+}
+
+/* 装饰元素动画 */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+@keyframes fall {
+  0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+@keyframes sway {
+  0%, 100% { transform: translateX(0) rotate(-5deg); }
+  50% { transform: translateX(20px) rotate(5deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* 装饰元素通用类 */
+.decor-item {
+  position: absolute;
+  pointer-events: none;
+}
+
+.decor-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.decor-fall {
+  animation: fall linear infinite;
+}
+
+.decor-sway {
+  animation: sway 4s ease-in-out infinite;
+}
+
+.decor-twinkle {
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+/* ==================== 主题切换过渡动画 ==================== */
+.theme-transition {
+  transition: background-color 0.5s ease, 
+              color 0.5s ease, 
+              border-color 0.5s ease,
+              box-shadow 0.5s ease;
+}
+
+/* 肃穆主题指示器 */
+.solemn-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #4A4A4A, #6B6B6B, #4A4A4A);
+  z-index: 10000;
+  opacity: 0.5;
+}
+
+/* 节日主题指示器 */
+.festive-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--holiday-primary), var(--holiday-accent), var(--holiday-primary));
+  z-index: 10000;
+  opacity: 0.7;
+}
+
+/* ==================== 响应式调整 ==================== */
+@media (max-width: 768px) {
+  .holiday-decoration-container {
+    display: none;
+  }
+}

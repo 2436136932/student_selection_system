@@ -3,6 +3,7 @@ package com.example.studentselectionsystem.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.studentselectionsystem.entity.*;
 import com.example.studentselectionsystem.mapper.*;
+import com.example.studentselectionsystem.service.RecommendationWeightService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class AwardRecommendationService {
 
     @Autowired
     private StudentAwardApplicationMapper studentAwardApplicationMapper;
+
+    @Autowired
+    private RecommendationWeightService recommendationWeightService;
 
     @Autowired
     private StudentMapper studentMapper;
@@ -67,7 +71,8 @@ public class AwardRecommendationService {
                     continue;
                 }
 
-                double matchScore = calculateMatchScore(student, award, studentScores, studentAwardRecords);
+                Map<String, Double> dimensionScores = calculateDimensionScores(student, award, studentScores, studentAwardRecords);
+                double matchScore = dimensionScores.get("totalScore");
                 
                 double winProbability = calculateWinProbability(student, award, studentScores, studentAwardRecords);
 
@@ -82,6 +87,27 @@ public class AwardRecommendationService {
                 recommendationItem.put("winProbability", Math.round(winProbability * 100) / 100.0);
                 recommendationItem.put("recommendation", recommendation);
                 recommendationItem.put("competitionLevel", getCompetitionLevel(award));
+                
+                // 添加各个维度的分数信息
+                recommendationItem.put("gradeScore", Math.round(dimensionScores.get("gradeScore") * 100) / 100.0);
+                recommendationItem.put("awardScore", Math.round(dimensionScores.get("awardScore") * 100) / 100.0);
+                recommendationItem.put("majorScore", Math.round(dimensionScores.get("majorScore") * 100) / 100.0);
+                recommendationItem.put("historyScore", Math.round(dimensionScores.get("historyScore") * 100) / 100.0);
+                recommendationItem.put("competitionScore", Math.round(dimensionScores.get("competitionScore") * 100) / 100.0);
+                
+                // 添加各个维度的原始分数
+                recommendationItem.put("gradeRawScore", Math.round(dimensionScores.get("gradeRawScore") * 100) / 100.0);
+                recommendationItem.put("awardRawScore", Math.round(dimensionScores.get("awardRawScore") * 100) / 100.0);
+                recommendationItem.put("majorRawScore", Math.round(dimensionScores.get("majorRawScore") * 100) / 100.0);
+                recommendationItem.put("historyRawScore", Math.round(dimensionScores.get("historyRawScore") * 100) / 100.0);
+                recommendationItem.put("competitionRawScore", Math.round(dimensionScores.get("competitionRawScore") * 100) / 100.0);
+                
+                // 添加权重信息
+                recommendationItem.put("gradeWeight", dimensionScores.get("gradeWeight"));
+                recommendationItem.put("awardWeight", dimensionScores.get("awardWeight"));
+                recommendationItem.put("majorWeight", dimensionScores.get("majorWeight"));
+                recommendationItem.put("historyWeight", dimensionScores.get("historyWeight"));
+                recommendationItem.put("competitionWeight", dimensionScores.get("competitionWeight"));
 
                 recommendations.add(recommendationItem);
             }
@@ -101,18 +127,62 @@ public class AwardRecommendationService {
     private double calculateMatchScore(Student student, Award award, 
                                       List<Score> studentScores, 
                                       List<StudentAwardRecord> studentAwardRecords) {
+        Map<String, Double> dimensionScores = calculateDimensionScores(student, award, studentScores, studentAwardRecords);
+        return dimensionScores.get("totalScore");
+    }
+    
+    private Map<String, Double> calculateDimensionScores(Student student, Award award, 
+                                                        List<Score> studentScores, 
+                                                        List<StudentAwardRecord> studentAwardRecords) {
+        Map<String, Double> scores = new HashMap<>();
         
-        double gradeScore = calculateGradeScore(studentScores) * 0.4;
+        // 获取数据库中的权重配置
+        RecommendationWeight weightConfig = recommendationWeightService.getWeights();
         
-        double awardScore = calculateAwardScore(award, studentAwardRecords) * 0.3;
+        // 将BigDecimal权重转换为小数百分比（如40.00 -> 0.40）
+        double gradeWeight = weightConfig.getGradeWeight().doubleValue() / 100.0;
+        double awardWeight = weightConfig.getAwardWeight().doubleValue() / 100.0;
+        double majorWeight = weightConfig.getMajorWeight().doubleValue() / 100.0;
+        double historyWeight = weightConfig.getHistoryWeight().doubleValue() / 100.0;
+        double competitionWeight = weightConfig.getCompetitionWeight().doubleValue() / 100.0;
         
-        double majorScore = calculateMajorScore(student, award) * 0.15;
+        // 计算原始分数
+        double gradeRawScore = calculateGradeScore(studentScores);
+        double awardRawScore = calculateAwardScore(award, studentAwardRecords);
+        double majorRawScore = calculateMajorScore(student, award);
+        double historyRawScore = calculateHistoryScore(award);
+        double competitionRawScore = calculateCompetitionScore(award);
         
-        double historyScore = calculateHistoryScore(award) * 0.1;
+        // 计算加权分数
+        double gradeScore = gradeRawScore * gradeWeight;
+        double awardScore = awardRawScore * awardWeight;
+        double majorScore = majorRawScore * majorWeight;
+        double historyScore = historyRawScore * historyWeight;
+        double competitionScore = competitionRawScore * competitionWeight;
         
-        double competitionScore = calculateCompetitionScore(award) * 0.05;
-
-        return gradeScore + awardScore + majorScore + historyScore + competitionScore;
+        // 存储各个维度的分数
+        scores.put("gradeRawScore", gradeRawScore);
+        scores.put("awardRawScore", awardRawScore);
+        scores.put("majorRawScore", majorRawScore);
+        scores.put("historyRawScore", historyRawScore);
+        scores.put("competitionRawScore", competitionRawScore);
+        
+        scores.put("gradeScore", gradeScore);
+        scores.put("awardScore", awardScore);
+        scores.put("majorScore", majorScore);
+        scores.put("historyScore", historyScore);
+        scores.put("competitionScore", competitionScore);
+        
+        scores.put("totalScore", gradeScore + awardScore + majorScore + historyScore + competitionScore);
+        
+        // 存储权重信息
+        scores.put("gradeWeight", gradeWeight * 100);
+        scores.put("awardWeight", awardWeight * 100);
+        scores.put("majorWeight", majorWeight * 100);
+        scores.put("historyWeight", historyWeight * 100);
+        scores.put("competitionWeight", competitionWeight * 100);
+        
+        return scores;
     }
 
     private double calculateGradeScore(List<Score> studentScores) {
@@ -246,7 +316,9 @@ public class AwardRecommendationService {
                                           List<Score> studentScores, 
                                           List<StudentAwardRecord> studentAwardRecords) {
         
-        double matchScore = calculateMatchScore(student, award, studentScores, studentAwardRecords);
+        // 使用calculateDimensionScores来计算matchScore，确保与推荐计算一致
+        Map<String, Double> dimensionScores = calculateDimensionScores(student, award, studentScores, studentAwardRecords);
+        double matchScore = dimensionScores.get("totalScore");
         
         Long totalApplications = studentAwardApplicationMapper.selectCount(
             new LambdaQueryWrapper<StudentAwardApplication>()

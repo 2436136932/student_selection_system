@@ -116,24 +116,34 @@
   <div v-else>
     <router-view />
   </div>
+
+  <!-- 节日装饰层 -->
+  <HolidayDecoration :theme="currentHolidayTheme" />
+
+  <!-- 主题状态指示器 -->
+  <div v-if="themeStatusText" class="theme-status-indicator" :class="{ 'solemn': isSolemn }">
+    <el-tooltip :content="themeStatusText" placement="bottom">
+      <div class="theme-indicator-dot"></div>
+    </el-tooltip>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { 
-  House, 
-  User, 
+import {
+  House,
+  User,
   UserFilled,
   Briefcase,
   Document,
   DocumentChecked,
   DocumentCopy,
   School,
-  DataLine, 
-  Medal, 
-  Menu, 
+  DataLine,
+  Medal,
+  Menu,
   ArrowDown,
   ArrowLeft,
   ArrowRight,
@@ -145,6 +155,8 @@ import {
   ChatLineRound
 } from '@element-plus/icons-vue'
 import axios from 'axios'
+import HolidayDecoration from './components/HolidayDecoration.vue'
+import { getCurrentTheme, applyThemeCSS, getThemeStatusText, isSolemnTheme, ThemeMode } from './utils/holidayTheme'
 
 const router = useRouter()
 const route = useRoute()
@@ -166,6 +178,13 @@ const isCompactMode = ref(false)
 
 // 深色模式
 const isDarkMode = ref(false)
+
+// 节日主题相关
+const currentHolidayTheme = ref(null)
+const themeStatusText = ref('')
+const isSolemn = ref(false)
+const holidayThemeMode = ref(ThemeMode.AUTO)
+const manualHolidayTheme = ref(null)
 
 // 未读消息数量
 const unreadMessageCount = ref(0)
@@ -236,10 +255,41 @@ const checkLoginStatus = () => {
 // 导入WebSocket服务
 import { initializeWebSocket as initWebSocket, triggerWebSocketConnection, closeWebSocket } from './utils/websocketService'
 
+// 初始化节日主题
+const initHolidayTheme = () => {
+  // 读取主题设置
+  const savedThemeSettings = localStorage.getItem('holidayThemeSettings')
+  if (savedThemeSettings) {
+    try {
+      const settings = JSON.parse(savedThemeSettings)
+      holidayThemeMode.value = settings.mode || ThemeMode.AUTO
+      manualHolidayTheme.value = settings.manualTheme || null
+    } catch (e) {
+      console.error('解析节日主题设置失败:', e)
+    }
+  }
+
+  // 获取当前主题
+  updateHolidayTheme()
+}
+
+// 更新节日主题
+const updateHolidayTheme = () => {
+  const theme = getCurrentTheme(manualHolidayTheme.value, holidayThemeMode.value)
+  currentHolidayTheme.value = theme
+  themeStatusText.value = getThemeStatusText(theme)
+  isSolemn.value = isSolemnTheme(theme)
+
+  // 应用主题CSS
+  applyThemeCSS(theme)
+
+  console.log('节日主题已更新:', themeStatusText.value)
+}
+
 // 组件挂载时检查登录状态和读取设置
 onMounted(() => {
   checkLoginStatus()
-  
+
   // 读取显示设置
   const savedDisplaySettings = localStorage.getItem('displaySettings')
   if (savedDisplaySettings) {
@@ -251,13 +301,16 @@ onMounted(() => {
       console.error('解析显示设置失败:', e)
     }
   }
-  
+
+  // 初始化节日主题
+  initHolidayTheme()
+
   // 监听未读消息数量更新事件
   window.addEventListener('updateUnreadCount', getUnreadMessageCount)
-  
+
   // 初始化WebSocket连接，用户一登录就建立连接
   initWebSocket()
-  
+
   // 获取在线人数
   getOnlineUserCount()
   // 每30秒更新一次在线人数
@@ -316,6 +369,19 @@ window.addEventListener('storage', (event) => {
   } else if (event.key === 'menuOrder') {
     // 菜单顺序发生变化，Vue会自动重新计算getVisibleMenus，无需手动刷新
     console.log('菜单顺序已更新')
+  } else if (event.key === 'holidayThemeSettings') {
+    // 节日主题设置发生变化
+    const savedThemeSettings = localStorage.getItem('holidayThemeSettings')
+    if (savedThemeSettings) {
+      try {
+        const settings = JSON.parse(savedThemeSettings)
+        holidayThemeMode.value = settings.mode || ThemeMode.AUTO
+        manualHolidayTheme.value = settings.manualTheme || null
+        updateHolidayTheme()
+      } catch (e) {
+        console.error('解析节日主题设置失败:', e)
+      }
+    }
   }
 })
 
@@ -1291,5 +1357,31 @@ html, body {
   .menu-icon {
     margin-right: 0;
   }
+}
+
+/* 主题状态指示器 */
+.theme-status-indicator {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.theme-indicator-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--holiday-primary, #4A90E2) 0%, var(--holiday-accent, #FFB08A) 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-indicator-dot:hover {
+  transform: scale(1.3);
+}
+
+.theme-status-indicator.solemn .theme-indicator-dot {
+  background: linear-gradient(135deg, #6B6B6B 0%, #888888 100%);
 }
 </style>

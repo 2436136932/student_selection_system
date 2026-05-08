@@ -145,7 +145,7 @@
           <el-input v-model="form.grade" placeholder="等级" readonly></el-input>
         </el-form-item>
         <el-form-item label="适用学期">
-          <el-input v-model="form.semester" placeholder="请输入适用学期（如：2023-2024-1）"></el-input>
+          <el-input v-model="form.semester" placeholder="请输入适用学期（如：2025-2026-1）"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>

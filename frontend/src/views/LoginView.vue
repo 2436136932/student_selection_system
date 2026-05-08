@@ -708,7 +708,7 @@ const handleLogin = () => {
       })
       .catch(error => {
         loginLoading.value = false
-        ElMessage.error('登录失败，请检查网络或联系管理员')
+        ElMessage.error('登录失败，请检查用户名和密码或联系管理员')
         console.error('登录错误:', error)
       })
     }
