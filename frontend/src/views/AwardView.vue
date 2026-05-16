@@ -3,10 +3,20 @@
     <!-- 评奖评优管理卡片式布局 -->
     <div class="award-management">
       <h2 class="page-title">评奖评优管理</h2>
-      <div class="card-header" style="margin-bottom: 20px;">
-          <el-button v-if="hasRole('admin')" type="primary" @click="handleAdd">
-            <el-icon><plus /></el-icon> 新建奖项
-          </el-button>
+      <div class="card-header" style="margin-bottom: 20px; align-items: center; gap: 8px;">
+          <div style="display:flex; gap:8px; align-items:center">
+            <el-button v-if="hasRole('admin')" type="primary" @click="handleAdd">
+              <el-icon><plus /></el-icon> 新建奖项
+            </el-button>
+            <el-button v-if="hasRole('admin')" type="warning" @click="downloadTemplate">
+              <el-icon><Download /></el-icon> 下载模板Excel
+            </el-button>
+            <el-button v-if="hasRole('admin')" type="success" @click="triggerImport">
+              批量导入奖项
+            </el-button>
+          </div>
+          <!-- 隐藏文件输入，用于批量导入 -->
+          <input ref="importFileInput" type="file" accept=".xlsx,.xls" style="display:none" @change="handleImportFile" />
         </div>
       
       <!-- 奖项卡片列表 -->
@@ -1631,6 +1641,55 @@ export default {
       getTeachers()
     })
 
+    // 下载模板
+    const importFileInput = ref(null)
+    const downloadTemplate = async () => {
+      try {
+        const res = await axios.get('/api/awards/template', { responseType: 'blob' })
+        const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'award_template.xlsx'
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+        window.URL.revokeObjectURL(url)
+        ElMessage.success('模板下载已开始')
+      } catch (error) {
+        console.error('下载模板失败', error)
+        ElMessage.error('模板下载失败')
+      }
+    }
+
+    const triggerImport = () => {
+      if (importFileInput.value) {
+        importFileInput.value.click()
+      }
+    }
+
+    const handleImportFile = async (event) => {
+      const file = event.target.files && event.target.files[0]
+      if (!file) return
+      const formData = new FormData()
+      formData.append('file', file)
+
+      try {
+        const res = await axios.post('/api/awards/batch-import', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+        ElMessage.success(res.data || '导入成功')
+        getAwards()
+      } catch (error) {
+        console.error('导入失败', error)
+        const msg = error.response?.data || '导入失败，请检查Excel格式'
+        ElMessage.error(msg)
+      } finally {
+        // 清空文件输入，允许重复选择同一文件
+        event.target.value = ''
+      }
+    }
+
     return {
       // 奖项类型管理
       dialogVisible,
@@ -1714,8 +1773,14 @@ export default {
   handleApplicationSizeChange,
   handleApplicationCurrentChange,
   handleViewResults,
-  downloadMaterial
+  downloadMaterial,
 
+      // 批量导入相关
+      importFileInput,
+      downloadTemplate,
+      triggerImport,
+      handleImportFile,
+      Download
     }
   }
 }
@@ -1896,3 +1961,8 @@ export default {
   }
 }
 </style>
+      importFileInput,
+      downloadTemplate,
+      triggerImport,
+      handleImportFile,
+      Download,

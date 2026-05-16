@@ -93,7 +93,7 @@ mybatis-plus:
 # JWT Configuration
 jwt:
   secret: student-selection-system-secret-key-2024
-  expiration: 86400000  # 24 hours in milliseconds
+  expiration: 7200000  # 2 hours in milliseconds
   header: Authorization
 
 # Logging Configuration

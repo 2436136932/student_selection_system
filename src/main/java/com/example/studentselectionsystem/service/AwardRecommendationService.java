@@ -35,6 +35,77 @@ public class AwardRecommendationService {
     @Autowired
     private StudentMapper studentMapper;
 
+    /**
+     * 诊断方法：分析为什么推荐为空
+     */
+    public Map<String, Object> getDiagnostic(Long studentId) {
+        Map<String, Object> diagnostic = new HashMap<>();
+        try {
+            Student student = studentMapper.selectById(studentId);
+            if (student == null) {
+                diagnostic.put("error", "学生不存在: " + studentId);
+                return diagnostic;
+            }
+            diagnostic.put("studentId", studentId);
+            diagnostic.put("studentName", student.getName());
+            diagnostic.put("studentMajor", student.getMajor());
+
+            // 检查可用奖项数
+            List<Award> allAwards = awardMapper.selectList(null);
+            diagnostic.put("totalAwardsInDb", allAwards.size());
+
+            List<Award> availableAwards = awardMapper.selectList(
+                new LambdaQueryWrapper<Award>()
+                    .eq(Award::getStatus, "已发布")
+                    .eq(Award::getCurrentStatus, "进行中")
+            );
+            diagnostic.put("availableAwards", availableAwards.size());
+
+            // 检查已申请数
+            Long appliedCount = studentAwardApplicationMapper.selectCount(
+                new LambdaQueryWrapper<StudentAwardApplication>()
+                    .eq(StudentAwardApplication::getStudentId, studentId)
+            );
+            diagnostic.put("alreadyAppliedCount", appliedCount);
+
+            // 展示各奖项状态
+            List<Map<String, Object>> awardStatusList = new ArrayList<>();
+            for (Award a : allAwards) {
+                Map<String, Object> status = new HashMap<>();
+                status.put("id", a.getId());
+                status.put("name", a.getAwardName());
+                status.put("status", a.getStatus());
+                status.put("currentStatus", a.getCurrentStatus());
+                
+                boolean applied = studentAwardApplicationMapper.exists(
+                    new LambdaQueryWrapper<StudentAwardApplication>()
+                        .eq(StudentAwardApplication::getStudentId, studentId)
+                        .eq(StudentAwardApplication::getAwardId, a.getId())
+                );
+                status.put("alreadyApplied", applied);
+                awardStatusList.add(status);
+            }
+            diagnostic.put("awardDetails", awardStatusList);
+
+            // 检查成绩数
+            Long scoreCount = scoreMapper.selectCount(
+                new LambdaQueryWrapper<Score>()
+                    .eq(Score::getStudentId, studentId)
+            );
+            diagnostic.put("scoreCount", scoreCount);
+
+            // 检查获奖记录数
+            Long recordCount = studentAwardRecordMapper.selectCount(
+                new LambdaQueryWrapper<StudentAwardRecord>()
+                    .eq(StudentAwardRecord::getStudentId, studentId)
+            );
+            diagnostic.put("awardRecordCount", recordCount);
+        } catch (Exception e) {
+            diagnostic.put("error", "诊断异常: " + e.getMessage());
+        }
+        return diagnostic;
+    }
+
     public List<Map<String, Object>> recommendAwards(Long studentId) {
         try {
             Student student = studentMapper.selectById(studentId);

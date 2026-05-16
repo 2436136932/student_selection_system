@@ -49,10 +49,12 @@
           <el-table-column prop="studentName" label="学生姓名" width="120"></el-table-column>
           <el-table-column prop="courseCode" label="标准代码" width="120"></el-table-column>
           <el-table-column prop="courseName" label="课程名称" width="200"></el-table-column>
-          <el-table-column prop="totalScore" label="评分" width="80"></el-table-column>
+          <el-table-column prop="usualScore" label="平时成绩" width="100"></el-table-column>
+          <el-table-column prop="examScore" label="考试成绩" width="100"></el-table-column>
+          <el-table-column prop="totalScore" label="总成绩" width="80"></el-table-column>
           <el-table-column prop="grade" label="等级" width="80"></el-table-column>
           <el-table-column prop="semester" label="适用学期" width="120"></el-table-column>
-          <el-table-column label="操作" width="150" fixed="right" v-if="hasRole('admin') || hasRole('teacher')">
+          <el-table-column label="操作" width="180" fixed="right" v-if="hasRole('admin') || hasRole('teacher')">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
               <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
@@ -138,8 +140,17 @@
         <el-form-item label="课程名称">
           <el-input v-model="form.courseName" placeholder="课程名称" readonly></el-input>
         </el-form-item>
-        <el-form-item label="评分">
-          <el-input-number v-model="form.totalScore" :min="0" :max="100" placeholder="请输入评分" @change="calculateGrade"></el-input-number>
+        <el-form-item label="平时成绩">
+          <el-input-number v-model="form.usualScore" :min="0" :max="100" placeholder="平时成绩" @change="onScoreInput"></el-input-number>
+          <span class="weight-hint">权重 30%</span>
+        </el-form-item>
+        <el-form-item label="考试成绩">
+          <el-input-number v-model="form.examScore" :min="0" :max="100" placeholder="考试成绩" @change="onScoreInput"></el-input-number>
+          <span class="weight-hint">权重 70%</span>
+        </el-form-item>
+        <el-form-item label="总成绩">
+          <el-input-number v-model="form.totalScore" :min="0" :max="100" placeholder="自动计算" readonly></el-input-number>
+          <span class="calc-hint">= 平时×30% + 考试×70%</span>
         </el-form-item>
         <el-form-item label="等级">
           <el-input v-model="form.grade" placeholder="等级" readonly></el-input>
@@ -210,6 +221,8 @@ const form = reactive({
   studentId: '',
   courseCode: '',
   courseName: '',
+  usualScore: null,
+  examScore: null,
   totalScore: null,
   grade: '',
   semester: ''
@@ -274,21 +287,30 @@ const getStudentNameByNumber = () => {
   }
 }
 
-// 根据总分计算等级
-const calculateGrade = () => {
-  const totalScore = form.totalScore
-  if (totalScore === null || totalScore === undefined) {
+// 根据平时成绩和考试成绩自动计算总成绩和等级
+const onScoreInput = () => {
+  const usualScore = form.usualScore
+  const examScore = form.examScore
+  
+  if (usualScore === null && examScore === null) {
+    form.totalScore = null
     form.grade = ''
     return
   }
   
+  const usual = usualScore !== null ? usualScore : 0
+  const exam = examScore !== null ? examScore : 0
+  const totalScore = Math.round((usual * 0.3 + exam * 0.7) * 100) / 100
+  form.totalScore = totalScore
+  
+  // 根据总成绩计算等级
   if (totalScore >= 90) {
     form.grade = 'A'
-  } else if (totalScore >= 80 && totalScore <= 89) {
+  } else if (totalScore >= 80) {
     form.grade = 'B'
-  } else if (totalScore >= 70 && totalScore <= 79) {
+  } else if (totalScore >= 70) {
     form.grade = 'C'
-  } else if (totalScore >= 60 && totalScore <= 69) {
+  } else if (totalScore >= 60) {
     form.grade = 'D'
   } else {
     form.grade = 'F'
@@ -406,6 +428,8 @@ const resetScoreForm = () => {
   form.studentId = ''
   form.courseCode = ''
   form.courseName = ''
+  form.usualScore = null
+  form.examScore = null
   form.totalScore = null
   form.grade = ''
   form.semester = ''
@@ -469,6 +493,8 @@ const handleEdit = (row) => {
   form.studentId = row.studentId || ''
   form.courseCode = row.courseCode || ''
   form.courseName = row.courseName || ''
+  form.usualScore = row.usualScore || null
+  form.examScore = row.examScore || null
   form.totalScore = row.totalScore || null
   form.grade = row.grade || ''
   form.semester = row.semester || ''
@@ -654,5 +680,17 @@ onMounted(() => {
 
 .statistics {
   margin-top: 20px;
+}
+
+.weight-hint {
+  margin-left: 8px;
+  font-size: 12px;
+  color: #909399;
+}
+
+.calc-hint {
+  margin-left: 8px;
+  font-size: 12px;
+  color: #409eff;
 }
 </style>

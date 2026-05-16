@@ -67,6 +67,12 @@ public class AwardRecommendationController {
             response.put("data", recommendations);
             response.put("total", recommendations.size());
             
+            // 诊断信息：帮助排查空推荐原因
+            if (recommendations.isEmpty()) {
+                Map<String, Object> diagnostic = recommendationService.getDiagnostic(studentId);
+                response.put("diagnostic", diagnostic);
+            }
+            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("获取推荐奖项失败", e);

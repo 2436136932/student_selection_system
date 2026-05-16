@@ -120,20 +120,43 @@ public class ScoreServiceImpl implements ScoreService {
     }
 
     /**
+     * 根据平时成绩和考试成绩计算总成绩
+     * 公式：总成绩 = 平时成绩 × 30% + 考试成绩 × 70%
+     * @param usualScore 平时成绩
+     * @param examScore 考试成绩
+     * @return 总成绩，保留两位小数
+     */
+    private BigDecimal calculateTotalScore(BigDecimal usualScore, BigDecimal examScore) {
+        if (usualScore == null && examScore == null) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal usual = usualScore != null ? usualScore : BigDecimal.ZERO;
+        BigDecimal exam = examScore != null ? examScore : BigDecimal.ZERO;
+        return usual.multiply(new BigDecimal("0.3"))
+                .add(exam.multiply(new BigDecimal("0.7")))
+                .setScale(2, java.math.RoundingMode.HALF_UP);
+    }
+
+    /**
      * 创建成绩记录
+     * 自动根据平时成绩(30%)和考试成绩(70%)计算总成绩，再根据总成绩计算等级
      * @param score 成绩信息
      * @return 创建的成绩
      */
     @Override
     public Score createScore(Score score) {
+        // 自动计算总成绩
+        BigDecimal computedTotal = calculateTotalScore(score.getUsualScore(), score.getExamScore());
+        score.setTotalScore(computedTotal);
         // 根据总分自动计算等级
-        score.setGrade(calculateGrade(score.getTotalScore()));
+        score.setGrade(calculateGrade(computedTotal));
         scoreRepository.insert(score);
         return score;
     }
 
     /**
      * 更新成绩信息
+     * 自动根据平时成绩(30%)和考试成绩(70%)重新计算总成绩和等级
      * @param id 成绩ID
      * @param score 成绩信息
      * @return 更新后的成绩
@@ -146,9 +169,11 @@ public class ScoreServiceImpl implements ScoreService {
             existingScore.setCourseId(score.getCourseId());
             existingScore.setUsualScore(score.getUsualScore());
             existingScore.setExamScore(score.getExamScore());
-            existingScore.setTotalScore(score.getTotalScore());
+            // 自动计算总成绩
+            BigDecimal computedTotal = calculateTotalScore(score.getUsualScore(), score.getExamScore());
+            existingScore.setTotalScore(computedTotal);
             // 根据总分自动计算等级
-            existingScore.setGrade(calculateGrade(score.getTotalScore()));
+            existingScore.setGrade(calculateGrade(computedTotal));
             scoreRepository.updateById(existingScore);
             return existingScore;
         }

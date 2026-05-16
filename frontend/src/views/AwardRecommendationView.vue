@@ -120,9 +120,27 @@
     </div>
 
     <el-empty 
-      v-else-if="!loading && analyzed"
-      description="暂无推荐奖项，请先完善您的成绩信息"
-    />
+      v-else-if="analyzed"
+      :description="emptyDescription"
+    >
+      <template v-if="diagnostic" #default>
+        <div class="diagnostic-info">
+          <p><strong>诊断信息：</strong></p>
+          <p>📋 数据库中奖项总数：{{ diagnostic.totalAwardsInDb }}</p>
+          <p>✅ 已发布且进行中的奖项：{{ diagnostic.availableAwards }}</p>
+          <p>📝 您已申请的奖项：{{ diagnostic.alreadyAppliedCount }}</p>
+          <p>📊 您的成绩记录数：{{ diagnostic.scoreCount }}</p>
+          <p>🏆 您的获奖记录数：{{ diagnostic.awardRecordCount }}</p>
+          <div v-if="diagnostic.awardDetails" class="award-status-list">
+            <p v-for="a in diagnostic.awardDetails" :key="a.id" style="font-size:12px;margin:4px 0;">
+              「{{ a.name }}」状态={{ a.status }}/{{ a.currentStatus }} 
+              <el-tag v-if="a.alreadyApplied" type="warning" size="small">已申请</el-tag>
+              <el-tag v-else type="success" size="small">未申请</el-tag>
+            </p>
+          </div>
+        </div>
+      </template>
+    </el-empty>
 
     <!-- 奖项详情对话框 -->
     <el-dialog 
@@ -344,6 +362,7 @@ const router = useRouter()
 const loading = ref(false)
 const analyzed = ref(false)
 const recommendations = ref([])
+const diagnostic = ref(null)
 const detailDialogVisible = ref(false)
 const selectedAward = ref(null)
 
@@ -372,6 +391,16 @@ const aiWeights = ref({
 // 计算总权重
 const totalWeight = computed(() => {
   return aiWeights.value.gradeWeight + aiWeights.value.awardWeight + aiWeights.value.majorWeight + aiWeights.value.historyWeight + aiWeights.value.competitionWeight
+})
+
+// 空推荐时的描述文案
+const emptyDescription = computed(() => {
+  if (!diagnostic.value) return '暂无推荐奖项'
+  if (diagnostic.value.availableAwards === 0) return '无可用奖项（需管理员发布奖项并设为"进行中"）'
+  if (diagnostic.value.alreadyAppliedCount > 0 && diagnostic.value.alreadyAppliedCount >= diagnostic.value.availableAwards)
+    return '您已申请所有可用奖项，无可推荐内容'
+  if (diagnostic.value.scoreCount === 0) return '您暂未录入成绩，请先联系教师录入'
+  return '暂无推荐奖项'
 })
 
 // 保存权重配置
@@ -433,6 +462,7 @@ const initAIWeights = async () => {
 
 const loadRecommendations = async () => {
   loading.value = true
+  diagnostic.value = null
   try {
     // 从 userInfo 中获取用户 ID
     const userInfoStr = localStorage.getItem('userInfo')
@@ -457,8 +487,11 @@ const loadRecommendations = async () => {
 
     if (response.data.success) {
       recommendations.value = response.data.data
+      diagnostic.value = response.data.diagnostic || null
       analyzed.value = true
-      ElMessage.success(`为您找到 ${response.data.total} 个推荐奖项`)
+      if (response.data.total > 0) {
+        ElMessage.success(`为您找到 ${response.data.total} 个推荐奖项`)
+      }
     } else {
       ElMessage.error(response.data.message || '获取推荐失败')
     }
@@ -756,6 +789,29 @@ onMounted(() => {
   margin-left: 10px;
   color: #909399;
   font-size: 14px;
+}
+
+.diagnostic-info {
+  text-align: left;
+  padding: 10px 20px;
+  background: #f5f7fa;
+  border-radius: 8px;
+  margin-top: 10px;
+  max-width: 500px;
+}
+
+.diagnostic-info p {
+  margin: 6px 0;
+  font-size: 13px;
+  color: #606266;
+}
+
+.award-status-list {
+  margin-top: 8px;
+  padding: 8px;
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #ebeef5;
 }
 
 @media (max-width: 768px) {
