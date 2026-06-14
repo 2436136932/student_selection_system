@@ -324,7 +324,7 @@ const getUserInfo = async () => {
     
     // 转换头像URL为完整URL
     if (userData.avatar && userData.avatar.startsWith('/')) {
-      userData.avatar = `http://localhost:8080${userData.avatar}`
+      userData.avatar = `${userData.avatar}`
     }
     
     userInfo.value = userData
@@ -360,21 +360,27 @@ const getUserInfo = async () => {
 // 表单提交
 const submitForm = async () => {
   if (!formRef.value) return
-  
+
   await formRef.value.validate(async (valid) => {
     if (valid) {
       try {
         // 调用API更新用户信息
+        // 包含所有必要字段，避免后端验证错误
         const response = await axios.put(`/api/users/${userInfo.value.id}`, {
+          username: userInfo.value.username,
+          real_name: userInfo.value.real_name || userInfo.value.name,
           email: form.email,
-          phone: form.phone
+          phone: form.phone,
+          role: userInfo.value.role,
+          status: userInfo.value.status
         })
-        
+
         // 更新用户信息
         userInfo.value = response.data
         ElMessage.success('个人信息更新成功')
       } catch (error) {
-        ElMessage.error('更新失败：' + error.message)
+        console.error('更新失败：', error)
+        ElMessage.error('更新失败：' + (error.response?.data?.message || error.message))
       }
     } else {
       return false
@@ -482,7 +488,7 @@ const confirmAvatarUpload = async () => {
     // 转换为完整URL（添加后端域名和端口）
     if (avatarUrl && avatarUrl.startsWith('/')) {
       // 后端服务运行在8080端口
-      avatarUrl = `http://localhost:8080${avatarUrl}`
+      avatarUrl = `${avatarUrl}`
     }
     
     // 更新用户头像

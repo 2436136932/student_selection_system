@@ -420,7 +420,7 @@ const getFullAvatarUrl = (avatar) => {
   if (!avatar) return null
   // 如果是相对路径，添加后端域名和端口
   if (avatar.startsWith('/')) {
-    return `http://localhost:8080${avatar}`
+    return `${avatar}`
   }
   return avatar
 }

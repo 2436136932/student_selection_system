@@ -163,7 +163,7 @@ const fetchUsers = async () => {
   try {
     console.log('开始获取用户列表...')
     console.log('当前token:', localStorage.getItem('token'))
-    const response = await fetch('http://localhost:8080/api/chats/users', {
+    const response = await fetch('/api/chats/users', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -200,7 +200,7 @@ const fetchUsers = async () => {
 // 获取聊天会话列表
 const fetchChatSessions = async () => {
   try {
-    const response = await fetch('http://localhost:8080/api/chats/sessions', {
+    const response = await fetch('/api/chats/sessions', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -222,7 +222,7 @@ const fetchChatSessions = async () => {
 // 获取在线用户列表
 const fetchOnlineUsers = async () => {
   try {
-    const response = await fetch('http://localhost:8080/api/chats/online-users', {
+    const response = await fetch('/api/chats/online-users', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -246,7 +246,7 @@ const fetchOnlineUsers = async () => {
 const selectUser = async (user) => {
   try {
     // 创建或获取会话
-    const response = await fetch('http://localhost:8080/api/chats/sessions', {
+    const response = await fetch('/api/chats/sessions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -277,7 +277,7 @@ const selectUser = async (user) => {
 // 标记消息为已读
 const markMessagesAsRead = async (sessionId) => {
   try {
-    await fetch(`http://localhost:8080/api/chats/sessions/${sessionId}/read-all`, {
+    await fetch(`/api/chats/sessions/${sessionId}/read-all`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -300,7 +300,7 @@ const markMessagesAsRead = async (sessionId) => {
 // 根据会话ID获取聊天消息
 const fetchMessagesBySessionId = async (sessionId) => {
   try {
-    const response = await fetch(`http://localhost:8080/api/chats/messages/session/${sessionId}`, {
+    const response = await fetch(`/api/chats/messages/session/${sessionId}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -322,7 +322,7 @@ const fetchMessagesBySessionId = async (sessionId) => {
 // 处理发送消息
 const handleSendMessage = async (message) => {
   try {
-    const response = await fetch('http://localhost:8080/api/chats/messages', {
+    const response = await fetch('/api/chats/messages', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,

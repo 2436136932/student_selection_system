@@ -36,8 +36,10 @@ export const initializeWebSocket = (onMessage) => {
   console.log('尝试建立WebSocket连接...')
   
   try {
+    // 根据当前协议决定WebSocket协议
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
     // 创建WebSocket连接
-    socket.value = new WebSocket(`ws://localhost:8080/ws/chat?userId=${userId}&token=${token}`)
+    socket.value = new WebSocket(`${wsProtocol}//${window.location.host}/ws/chat?userId=${userId}&token=${token}`)
     
     socket.value.onopen = () => {
       console.log('WebSocket连接已建立')

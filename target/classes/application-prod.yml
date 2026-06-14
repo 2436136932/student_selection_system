@@ -1,0 +1,81 @@
+﻿spring:
+  application:
+    name: student-selection-system
+  main:
+    allow-circular-references: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/student_selection_system?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: root123
+  sql:
+    init:
+      schema-locations: classpath:database_init.sql
+      mode: never
+      platform: mysql
+  thymeleaf:
+    cache: true
+    prefix: classpath:/templates/
+    suffix: .html
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+  mail:
+    host: smtp.qq.com
+    port: 465
+    username: 2436136932@qq.com
+    password: hgbuvkojlctgdjbe
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+          debug: false
+
+file:
+  storage:
+    dir: /www/wwwroot/student-selection-system/uploads/
+    allowed-extensions: docx,doc,pdf,pptx,ppt,png,jpg,jpeg,xls,xlsx
+
+server:
+  port: 8080
+  address: 0.0.0.0
+  servlet:
+    context-path: /
+  tomcat:
+    uri-encoding: UTF-8
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.example.studentselectionsystem.entity
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: AUTO
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+jwt:
+  secret: StudentSelectionSystem2024SecureKey!@#prod
+  expiration: 7200000
+  header: Authorization
+
+logging:
+  level:
+    root: info
+    com.example.studentselectionsystem: info
+    org.springframework.web: info
+    com.baomidou: info
+  file:
+    name: /www/wwwroot/student-selection-system/logs/student-selection-system.log
+    max-size: 10MB
+    max-history: 7

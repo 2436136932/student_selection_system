@@ -430,7 +430,7 @@ const getUserInitial = (user) => {
 const getFullAvatarUrl = (avatar) => {
   if (!avatar) return ''
   if (avatar.startsWith('/')) {
-    return `http://localhost:8080${avatar}`
+    return `${avatar}`
   }
   return avatar
 }

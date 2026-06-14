@@ -417,7 +417,7 @@ const resetSearch = () => {
 const getImageUrl = (imageUrl) => {
   // 如果是本地图片路径（以/uploads/开头），则拼接完整URL
   if (imageUrl && imageUrl.startsWith('/uploads/')) {
-    return `http://localhost:8080${imageUrl}`
+    return `${imageUrl}`
   }
   // 否则直接返回（可能是外部URL）
   return imageUrl

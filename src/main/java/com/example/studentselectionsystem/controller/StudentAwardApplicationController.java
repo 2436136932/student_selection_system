@@ -44,7 +44,6 @@ import java.util.UUID;
  */
 @RestController
 @RequestMapping("/api/student-award-applications")
-@CrossOrigin(origins = "http://localhost:5173") // 允许来自前端的跨域请求
 public class StudentAwardApplicationController {
 
     private static final Logger logger = LoggerFactory.getLogger(StudentAwardApplicationController.class);

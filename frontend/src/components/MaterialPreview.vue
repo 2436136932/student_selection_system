@@ -255,7 +255,7 @@ const loadFileContent = async () => {
   try {
     let requestUrl = props.url
     if (requestUrl.startsWith('/api')) {
-      requestUrl = `http://localhost:8080${requestUrl}`
+      requestUrl = `${requestUrl}`
     }
     
     console.log('开始加载文件，请求 URL:', requestUrl)
@@ -329,7 +329,7 @@ const handleDownload = async () => {
     // 确保下载URL使用完整的后端URL
     let downloadUrl = props.downloadUrl
     if (downloadUrl.startsWith('/api')) {
-      downloadUrl = `http://localhost:8080${downloadUrl}`
+      downloadUrl = `${downloadUrl}`
     }
     
     // 使用axios获取文件的blob数据，确保携带JWT令牌
@@ -376,7 +376,7 @@ const openInNewTab = () => {
   // 确保URL使用完整的后端URL
   let openUrl = props.url
   if (openUrl.startsWith('/api')) {
-    openUrl = `http://localhost:8080${openUrl}`
+    openUrl = `${openUrl}`
   }
   window.open(openUrl, '_blank')
 }

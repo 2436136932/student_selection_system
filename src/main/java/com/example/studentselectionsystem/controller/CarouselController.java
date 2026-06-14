@@ -21,7 +21,6 @@ import java.util.UUID;
 /**
  * 轮播图Controller
  */
-@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/carousels")
 public class CarouselController {
@@ -130,8 +129,8 @@ public class CarouselController {
         }
 
         try {
-            // 设置图片存储路径
-            String uploadDir = "G:/javacode/student-selection-system/uploads/";
+            // 设置图片存储路径 - 使用配置文件中的路径
+            String uploadDir = System.getProperty("file.storage.dir", "/www/wwwroot/student-selection-system/uploads/");
             File dir = new File(uploadDir);
             if (!dir.exists()) {
                 dir.mkdirs();

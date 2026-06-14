@@ -262,7 +262,7 @@ const getInitials = (name) => {
 const getFullAvatarUrl = (avatar) => {
   if (!avatar) return ''
   if (avatar.startsWith('/')) {
-    return `http://localhost:8080${avatar}`
+    return `${avatar}`
   }
   return avatar
 }
@@ -362,7 +362,7 @@ const handleFileSelect = async (event) => {
     const formData = new FormData()
     formData.append('file', file)
     
-    const response = await fetch('http://localhost:8080/api/chats/files/upload', {
+    const response = await fetch('/api/chats/files/upload', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -403,7 +403,7 @@ const handleFileSelect = async (event) => {
 // 处理文件下载
 const handleFileDownload = async (fileUrl, fileName) => {
   try {
-    const response = await fetch(`http://localhost:8080/api/chats/files/download?fileUrl=${encodeURIComponent(fileUrl)}`, {
+    const response = await fetch(`/api/chats/files/download?fileUrl=${encodeURIComponent(fileUrl)}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -447,7 +447,7 @@ const isImageFile = (fileName) => {
 const showImagePreview = async (imageUrl, title = '图片预览') => {
   try {
     // 直接使用下载接口获取图片内容，不依赖于imageUrl的格式
-    const url = new URL('http://localhost:8080/api/chats/files/download')
+    const url = new URL('/api/chats/files/download')
     url.searchParams.append('fileUrl', imageUrl)
     
     const response = await fetch(url.toString(), {
@@ -496,7 +496,7 @@ const formatFileSize = (bytes) => {
 // 标记消息为已读
 const markMessagesAsRead = async () => {
   try {
-    await fetch(`http://localhost:8080/api/chats/sessions/${props.session.id}/read-all`, {
+    await fetch(`/api/chats/sessions/${props.session.id}/read-all`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,

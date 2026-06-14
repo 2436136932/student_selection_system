@@ -71,7 +71,8 @@ public class AuthController {
                     "id", user.getId(),
                     "username", user.getUsername(),
                     "role", user.getRole(),
-                    "name", user.getName(),
+                    "name", user.getRealName() != null ? user.getRealName() : user.getName(),
+                    "real_name", user.getRealName() != null ? user.getRealName() : user.getName(),
                     "email", user.getEmail(),
                     "phone", user.getPhone(),
                     "avatar", user.getAvatar() != null ? user.getAvatar() : ""
@@ -137,7 +138,8 @@ public class AuthController {
                     "id", savedUser.getId(),
                     "username", savedUser.getUsername(),
                     "role", savedUser.getRole(),
-                    "name", savedUser.getName(),
+                    "name", savedUser.getRealName() != null ? savedUser.getRealName() : savedUser.getName(),
+                    "real_name", savedUser.getRealName() != null ? savedUser.getRealName() : savedUser.getName(),
                     "email", savedUser.getEmail(),
                     "phone", savedUser.getPhone(),
                     "avatar", savedUser.getAvatar() != null ? savedUser.getAvatar() : ""

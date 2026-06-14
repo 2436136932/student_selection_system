@@ -987,7 +987,7 @@ const previewMaterial = (row) => {
   
   try {
     // 生成完整的后端URL
-    const baseUrl = 'http://localhost:8080'
+    const baseUrl = ''
     const previewPath = `/api/student-award-applications/preview/${row.id}`
     const downloadPath = `/api/student-award-applications/download/${row.id}`
     
@@ -1021,7 +1021,7 @@ const downloadMaterial = async (row) => {
   
   try {
     // 生成完整的下载URL
-    const baseUrl = 'http://localhost:8080'
+    const baseUrl = ''
     const downloadUrl = `${baseUrl}/api/student-award-applications/download/${row.id}`
     
     // 使用axios获取文件的blob数据，确保携带JWT令牌
