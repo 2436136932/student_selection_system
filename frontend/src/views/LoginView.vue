@@ -507,15 +507,10 @@ import { ref, reactive, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
-
-// 设置axios基础URL，根据当前访问的hostname自动构建后端URL
-const getBaseURL = () => {
-  const hostname = window.location.hostname
-  return `http://${hostname}:8080`
-}
-axios.defaults.baseURL = getBaseURL()
+import { useUserStore } from '../store/user'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 // 角色选择
 const selectedRole = ref('student')
@@ -684,22 +679,18 @@ const handleLogin = () => {
           ElMessage.success('登录成功')
           // 获取当前时间
           const currentTime = new Date().toLocaleString('zh-CN')
-          // 获取上次登录时间（如果有）
           const lastLoginTime = localStorage.getItem('loginTime') || '未知'
-          // 存储用户信息和token到本地存储
-          localStorage.setItem('userInfo', JSON.stringify({
+          // 通过 store 存储用户信息和 token
+          userStore.login({
             username: response.data.user.username,
             role: response.data.user.role,
             name: response.data.user.name || response.data.user.username,
             id: response.data.user.id,
             avatar: response.data.user.avatar || ''
-          }))
+          }, response.data.token)
           // 存储登录时间
           localStorage.setItem('loginTime', currentTime)
-          // 存储上次登录时间
           localStorage.setItem('lastLoginTime', lastLoginTime)
-          // 存储token
-          localStorage.setItem('token', response.data.token)
           // 跳转到系统主页
           router.push('/home')
         } else {

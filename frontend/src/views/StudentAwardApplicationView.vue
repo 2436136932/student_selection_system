@@ -437,15 +437,15 @@ import { Edit, Delete, Plus, Check, Close, Upload, Download, Picture, View } fro
 import axios from 'axios'
 // 导入材料预览组件
 import MaterialPreview from '../components/MaterialPreview.vue'
+import { useUserStore } from '../store/user'
+
+const userStore = useUserStore()
 
 // 初始化路由
 const router = useRouter()
 
 // 获取用户信息
-const getUserInfo = () => {
-  const userInfoStr = localStorage.getItem('userInfo')
-  return userInfoStr ? JSON.parse(userInfoStr) : {}
-}
+const getUserInfo = () => userStore.userInfo
 
 // 检查用户是否有指定角色
 const hasRole = (role) => {
@@ -1028,7 +1028,7 @@ const downloadMaterial = async (row) => {
     const response = await axios.get(downloadUrl, {
       responseType: 'blob',
       headers: {
-        Authorization: localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : ''
+        Authorization: userStore.token ? `Bearer ${userStore.token}` : ''
       }
     })
     

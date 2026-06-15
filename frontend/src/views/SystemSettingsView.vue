@@ -234,10 +234,14 @@ import {
   DocumentChecked, Medal, DocumentCopy, Bell, UserFilled,
   PictureRounded, TrendCharts, Calendar
 } from '@element-plus/icons-vue'
-import { getUserInfo } from '../utils/role'
 import Sortable from 'sortablejs'
 import axios from 'axios'
 import { getAllThemes, detectHoliday, getCurrentTheme, applyThemeCSS, ThemeMode } from '../utils/holidayTheme'
+import { useUserStore } from '../store/user'
+import { useAppStore } from '../store/app'
+
+const userStore = useUserStore()
+const appStore = useAppStore()
 
 // 主题选项
 const themeOptions = ref([
@@ -250,7 +254,7 @@ const themeOptions = ref([
 ])
 
 // 用户信息 - 立即从localStorage获取
-const userInfo = ref(getUserInfo())
+const userInfo = computed(() => userStore.userInfo)
 
 // 电脑信息
 const computerInfo = ref({
@@ -359,8 +363,6 @@ const saveMenuOrder = () => {
   const menuOrder = menuItems.value.map(item => item.index)
   localStorage.setItem('menuOrder', JSON.stringify(menuOrder))
   ElMessage.success('菜单顺序已保存')
-  // 触发storage事件，让App.vue感知到变化
-  window.dispatchEvent(new Event('storage'))
 }
 
 // 恢复默认菜单顺序
@@ -383,10 +385,12 @@ const themePreviewStyle = computed(() => {
   }
 })
 
-// 显示设置
+// 显示设置 - 使用 appStore 的响应式状态
 const displaySettings = reactive({
-  compactMode: false,
-  darkMode: false
+  get compactMode() { return appStore.isCompactMode },
+  set compactMode(val) { appStore.isCompactMode = val },
+  get darkMode() { return appStore.isDarkMode },
+  set darkMode(val) { appStore.isDarkMode = val }
 })
 
 
@@ -407,37 +411,22 @@ const handleThemeChange = () => {
 
 // 处理节日主题模式变化
 const handleHolidayModeChange = () => {
-  // 如果切换到自动模式，清除手动主题
-  if (holidayThemeSettings.mode === ThemeMode.AUTO) {
-    holidayThemeSettings.manualTheme = null
-  }
-  // 保存并应用
-  saveHolidayThemeSettings()
+  appStore.setHolidayThemeMode(holidayThemeSettings.mode)
 }
 
 // 选择节日主题
 const selectHolidayTheme = (themeKey) => {
   holidayThemeSettings.manualTheme = themeKey
-  saveHolidayThemeSettings()
+  appStore.setManualTheme(themeKey)
   ElMessage.success('主题已切换')
 }
 
 // 保存节日主题设置
 const saveHolidayThemeSettings = () => {
-  const settings = {
-    mode: holidayThemeSettings.mode,
-    manualTheme: holidayThemeSettings.manualTheme
+  appStore.setHolidayThemeMode(holidayThemeSettings.mode)
+  if (holidayThemeSettings.manualTheme) {
+    appStore.setManualTheme(holidayThemeSettings.manualTheme)
   }
-  localStorage.setItem('holidayThemeSettings', JSON.stringify(settings))
-
-  // 应用主题
-  const theme = getCurrentTheme(holidayThemeSettings.manualTheme, holidayThemeSettings.mode)
-  if (theme) {
-    applyThemeCSS(theme)
-  }
-
-  // 触发storage事件，通知App.vue更新
-  window.dispatchEvent(new Event('storage'))
 }
 
 // 初始化节日主题设置
@@ -456,74 +445,47 @@ const initHolidayThemeSettings = () => {
 
 // 保存设置
 const saveSettings = () => {
-  // 保存主题设置
   localStorage.setItem('selectedTheme', selectedTheme.value)
-
-  // 保存显示设置
-  localStorage.setItem('displaySettings', JSON.stringify(displaySettings))
-
-  // 保存节日主题设置
+  appStore.saveDisplaySettings()
   saveHolidayThemeSettings()
-
-  // 保存菜单顺序
   saveMenuOrder()
-
   ElMessage.success('设置已保存')
 }
 
 // 恢复默认设置
 const resetSettings = () => {
-  // 恢复默认主题
   selectedTheme.value = 'default'
   handleThemeChange()
 
-  // 恢复默认显示设置
-  Object.assign(displaySettings, {
-    compactMode: false,
-    darkMode: false
-  })
+  appStore.isCompactMode = false
+  appStore.isDarkMode = false
+  appStore.saveDisplaySettings()
 
-  // 恢复默认节日主题设置
   holidayThemeSettings.mode = ThemeMode.AUTO
   holidayThemeSettings.manualTheme = null
-  saveHolidayThemeSettings()
+  appStore.setHolidayThemeMode(ThemeMode.AUTO)
 
-  // 恢复默认菜单顺序
   resetMenuOrder()
-
   ElMessage.info('已恢复默认设置')
 }
 
 // 初始化设置
 const initSettings = () => {
-  // 加载主题设置
   const savedTheme = localStorage.getItem('selectedTheme')
   if (savedTheme) {
     selectedTheme.value = savedTheme
     handleThemeChange()
   } else {
-    // 默认主题
     handleThemeChange()
   }
 
-  // 加载显示设置
-  const savedDisplaySettings = localStorage.getItem('displaySettings')
-  if (savedDisplaySettings) {
-    Object.assign(displaySettings, JSON.parse(savedDisplaySettings))
-  }
-
-  // 加载节日主题设置
   initHolidayThemeSettings()
 }
 
-// 监听显示设置变化，实时保存到localStorage
-watch(displaySettings, (newSettings) => {
-  // 实时保存到localStorage
-  localStorage.setItem('displaySettings', JSON.stringify(newSettings))
-
-  // 触发显示效果变化（通过localStorage事件）
-  window.dispatchEvent(new Event('storage'))
-}, { deep: true })
+// 监听显示设置变化，实时保存
+watch(() => [appStore.isCompactMode, appStore.isDarkMode], () => {
+  appStore.saveDisplaySettings()
+})
 
 // 组件挂载时初始化
 onMounted(() => {
@@ -553,7 +515,7 @@ onMounted(() => {
 
 // 根据用户角色过滤菜单
 const filterMenusByRole = () => {
-  const currentRole = userInfo.value.role
+  const currentRole = userStore.role
   if (currentRole) {
     // 根据用户角色过滤菜单
     const defaultMenus = [

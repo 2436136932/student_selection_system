@@ -1,9 +1,11 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
 import axios from 'axios'
+import { useUserStore } from './store/user'
 import './styles/global.css'
 import './styles/holiday-themes.css'
 
@@ -31,11 +33,10 @@ axios.interceptors.request.use(config => {
     return Promise.reject(new Error('外部请求被拦截'))
   }
   
-  const token = localStorage.getItem('token')
-  console.log('Axios请求拦截器 - token:', token)
+  const userStore = useUserStore()
+  const token = userStore.token
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
-    console.log('Axios请求拦截器 - 添加Authorization头:', config.headers.Authorization)
   }
   return config
 }, error => {
@@ -57,6 +58,13 @@ axios.interceptors.response.use(response => {
 })
 
 const app = createApp(App)
+const pinia = createPinia()
+
+app.use(pinia)
+
+// 必须在 router 之前初始化 store，否则路由守卫读不到 token，刷新页面会被踢回登录页
+const userStore = useUserStore()
+userStore.initFromStorage()
 
 app.use(ElementPlus)
 app.use(router)

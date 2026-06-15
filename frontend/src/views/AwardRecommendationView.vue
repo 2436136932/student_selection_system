@@ -357,6 +357,9 @@ import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { InfoFilled, Refresh, DocumentAdd, View, TrendCharts, Setting } from '@element-plus/icons-vue'
+import { useUserStore } from '../store/user'
+
+const userStore = useUserStore()
 
 const router = useRouter()
 const loading = ref(false)
@@ -367,8 +370,7 @@ const detailDialogVisible = ref(false)
 const selectedAward = ref(null)
 
 // 用户信息
-const userInfoStr = localStorage.getItem('userInfo')
-const userInfo = userInfoStr ? JSON.parse(userInfoStr) : {}
+const userInfo = userStore.userInfo
 
 // 权重配置对话框
 const weightDialogVisible = ref(false)
@@ -465,15 +467,13 @@ const loadRecommendations = async () => {
   diagnostic.value = null
   try {
     // 从 userInfo 中获取用户 ID
-    const userInfoStr = localStorage.getItem('userInfo')
-    if (!userInfoStr) {
+    if (!userStore.isLoggedIn) {
       ElMessage.error('请先登录学生账号')
       loading.value = false
       return
     }
-    
-    const userInfo = JSON.parse(userInfoStr)
-    const userId = userInfo.id
+
+    const userId = userStore.userId
     
     if (!userId) {
       ElMessage.error('获取用户信息失败，请重新登录')

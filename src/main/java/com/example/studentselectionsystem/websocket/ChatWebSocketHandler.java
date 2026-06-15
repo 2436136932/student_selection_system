@@ -14,6 +14,8 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -178,11 +180,11 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                 String[] params = queryString.split("&");
                 for (String param : params) {
                     System.out.println("解析参数: " + param);
-                    String[] keyValue = param.split("=");
+                    String[] keyValue = param.split("=", 2);
                     if (keyValue.length == 2) {
                         System.out.println("参数键: " + keyValue[0] + ", 值: " + keyValue[1]);
                         if ("userId".equals(keyValue[0])) {
-                            userId = keyValue[1];
+                            userId = URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8);
                             System.out.println("解析到的userId: " + userId);
                             break;
                         }
@@ -207,11 +209,11 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             String[] params = queryString.split("&");
             for (String param : params) {
                 System.out.println("解析参数: " + param);
-                String[] keyValue = param.split("=");
+                String[] keyValue = param.split("=", 2);
                 if (keyValue.length == 2) {
                     System.out.println("参数键: " + keyValue[0] + ", 值: " + keyValue[1]);
                     if ("token".equals(keyValue[0])) {
-                        String token = keyValue[1];
+                        String token = URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8);
                         System.out.println("解析到的token: " + token.substring(0, Math.min(10, token.length())) + "...");
                         return token;
                     }

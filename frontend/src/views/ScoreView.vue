@@ -175,12 +175,12 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import axios from 'axios'
 import * as echarts from 'echarts'
 import { ArrowDown } from '@element-plus/icons-vue'
+import { useUserStore } from '../store/user'
+
+const userStore = useUserStore()
 
 // 获取用户信息
-const getUserInfo = () => {
-  const userInfoStr = localStorage.getItem('userInfo')
-  return userInfoStr ? JSON.parse(userInfoStr) : {}
-}
+const getUserInfo = () => userStore.userInfo
 
 // 检查用户是否有指定角色
 const hasRole = (role) => {

@@ -213,6 +213,12 @@
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { Close, Right, CircleCheck, CirclePlus, Document, Download } from '@element-plus/icons-vue'
 import { ElDialog, ElMessage } from 'element-plus'
+import { useUserStore } from '../store/user'
+import { useAppStore } from '../store/app'
+import axios from 'axios'
+
+const userStore = useUserStore()
+const appStore = useAppStore()
 
 // 接收父组件传递的属性
 const props = defineProps({
@@ -239,12 +245,12 @@ const emit = defineEmits(['send-message', 'close-session'])
 
 // 获取当前用户ID
 const currentUserId = computed(() => {
-  return JSON.parse(localStorage.getItem('userInfo'))?.id || ''
+  return userStore.userId || ''
 })
 
 // 获取用户角色
 const currentUserRole = computed(() => {
-  return JSON.parse(localStorage.getItem('userInfo'))?.role || ''
+  return userStore.userInfo?.role || ''
 })
 
 // 判断当前聊天用户是否在线
@@ -262,7 +268,7 @@ const getInitials = (name) => {
 const getFullAvatarUrl = (avatar) => {
   if (!avatar) return ''
   if (avatar.startsWith('/')) {
-    return `${avatar}`
+    return `${axios.defaults.baseURL}${avatar}`
   }
   return avatar
 }
@@ -365,7 +371,7 @@ const handleFileSelect = async (event) => {
     const response = await fetch('/api/chats/files/upload', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${userStore.token}`
       },
       body: formData
     })
@@ -406,7 +412,7 @@ const handleFileDownload = async (fileUrl, fileName) => {
     const response = await fetch(`/api/chats/files/download?fileUrl=${encodeURIComponent(fileUrl)}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${userStore.token}`
       }
     })
     
@@ -453,7 +459,7 @@ const showImagePreview = async (imageUrl, title = '图片预览') => {
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${userStore.token}`
       }
     })
     
@@ -499,13 +505,13 @@ const markMessagesAsRead = async () => {
     await fetch(`/api/chats/sessions/${props.session.id}/read-all`, {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${userStore.token}`,
         'Content-Type': 'application/json'
       }
     })
     console.log('消息已标记为已读')
     // 更新App.vue中的未读消息数量
-    window.dispatchEvent(new CustomEvent('updateUnreadCount'))
+    appStore.fetchUnreadMessageCount()
   } catch (error) {
     console.error('标记消息为已读失败:', error)
   }

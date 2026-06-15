@@ -219,6 +219,9 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { User, EditPen, Lock, UserFilled, Edit, Plus } from '@element-plus/icons-vue'
 import axios from 'axios'
+import { useUserStore } from '../store/user'
+
+const userStoreGlobal = useUserStore()
 
 // 默认头像 - 使用Element Plus内置默认头像，不再依赖外部链接
 const defaultAvatar = ''
@@ -324,7 +327,7 @@ const getUserInfo = async () => {
     
     // 转换头像URL为完整URL
     if (userData.avatar && userData.avatar.startsWith('/')) {
-      userData.avatar = `${userData.avatar}`
+      userData.avatar = `${axios.defaults.baseURL}${userData.avatar}`
     }
     
     userInfo.value = userData
@@ -476,19 +479,14 @@ const confirmAvatarUpload = async () => {
     formData.append('file', uploadedAvatarFile.value)
     
     // 调用API上传头像
-    const response = await axios.post('/api/users/avatar', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
+    const response = await axios.post('/api/users/avatar', formData)
     
     // 获取头像URL
     let avatarUrl = response.data.avatar
     
     // 转换为完整URL（添加后端域名和端口）
     if (avatarUrl && avatarUrl.startsWith('/')) {
-      // 后端服务运行在8080端口
-      avatarUrl = `${avatarUrl}`
+      avatarUrl = `${axios.defaults.baseURL}${avatarUrl}`
     }
     
     // 更新用户头像
@@ -497,12 +495,8 @@ const confirmAvatarUpload = async () => {
     // 同步更新预览图
     previewImage.value = avatarUrl
     
-    // 同步更新localStorage中的用户信息，确保右上角头像同步显示
-    const currentUserInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
-    localStorage.setItem('userInfo', JSON.stringify({
-      ...currentUserInfo,
-      avatar: avatarUrl
-    }))
+    // 同步更新 store 中的用户信息，确保右上角头像同步显示
+    userStoreGlobal.updateUserInfo({ avatar: avatarUrl })
     
     showAvatarUpload.value = false
     ElMessage.success('头像上传成功')

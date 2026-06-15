@@ -1,1 +1,0 @@
-const r=()=>{const o=localStorage.getItem("userInfo");return o?JSON.parse(o):{}},s=o=>{const e=r();return console.log("hasRole函数被调用，传入角色:",o,"，当前用户角色:",e.role),e.role&&e.role.toLowerCase()===o.toLowerCase()};export{r as g,s as h};

@@ -292,6 +292,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
+import { useUserStore } from '../store/user'
+import axios from 'axios'
+
+const userStore = useUserStore()
 
 // 接收父组件传递的属性
 const props = defineProps({
@@ -379,7 +383,7 @@ const roleUnreadCounts = computed(() => {
   // 遍历所有聊天会话，计算各角色的未读消息总数
   props.chatSessions.forEach(session => {
     // 获取会话的对方用户ID
-    const currentUserId = JSON.parse(localStorage.getItem('userInfo'))?.id
+    const currentUserId = userStore.userId
     const otherUserId = session.user1Id === currentUserId ? session.user2Id : session.user1Id
     
     // 查找对方用户
@@ -396,7 +400,7 @@ const roleUnreadCounts = computed(() => {
 
 // 获取当前用户ID
 const currentUserId = computed(() => {
-  return JSON.parse(localStorage.getItem('userInfo'))?.id || ''
+  return userStore.userId || ''
 })
 
 // 判断用户是否活跃（是否是当前聊天对象）
@@ -430,7 +434,7 @@ const getUserInitial = (user) => {
 const getFullAvatarUrl = (avatar) => {
   if (!avatar) return ''
   if (avatar.startsWith('/')) {
-    return `${avatar}`
+    return `${axios.defaults.baseURL}${avatar}`
   }
   return avatar
 }

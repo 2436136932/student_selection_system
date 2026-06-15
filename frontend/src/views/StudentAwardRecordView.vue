@@ -193,11 +193,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted, reactive, computed } from 'vue'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { formatDate } from '../utils/dateUtils'
 import { ArrowDown } from '@element-plus/icons-vue'
+import { useUserStore } from '../store/user'
+
+const userStore = useUserStore()
 
 // 搜索参数
 const searchParams = reactive({
@@ -239,7 +242,7 @@ const selectedRecords = ref([])
 const recordTable = ref(null)
 
 // 用户信息
-const userInfo = ref(JSON.parse(localStorage.getItem('userInfo') || '{}'))
+const userInfo = computed(() => userStore.userInfo)
 
 // 获取奖项列表
 const getAwards = async () => {
@@ -333,10 +336,7 @@ const handleSearch = () => {
 }
 
 // 获取用户信息
-const getUserInfo = () => {
-  const userInfoStr = localStorage.getItem('userInfo')
-  return userInfoStr ? JSON.parse(userInfoStr) : {}
-}
+const getUserInfo = () => userStore.userInfo
 
 // 检查用户是否有指定角色
 const hasRole = (role) => {

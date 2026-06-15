@@ -61,6 +61,13 @@
 import { ref, onMounted, watch, onUnmounted, computed } from 'vue'
 import ChatList from '../components/ChatList.vue'
 import ChatWindow from '../components/ChatWindow.vue'
+import { useUserStore } from '../store/user'
+import { useChatStore } from '../store/chat'
+import { useAppStore } from '../store/app'
+
+const userStore = useUserStore()
+const chatStore = useChatStore()
+const appStore = useAppStore()
 
 // 用户列表
 const users = ref([])
@@ -74,6 +81,7 @@ const currentChatUser = ref(null)
 const currentMessages = ref([])
 // 在线用户列表
 const onlineUsers = ref([])
+const onlineUsersTimer = ref(null)
 
 // 响应式布局相关
 const windowWidth = ref(window.innerWidth)
@@ -105,28 +113,26 @@ const handleSelectUser = (user) => {
   }
 }
 
-// 导入WebSocket服务
-import { initializeWebSocket as initWebSocket } from '../utils/websocketService'
+// 导入WebSocket服务 - 已由 chatStore 管理
 
 // 初始化聊天功能
 onMounted(() => {
-  console.log('ChatView组件已挂载，开始初始化聊天功能...')
   fetchUsers()
   fetchChatSessions()
   fetchOnlineUsers()
-  // 使用WebSocket服务初始化连接，传入消息处理函数
-  initWebSocket(handleWebSocketMessage)
-  // 每30秒获取一次在线用户列表
-  setInterval(fetchOnlineUsers, 30000)
-  console.log('聊天功能初始化完成')
-  
-  // 添加窗口大小变化监听
+  chatStore.initWebSocket(handleWebSocketMessage)
+  onlineUsersTimer.value = setInterval(fetchOnlineUsers, 30000)
+
   window.addEventListener('resize', handleResize)
 })
 
 // 组件卸载时清理
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
+  if (onlineUsersTimer.value) {
+    clearInterval(onlineUsersTimer.value)
+    onlineUsersTimer.value = null
+  }
 })
 
 // 消息处理函数
@@ -139,7 +145,7 @@ const handleWebSocketMessage = (event) => {
     if (currentSession.value && currentSession.value.id === message.sessionId) {
       currentMessages.value.push(message)
       // 如果是收到的消息，标记为已读
-      const userId = JSON.parse(localStorage.getItem('userInfo'))?.id
+      const userId = userStore.userId
       if (message.senderId !== userId) {
         markMessagesAsRead(message.sessionId)
       }
@@ -151,7 +157,7 @@ const handleWebSocketMessage = (event) => {
         fetchChatSessions()
       }
       // 发送未读消息数量更新事件
-      window.dispatchEvent(new CustomEvent('updateUnreadCount'))
+      appStore.fetchUnreadMessageCount()
     }
   } catch (error) {
     console.error('解析WebSocket消息失败:', error)
@@ -162,11 +168,11 @@ const handleWebSocketMessage = (event) => {
 const fetchUsers = async () => {
   try {
     console.log('开始获取用户列表...')
-    console.log('当前token:', localStorage.getItem('token'))
+    console.log('当前token:', userStore.token)
     const response = await fetch('/api/chats/users', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${userStore.token}`,
         'Content-Type': 'application/json'
       }
     })
@@ -203,7 +209,7 @@ const fetchChatSessions = async () => {
     const response = await fetch('/api/chats/sessions', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${userStore.token}`,
         'Content-Type': 'application/json'
       }
     })
@@ -225,7 +231,7 @@ const fetchOnlineUsers = async () => {
     const response = await fetch('/api/chats/online-users', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${userStore.token}`,
         'Content-Type': 'application/json'
       }
     })
@@ -249,7 +255,7 @@ const selectUser = async (user) => {
     const response = await fetch('/api/chats/sessions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${userStore.token}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ receiverId: user.id })
@@ -280,7 +286,7 @@ const markMessagesAsRead = async (sessionId) => {
     await fetch(`/api/chats/sessions/${sessionId}/read-all`, {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${userStore.token}`,
         'Content-Type': 'application/json'
       }
     })
@@ -303,7 +309,7 @@ const fetchMessagesBySessionId = async (sessionId) => {
     const response = await fetch(`/api/chats/messages/session/${sessionId}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${userStore.token}`,
         'Content-Type': 'application/json'
       }
     })
@@ -325,7 +331,7 @@ const handleSendMessage = async (message) => {
     const response = await fetch('/api/chats/messages', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${userStore.token}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(message)
@@ -351,7 +357,7 @@ const updateSessionLastMessage = (sessionId, message) => {
     chatSessions.value[sessionIndex].lastMessage = message.content
     chatSessions.value[sessionIndex].lastMessageTime = message.createdAt
     // 如果是收到的消息，未读消息数量加1
-    if (message.senderId !== JSON.parse(localStorage.getItem('userInfo'))?.id) {
+    if (message.senderId !== userStore.userId) {
       chatSessions.value[sessionIndex].unreadCount = (chatSessions.value[sessionIndex].unreadCount || 0) + 1
     }
   }

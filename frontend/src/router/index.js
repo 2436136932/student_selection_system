@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { useUserStore } from '../store/user'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -117,20 +118,15 @@ const router = createRouter({
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
-  // 检查页面是否需要认证
   if (to.meta.requiresAuth) {
-    // 检查是否已登录
-    const userInfo = localStorage.getItem('userInfo')
-    if (userInfo) {
-      // 已登录，继续访问
+    const userStore = useUserStore()
+    if (userStore.isLoggedIn) {
       next()
     } else {
-      // 未登录，跳转到登录页
       ElMessage.warning('请先登录')
       next('/')
     }
   } else {
-    // 不需要认证的页面，直接访问
     next()
   }
 })

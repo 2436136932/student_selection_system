@@ -1,9 +1,9 @@
 <template>
   <!-- 根据用户是否登录显示不同界面 -->
-  <div v-if="isLoggedIn" class="app-container" :class="{ 'dark-mode': isDarkMode }">
+  <div v-if="userStore.isLoggedIn" class="app-container" :class="{ 'dark-mode': appStore.isDarkMode }">
     <el-container>
       <!-- 侧边栏导航 -->
-      <el-aside :width="isCollapse ? '64px' : '220px'" class="sidebar">
+      <el-aside :width="appStore.sidebarWidth" class="sidebar">
         <div class="logo-container">
           <div class="logo-icon">
             <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -12,7 +12,7 @@
               <path d="M50 50L60 60H40L50 50Z" fill="#2c3e50"/>
             </svg>
           </div>
-          <h3 class="logo-text" v-if="!isCollapse">学生评奖评优系统</h3>
+          <h3 class="logo-text" v-if="!appStore.isCollapse">学生评奖评优系统</h3>
         </div>
         <el-menu
           :default-active="activeIndex"
@@ -26,7 +26,7 @@
             <el-sub-menu v-if="menu.children" :index="menu.index">
               <template #title>
                 <el-icon class="menu-icon"><component :is="menu.icon" /></el-icon>
-                <span class="menu-text" v-if="!isCollapse">{{ menu.text }}</span>
+                <span class="menu-text" v-if="!appStore.isCollapse">{{ menu.text }}</span>
               </template>
               <el-menu-item
                 v-for="subMenu in menu.children"
@@ -41,12 +41,12 @@
             <!-- 普通菜单项 -->
             <el-menu-item v-else :index="menu.index" class="menu-item">
               <el-icon class="menu-icon"><component :is="menu.icon" /></el-icon>
-              <span class="menu-text" v-if="!isCollapse">{{ menu.text }}</span>
+              <span class="menu-text" v-if="!appStore.isCollapse">{{ menu.text }}</span>
             </el-menu-item>
           </template>
         </el-menu>
-        <div class="sidebar-toggle-btn" @click="toggleCollapse">
-          <el-icon v-if="isCollapse"><ArrowRight /></el-icon>
+        <div class="sidebar-toggle-btn" @click="appStore.toggleCollapse()">
+          <el-icon v-if="appStore.isCollapse"><ArrowRight /></el-icon>
           <el-icon v-else><ArrowLeft /></el-icon>
         </div>
       </el-aside>
@@ -60,20 +60,20 @@
             </div>
             <div class="header-right">
               <div class="header-info">
-                <span class="online-count">系统当前在线人数：{{ onlineUserCount }}</span>
+                <span class="online-count">系统当前在线人数：{{ appStore.onlineUserCount }}</span>
                 <span class="role-tag" :class="getRoleClass()">
-                  {{ getRoleName() }}
+                  {{ userStore.roleName }}
                 </span>
                 <el-dropdown trigger="click" @command="handleDropdownCommand">
                   <div class="user-info">
-                    <el-avatar 
-                      size="small" 
-                      :src="getFullAvatarUrl(userInfo.avatar)"
+                    <el-avatar
+                      size="small"
+                      :src="getFullAvatarUrl(userStore.userInfo.avatar)"
                       @error="handleAvatarError"
                     >
-                      <el-icon v-if="!userInfo.avatar"><UserFilled /></el-icon>
+                      <el-icon v-if="!userStore.userInfo.avatar"><UserFilled /></el-icon>
                     </el-avatar>
-                    <span class="user-name">{{ userInfo.name || userInfo.username }}</span>
+                    <span class="user-name">{{ userStore.displayName }}</span>
                     <el-icon class="el-icon--right"><arrow-down /></el-icon>
                   </div>
                   <template #dropdown>
@@ -85,7 +85,7 @@
                       <el-dropdown-item command="chat">
                         <el-icon><ChatLineRound /></el-icon>
                         聊天中心
-                        <el-badge v-if="unreadMessageCount > 0" :value="unreadMessageCount" class="unread-badge" />
+                        <el-badge v-if="appStore.unreadMessageCount > 0" :value="appStore.unreadMessageCount" class="unread-badge" />
                       </el-dropdown-item>
                       <el-dropdown-item command="settings">
                         <el-icon><setting /></el-icon>
@@ -104,7 +104,7 @@
         </el-header>
 
         <!-- 内容区域 -->
-        <el-main class="main-content" :class="{ 'compact-mode': isCompactMode }">
+        <el-main class="main-content" :class="{ 'compact-mode': appStore.isCompactMode }">
           <div class="content-wrapper">
             <router-view />
           </div>
@@ -118,18 +118,18 @@
   </div>
 
   <!-- 节日装饰层 -->
-  <HolidayDecoration :theme="currentHolidayTheme" />
+  <HolidayDecoration :theme="appStore.currentHolidayTheme" />
 
   <!-- 主题状态指示器 -->
-  <div v-if="themeStatusText" class="theme-status-indicator" :class="{ 'solemn': isSolemn }">
-    <el-tooltip :content="themeStatusText" placement="bottom">
+  <div v-if="appStore.themeStatusText" class="theme-status-indicator" :class="{ 'solemn': appStore.isSolemn }">
+    <el-tooltip :content="appStore.themeStatusText" placement="bottom">
       <div class="theme-indicator-dot"></div>
     </el-tooltip>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import {
@@ -154,43 +154,20 @@ import {
   ChatDotRound,
   ChatLineRound
 } from '@element-plus/icons-vue'
-import axios from 'axios'
 import HolidayDecoration from './components/HolidayDecoration.vue'
-import { getCurrentTheme, applyThemeCSS, getThemeStatusText, isSolemnTheme, ThemeMode } from './utils/holidayTheme'
+import axios from 'axios'
+import { useUserStore } from './store/user'
+import { useAppStore } from './store/app'
+import { useChatStore } from './store/chat'
 
 const router = useRouter()
 const route = useRoute()
-
-// 用户登录状态
-const isLoggedIn = ref(false)
-
-// 用户信息
-const userInfo = ref({})
-
-// 侧边栏折叠状态
-const isCollapse = ref(false)
+const userStore = useUserStore()
+const appStore = useAppStore()
+const chatStore = useChatStore()
 
 // 当前激活的菜单项
 const activeIndex = computed(() => route.path)
-
-// 紧凑模式
-const isCompactMode = ref(false)
-
-// 深色模式
-const isDarkMode = ref(false)
-
-// 节日主题相关
-const currentHolidayTheme = ref(null)
-const themeStatusText = ref('')
-const isSolemn = ref(false)
-const holidayThemeMode = ref(ThemeMode.AUTO)
-const manualHolidayTheme = ref(null)
-
-// 未读消息数量
-const unreadMessageCount = ref(0)
-
-// 在线人数
-const onlineUserCount = ref(0)
 
 // 菜单定义，包含每个菜单的权限信息
 const menuItems = [
@@ -200,10 +177,10 @@ const menuItems = [
   { index: '/courses', icon: School, text: '课程管理', roles: ['admin', 'teacher', 'student'] },
   { index: '/majors', icon: School, text: '专业管理', roles: ['admin', 'teacher', 'student'] },
   { index: '/scores', icon: DataLine, text: '评分管理', roles: ['admin', 'teacher', 'student'] },
-  { 
-    index: '/award-management', 
-    icon: DocumentChecked, 
-    text: '奖项管理', 
+  {
+    index: '/award-management',
+    icon: DocumentChecked,
+    text: '奖项管理',
     roles: ['admin', 'teacher', 'student'],
     children: [
       { index: '/awards', icon: Medal, text: '评奖评优', roles: ['admin', 'teacher', 'student'] },
@@ -218,301 +195,87 @@ const menuItems = [
   { index: '/carousel', icon: PictureRounded, text: '轮播图管理', roles: ['admin'] }
 ]
 
-// 菜单映射
-const menuMap = {
-  '/home': '首页',
-  '/students': '学生管理',
-  '/teachers': '教师管理',
-  '/courses': '课程管理',
-  '/majors': '专业管理',
-  '/scores': '成绩管理',
-  '/awards': '评奖评优',
-  '/student-award-applications': '奖项申请',
-  '/student-award-records': '获奖记录',
-  '/award-recommendation': 'AI智能推荐',
-  '/statistics': '数据统计',
-  '/notices': '通知管理',
-  '/users': '用户管理',
-  '/carousel': '轮播图管理',
-  '/profile': '个人中心',
-  '/system-settings': '系统设置'
-}
+let onlineCountTimer = null
 
-// 检查用户登录状态
-const checkLoginStatus = () => {
-  const userInfoStr = localStorage.getItem('userInfo')
-  if (userInfoStr) {
-    isLoggedIn.value = true
-    userInfo.value = JSON.parse(userInfoStr)
-    // 登录状态下获取未读消息数量
-    getUnreadMessageCount()
-  } else {
-    isLoggedIn.value = false
-    userInfo.value = {}
-  }
-}
-
-// 导入WebSocket服务
-import { initializeWebSocket as initWebSocket, triggerWebSocketConnection, closeWebSocket } from './utils/websocketService'
-
-// 初始化节日主题
-const initHolidayTheme = () => {
-  // 读取主题设置
-  const savedThemeSettings = localStorage.getItem('holidayThemeSettings')
-  if (savedThemeSettings) {
-    try {
-      const settings = JSON.parse(savedThemeSettings)
-      holidayThemeMode.value = settings.mode || ThemeMode.AUTO
-      manualHolidayTheme.value = settings.manualTheme || null
-    } catch (e) {
-      console.error('解析节日主题设置失败:', e)
-    }
-  }
-
-  // 获取当前主题
-  updateHolidayTheme()
-}
-
-// 更新节日主题
-const updateHolidayTheme = () => {
-  const theme = getCurrentTheme(manualHolidayTheme.value, holidayThemeMode.value)
-  currentHolidayTheme.value = theme
-  themeStatusText.value = getThemeStatusText(theme)
-  isSolemn.value = isSolemnTheme(theme)
-
-  // 应用主题CSS
-  applyThemeCSS(theme)
-
-  console.log('节日主题已更新:', themeStatusText.value)
-}
-
-// 组件挂载时检查登录状态和读取设置
 onMounted(() => {
-  checkLoginStatus()
+  appStore.initDisplaySettings()
+  appStore.initHolidayTheme()
 
-  // 读取显示设置
-  const savedDisplaySettings = localStorage.getItem('displaySettings')
-  if (savedDisplaySettings) {
-    try {
-      const displaySettings = JSON.parse(savedDisplaySettings)
-      isCompactMode.value = displaySettings.compactMode || false
-      isDarkMode.value = displaySettings.darkMode || false
-    } catch (e) {
-      console.error('解析显示设置失败:', e)
-    }
+  if (userStore.isLoggedIn) {
+    chatStore.initWebSocket()
+    appStore.fetchUnreadMessageCount()
+    appStore.fetchOnlineUserCount()
+    onlineCountTimer = setInterval(() => appStore.fetchOnlineUserCount(), 30000)
   }
-
-  // 初始化节日主题
-  initHolidayTheme()
-
-  // 监听未读消息数量更新事件
-  window.addEventListener('updateUnreadCount', getUnreadMessageCount)
-
-  // 初始化WebSocket连接，用户一登录就建立连接
-  initWebSocket()
-
-  // 获取在线人数
-  getOnlineUserCount()
-  // 每30秒更新一次在线人数
-  setInterval(getOnlineUserCount, 30000)
 })
 
-// 组件卸载时移除事件监听
 onUnmounted(() => {
-  window.removeEventListener('updateUnreadCount', getUnreadMessageCount)
+  if (onlineCountTimer) {
+    clearInterval(onlineCountTimer)
+  }
 })
 
-// 监听userInfo变化
-watch(userInfo, (newVal, oldVal) => {
-  if (newVal && newVal.username) {
-    isLoggedIn.value = true
-    // 用户登录，触发WebSocket连接
-    console.log('检测到用户登录，初始化WebSocket连接')
-    triggerWebSocketConnection()
+// 监听登录状态变化，触发WebSocket连接/断开
+watch(() => userStore.isLoggedIn, (loggedIn) => {
+  if (loggedIn) {
+    chatStore.triggerConnection()
+    appStore.fetchUnreadMessageCount()
+    appStore.fetchOnlineUserCount()
+    if (!onlineCountTimer) {
+      onlineCountTimer = setInterval(() => appStore.fetchOnlineUserCount(), 30000)
+    }
   } else {
-    isLoggedIn.value = false
-    // 用户注销，关闭WebSocket连接
-    console.log('检测到用户注销，关闭WebSocket连接')
-    closeWebSocket()
-  }
-}, { deep: true })
-
-// 监听localStorage变化
-window.addEventListener('storage', (event) => {
-  if (event.key === 'userInfo') {
-    // 检查登录状态
-    checkLoginStatus()
-    
-    // 获取最新的用户信息
-    const userInfoStr = localStorage.getItem('userInfo')
-    if (userInfoStr) {
-      // 用户已登录，触发WebSocket连接
-      console.log('检测到用户登录，触发WebSocket连接')
-      triggerWebSocketConnection()
-    } else {
-      // 用户已注销，关闭WebSocket连接
-      console.log('检测到用户注销，关闭WebSocket连接')
-      closeWebSocket()
-    }
-  } else if (event.key === 'displaySettings') {
-    // 重新读取显示设置
-    const savedDisplaySettings = localStorage.getItem('displaySettings')
-    if (savedDisplaySettings) {
-      try {
-        const displaySettings = JSON.parse(savedDisplaySettings)
-        isCompactMode.value = displaySettings.compactMode || false
-        isDarkMode.value = displaySettings.darkMode || false
-      } catch (e) {
-        console.error('解析显示设置失败:', e)
-      }
-    }
-  } else if (event.key === 'menuOrder') {
-    // 菜单顺序发生变化，Vue会自动重新计算getVisibleMenus，无需手动刷新
-    console.log('菜单顺序已更新')
-  } else if (event.key === 'holidayThemeSettings') {
-    // 节日主题设置发生变化
-    const savedThemeSettings = localStorage.getItem('holidayThemeSettings')
-    if (savedThemeSettings) {
-      try {
-        const settings = JSON.parse(savedThemeSettings)
-        holidayThemeMode.value = settings.mode || ThemeMode.AUTO
-        manualHolidayTheme.value = settings.manualTheme || null
-        updateHolidayTheme()
-      } catch (e) {
-        console.error('解析节日主题设置失败:', e)
-      }
+    chatStore.closeConnection()
+    if (onlineCountTimer) {
+      clearInterval(onlineCountTimer)
+      onlineCountTimer = null
     }
   }
 })
-
-// 监听路由变化，当路由从登录页跳转到其他页面时，检查登录状态
-watch(() => route.path, (newPath) => {
-  checkLoginStatus()
-})
-
-// 切换侧边栏折叠状态
-const toggleCollapse = () => {
-  isCollapse.value = !isCollapse.value
-}
 
 // 菜单选择事件处理
-const handleMenuSelect = (key, keyPath) => {
+const handleMenuSelect = (key) => {
   router.push(key)
-}
-
-// 获取当前菜单名称
-const getCurrentMenuName = () => {
-  return menuMap[route.path] || ''
-}
-
-// 获取角色名称
-const getRoleName = () => {
-  const roleMap = {
-    'admin': '管理员',
-    'teacher': '教师',
-    'student': '学生'
-  }
-  return roleMap[userInfo.value.role] || '用户'
 }
 
 // 获取完整的头像URL
 const getFullAvatarUrl = (avatar) => {
   if (!avatar) return null
-  // 如果是相对路径，添加后端域名和端口
   if (avatar.startsWith('/')) {
-    return `${avatar}`
+    return `${axios.defaults.baseURL}${avatar}`
   }
   return avatar
 }
 
 // 处理头像加载错误
-const handleAvatarError = (error) => {
-  console.error('右上角头像加载失败：', error)
-  // 头像加载失败时，不做特殊处理，让组件显示默认图标
-}
-
-// 获取未读消息数量
-const getUnreadMessageCount = async () => {
-  try {
-    const response = await axios.get('/api/chats/unread-count', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-    if (response.data) {
-      unreadMessageCount.value = response.data.unreadCount || 0
-    }
-  } catch (error) {
-    console.error('获取未读消息数量失败:', error)
-    // 忽略错误，避免影响页面加载
-  }
-}
-
-// 获取在线人数
-const getOnlineUserCount = async () => {
-  console.log('开始获取在线人数...')
-  try {
-    // 同时调用两个端点进行验证
-    const [userIdsResponse, countResponse] = await Promise.all([
-      axios.get('/api/chats/online-users'),
-      axios.get('/api/chats/online-count')
-    ]);
-    
-    console.log('获取在线用户ID成功，响应数据:', userIdsResponse.data);
-    console.log('获取在线人数成功，响应数据:', countResponse.data);
-    
-    // 使用userIdsResponse.data.length获取在线人数
-    onlineUserCount.value = userIdsResponse.data.length || 0;
-    console.log('根据在线用户ID列表计算的在线人数:', onlineUserCount.value);
-    console.log('直接获取的在线人数:', countResponse.data?.onlineCount);
-    
-    // 如果直接获取的在线人数不为空，使用它进行验证
-    if (countResponse.data?.onlineCount !== undefined) {
-      console.log('在线人数验证:', onlineUserCount.value === countResponse.data.onlineCount ? '一致' : '不一致');
-    }
-  } catch (error) {
-    console.error('获取在线人数失败:', error);
-    console.error('错误详情:', error.response?.status, error.response?.data);
-    // 忽略错误，避免影响页面加载
-  }
-}
+const handleAvatarError = () => {}
 
 // 根据用户角色过滤可见菜单，并支持自定义顺序
 const getVisibleMenus = computed(() => {
-  const currentRole = userInfo.value.role
-  // 先根据用户角色过滤菜单
+  const currentRole = userStore.role
   const filteredMenus = menuItems.filter(menu => menu.roles.includes(currentRole))
-  
-  // 读取localStorage中的菜单顺序
+
   const savedMenuOrder = localStorage.getItem('menuOrder')
   if (savedMenuOrder) {
     try {
       const menuOrder = JSON.parse(savedMenuOrder)
-      // 创建菜单索引映射
-      const menuMap = new Map()
-      filteredMenus.forEach(menu => menuMap.set(menu.index, menu))
-      
-      // 按照保存的顺序排列菜单
+      const menuIndexMap = new Map()
+      filteredMenus.forEach(menu => menuIndexMap.set(menu.index, menu))
+
       const orderedMenus = []
       menuOrder.forEach(index => {
-        const menu = menuMap.get(index)
+        const menu = menuIndexMap.get(index)
         if (menu) {
           orderedMenus.push(menu)
-          menuMap.delete(index)
+          menuIndexMap.delete(index)
         }
       })
-      
-      // 添加剩余的菜单（未在配置中定义的菜单）
-      menuMap.forEach(menu => orderedMenus.push(menu))
-      
+      menuIndexMap.forEach(menu => orderedMenus.push(menu))
       return orderedMenus
     } catch (error) {
-      console.error('解析菜单顺序失败:', error)
       return filteredMenus
     }
   }
-  
-  // 没有保存的顺序，返回默认顺序
   return filteredMenus
 })
 
@@ -523,7 +286,7 @@ const getRoleClass = () => {
     'teacher': 'role-teacher',
     'student': 'role-student'
   }
-  return roleClassMap[userInfo.value.role] || ''
+  return roleClassMap[userStore.role] || ''
 }
 
 // 下拉菜单命令处理
@@ -546,10 +309,8 @@ const handleDropdownCommand = (command) => {
 
 // 退出登录
 const handleLogout = () => {
-  localStorage.removeItem('userInfo')
-  localStorage.removeItem('token')
-  isLoggedIn.value = false
-  userInfo.value = {}
+  userStore.logout()
+  chatStore.closeConnection()
   ElMessage.success('退出登录成功')
   router.push('/')
 }

@@ -138,6 +138,9 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Search, Edit, Delete } from '@element-plus/icons-vue'
 import axios from 'axios'
+import { useUserStore } from '../store/user'
+
+const userStore = useUserStore()
 
 // 通知列表数据
 const currentPage = ref(1)
@@ -187,10 +190,7 @@ const rules = reactive({
 const selectedNotices = ref([])
 
 // 获取用户信息
-const getUserInfo = () => {
-  const userInfoStr = localStorage.getItem('userInfo')
-  return userInfoStr ? JSON.parse(userInfoStr) : null
-}
+const getUserInfo = () => userStore.userInfo
 
 // 获取通知列表
 const getNotices = async () => {

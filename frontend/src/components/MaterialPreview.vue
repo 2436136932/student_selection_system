@@ -145,6 +145,9 @@ import { ref, computed, watch, onUnmounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Picture, Document, Download, Link, DocumentRemove, RefreshRight } from '@element-plus/icons-vue'
 import axios from 'axios'
+import { useUserStore } from '../store/user'
+
+const userStore = useUserStore()
 
 // Props
 const props = defineProps({
@@ -263,10 +266,10 @@ const loadFileContent = async () => {
     const response = await axios.get(requestUrl, {
       responseType: 'blob',
       headers: {
-        Authorization: localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : ''
+        Authorization: userStore.token ? `Bearer ${userStore.token}` : ''
       }
     })
-    
+
     console.log('文件加载成功，状态码:', response.status)
     console.log('响应头 Content-Type:', response.headers['content-type'])
     
@@ -336,10 +339,10 @@ const handleDownload = async () => {
     const response = await axios.get(downloadUrl, {
       responseType: 'blob',
       headers: {
-        Authorization: localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : ''
+        Authorization: userStore.token ? `Bearer ${userStore.token}` : ''
       }
     })
-    
+
     // 创建临时的blob URL
     const blob = new Blob([response.data], { type: response.headers['content-type'] })
     const blobUrl = URL.createObjectURL(blob)
